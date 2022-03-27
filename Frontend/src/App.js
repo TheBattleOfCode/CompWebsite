@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { Switch, Route, Link } from "react-router-dom";
-import "bootstrap/dist/css/bootstrap.min.css";
+import 'bootstrap/dist/css/bootstrap.min.css'
+import 'jquery/dist/jquery.min.js'
+import 'bootstrap/dist/js/bootstrap.min.js'
 import "./App.css";
 
 import AuthService from "./services/auth.service";
@@ -12,6 +14,7 @@ import Profile from "./components/Profile";
 import BoardUser from "./components/BoardUser";
 import BoardModerator from "./components/BoardModerator";
 import BoardAdmin from "./components/BoardAdmin";
+import CreateProblem from "./components/CreateProblem";
 
 // import AuthVerify from "./common/AuthVerify";
 import EventBus from "./common/EventBus";
@@ -139,6 +142,7 @@ const App = () => {
           <Route path="/admin" component={BoardAdmin} />
           <Route exact path="/contest" component={Contest} />
           <Route exact path="/standings" component={Standings} />
+          <Route exact path="/createProb" component={CreateProblem} />
         </Switch>
       </div>
 
