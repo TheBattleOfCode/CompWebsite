@@ -7,9 +7,9 @@ const CreateProblem = () => {
     
     const [selectValue,setSelectValue]=useState("");
     
-    //const [probTitle,setProbTitle]=useState("");
-    //const [probDesc,setProbDesc]=useState("");
-    //const [probScore,setProbScore]=useState("");
+    const [probTitle,setProbTitle]=useState("");
+    const [probDesc,setProbDesc]=useState("");
+    const [probScore,setProbScore]=useState("");
     const [probFile,setProbFile]=useState("");
     const [probInput,setProbInput]=useState([]);
     const [probOutput,setProbOutput]=useState(0);
@@ -49,11 +49,48 @@ const CreateProblem = () => {
           </div>
           <h3>{selectValue}</h3>
 
+          <div className="form-group">
+                <label htmlFor="Title">Title</label>
+                <input
+                  type="text"
+                  className="form-control"
+                  name="Title"
+                  value={probTitle}
+                  onChange={(e)=>setProbTitle(e.target.value)}
+                />
+          </div>
+
+          <div className="form-group">
+                <label htmlFor="Description">Description</label>
+                <textarea
+                  type="text"
+                  className="form-control"
+                  name="Description"
+                  value={probDesc}
+                  onChange={(e)=>setProbDesc(e.target.value)}
+                />
+          </div>
+
+
+          <div className="form-group">
+                <label htmlFor="Score">Score</label>
+                <input
+                  type="text"
+                  className="form-control"
+                  name="Score"
+                  value={probScore}
+                  onChange={(e)=>setProbScore(e.target.value)}
+                />
+          </div>
+
           {selectValue==="Number gen" && <div>
           
           {
             <div>
               
+              
+
+
               <div className="form-group">
                 <label htmlFor="File">File</label>
                 <textarea
@@ -64,6 +101,7 @@ const CreateProblem = () => {
                   onChange={(e)=>setProbFile(e.target.value)}
                 />
               </div>
+
 
               
 
