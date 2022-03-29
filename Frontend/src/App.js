@@ -15,6 +15,7 @@ import BoardUser from "./components/BoardUser";
 import BoardModerator from "./components/BoardModerator";
 import BoardAdmin from "./components/BoardAdmin";
 import CreateProblem from "./components/CreateProblem";
+import ProbTemp from "./components/ProbTemp";
 
 // import AuthVerify from "./common/AuthVerify";
 import EventBus from "./common/EventBus";
@@ -143,6 +144,7 @@ const App = () => {
           <Route exact path="/contest" component={Contest} />
           <Route exact path="/standings" component={Standings} />
           <Route exact path="/createProb" component={CreateProblem} />
+          <Route exact path="/ProbTemp" component={ProbTemp} />
         </Switch>
       </div>
 
