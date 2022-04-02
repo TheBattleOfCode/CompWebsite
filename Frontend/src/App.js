@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from "react";
 import { Switch, Route, Link } from "react-router-dom";
-import "bootstrap/dist/css/bootstrap.min.css";
+import 'bootstrap/dist/css/bootstrap.min.css'
+import 'jquery/dist/jquery.min.js'
+import 'bootstrap/dist/js/bootstrap.min.js'
 import "./App.css";
 
 import AuthService from "./services/auth.service";
@@ -12,6 +14,7 @@ import Profile from "./components/Profile";
 import BoardUser from "./components/BoardUser";
 import BoardModerator from "./components/BoardModerator";
 import BoardAdmin from "./components/BoardAdmin";
+import CreateProblem from "./components/CreateProblem";
 
 // import AuthVerify from "./common/AuthVerify";
 import EventBus from "./common/EventBus";
@@ -19,9 +22,9 @@ import Contest from "./components/Contest";
 import Standings from "./components/Standings";
 
 const App = () => {
-  const [showModeratorBoard, setShowModeratorBoard] = useState(false);
-  const [showAdminBoard, setShowAdminBoard] = useState(false);
-  const [currentUser, setCurrentUser] = useState(undefined);
+  const [ showModeratorBoard, setShowModeratorBoard ] = useState(false);
+  const [ showAdminBoard, setShowAdminBoard ] = useState(false);
+  const [ currentUser, setCurrentUser ] = useState(undefined);
 
   useEffect(() => {
     const user = AuthService.getCurrentUser();
@@ -55,12 +58,12 @@ const App = () => {
           CompWeb
         </Link>
         <div className="navbar-nav mr-auto">
-        <li className="nav-item">
+          <li className="nav-item">
             <Link to={"/home"} className="nav-link">
               Home
             </Link>
           </li>
-          
+
           {showModeratorBoard && (
             <li className="nav-item">
               <Link to={"/mod"} className="nav-link">
@@ -77,6 +80,14 @@ const App = () => {
             </li>
           )}
 
+          {showAdminBoard && (
+            <li className="nav-item">
+              <Link to={"/createProb"} className="nav-link">
+                Create Problem
+              </Link>
+            </li>
+          )}
+
           {currentUser && (
             <li className="nav-item">
               <Link to={"/user"} className="nav-link">
@@ -84,12 +95,12 @@ const App = () => {
               </Link>
             </li>
           )}
-          
+
           <li className="nav-item">
             <Link to={"/contest"} className="nav-link">
               Contests
             </Link>
-          
+
           </li>
           <li className="nav-item">
             <Link to={"/standings"} className="nav-link">
@@ -130,7 +141,7 @@ const App = () => {
 
       <div className="container mt-3">
         <Switch>
-          <Route exact path={["/", "/home"]} component={Home} />
+          <Route exact path={[ "/", "/home" ]} component={Home} />
           <Route exact path="/login" component={Login} />
           <Route exact path="/register" component={Register} />
           <Route exact path="/profile" component={Profile} />
@@ -139,6 +150,7 @@ const App = () => {
           <Route path="/admin" component={BoardAdmin} />
           <Route exact path="/contest" component={Contest} />
           <Route exact path="/standings" component={Standings} />
+          <Route exact path="/createProb" component={CreateProblem} />
         </Switch>
       </div>
 
