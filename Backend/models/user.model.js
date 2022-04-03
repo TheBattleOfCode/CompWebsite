@@ -6,6 +6,12 @@ const User = mongoose.model(
     username: String,
     email: String,
     password: String,
+    teamName: String,
+    indivScore: Number,
+    teamScore: Number,
+    country: String,
+    city: String,
+    organization: String,
     roles: [
       {
         type: mongoose.Schema.Types.ObjectId,
