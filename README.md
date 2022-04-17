@@ -5,7 +5,7 @@
 #### Roadmap
 
 - [X] Authentification and account managment 
-- Number gen type problem :
+- [ ] Number gen type problem :
   - [X] Create problem
   - [X] open problem
   - [ ] generate input/output
