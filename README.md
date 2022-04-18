@@ -11,6 +11,7 @@
   - [ ] generate input/output
   - [ ] submit answer 
   - [ ] affecting score
+- [ ] tableau de bord
 
 
 #### Assets :
