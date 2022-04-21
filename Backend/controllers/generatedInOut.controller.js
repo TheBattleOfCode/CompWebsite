@@ -9,7 +9,7 @@ exports.SaveInOut= (req, res) => {
         answered:false
         
     })
-    prob.save((err, InOut) => {
+    InOut.save((err, InOut) => {
         if (err) {
             return res.status(500).send({ message: err });
         }
