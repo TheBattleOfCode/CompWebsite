@@ -1,15 +1,13 @@
 import React from "react";
-import {
-    useParams
-} from "react-router-dom";
+import { useParams } from "react-router-dom";
 import authService from "../services/auth.service";
+import genProblemService from "../services/gen-problem.service";
 import probService from "../services/prob.service";
+
 function ProbNumberGen() {
     const currentUser = authService.getCurrentUser();
-
-
-
     // getting the problem
+
     const getAnswer = async () => {
         const currentProblem = probService.GetProb(id);
         const data = await currentProblem;
@@ -18,8 +16,11 @@ function ProbNumberGen() {
 
     let { id } = useParams();
     const [ prob, setProb ] = React.useState([]);
+
+
     React.useEffect(() => {
         getAnswer();
+
         
     }, []);
     console.log(prob);
