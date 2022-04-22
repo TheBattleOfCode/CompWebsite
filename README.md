@@ -8,7 +8,7 @@
 - [ ] Number gen type problem :
   - [X] Create problem
   - [X] open problem
-  - [ ] generate input/output
+  - [X] generate input/output
   - [ ] submit answer 
   - [ ] affecting score
 
