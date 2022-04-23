@@ -1,4 +1,4 @@
-# CompWebsite
+# Battle Of Code 
 
 #### A problem solving platform 
 
@@ -27,3 +27,11 @@
 
 ## Use case Diagram
 ![UC diag](https://i.imgur.com/Gnjh6sD.png)
+
+
+## A project by :
+  [**Ahmed Khalil SEDDIK**](https://www.linkedin.com/in/ahmed-khalil-seddik/)
+
+  [**Houssam MOUSSA**](https://www.linkedin.com/in/houssem-moussa-aa7402188/)
+
+  [**Mohamed NEJI**](https://www.linkedin.com/in/mohamedneji/)
