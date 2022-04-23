@@ -10,6 +10,7 @@ function ProbNumberGen() {
     const [ prob, setProb ] = React.useState([]);
     const [ inOut, setInOut ] = React.useState([]);
     const [ generatedInOut, setGeneratedInOut ] = React.useState([]);
+    const [ answerTry, setAnswerTry ] = React.useState("");
     const currentUser = authService.getCurrentUser();
 
     function hash(input) {
@@ -22,6 +23,7 @@ function ProbNumberGen() {
         //console.log(generatedInOutFromEval);
         //console.log(generatedInOut);
     }
+
 
     const getData = async () => {
         // getting the problem
@@ -38,17 +40,16 @@ function ProbNumberGen() {
         // if there's no data, then we need to generate it
         if (!dataInOut.data) {
             generateInOut(data.data.inOutContentGen);
-
         }
         else {
-            setInOut({ "input": dataInOut.data.genInput, "output": dataInOut.data.genOutput });
+            setInOut({ "input": dataInOut.data.genInput, "output": dataInOut.data.genOutput, "answered": dataInOut.data.answered });
         }
     };
 
     React.useEffect(() => {
         if (generatedInOut.output) {
             console.log(generatedInOut);
-            setInOut({ "input": generatedInOut.input, "output": generatedInOut.output });
+            setInOut({ "input": generatedInOut.input, "output": generatedInOut.output, "answered": false });
             let encrypted = hash(generatedInOut.output);
             console.log(encrypted);
             genProblemService.SaveGenProb(
@@ -63,7 +64,7 @@ function ProbNumberGen() {
                         console.log(error);
                     }
                 );;
-                
+
         }
     }, [ generatedInOut ]);
 
@@ -73,9 +74,22 @@ function ProbNumberGen() {
     }, []);
 
 
+    function submitAnswer() {
+        let encrypted = hash(answerTry);
+        // 505 for AKS
+        if (encrypted === inOut.output) {
+            setInOut({ "input": inOut.input, "output": answerTry, "answered": true });
+            // change it in the database
+
+            // add score to the user
+        }
+        else {
+            alert("Incorrect!");
+        }
+    }
 
     return (
-        <div>
+        <div className="w-100 p-3">
 
             <div className="container"></div>
 
@@ -84,7 +98,7 @@ function ProbNumberGen() {
                 <div className="col-9 align-self-start">
                     <h1 className="h1 text-center">{prob.title + " (" + prob.score + " points)"}</h1>
                     <h3 className="h3">Description</h3>
-                    <p className="fs-4 p-sm-3 text-sm-start">{prob.description}</p>
+                    <div dangerouslySetInnerHTML={{ __html: prob.description }}></div>
 
                 </div>
 
@@ -95,13 +109,30 @@ function ProbNumberGen() {
             {!!currentUser && <div className="row justify-content-start" id="aa">
                 <div className="col-9">
                     <h4 className="h4">Click to get your input</h4>
-                    <button onClick={() => navigator.clipboard.writeText(inOut.input)}>Copy</button>
+                    <button onClick={() => navigator.clipboard.writeText(inOut.input)} className="btn btn-warning " >Copy</button>
+                    {!inOut.answered &&
+                        <div>
+                            
+                            <div className="form-group w-25">
+                                <label for="submission"><h4>submission</h4></label>
+                                <input type="text"
+                                    className="form-control"
+                                    name="submission"
+                                    placeholder="Your answer here"
+                                    value={answerTry}
+                                    onChange={(e) => setAnswerTry(e.target.value)} />
 
-                    <div>
-                        <br></br>
-                        <input type="text" name="submission" placeholder="Your answer here" />
-                        <button type="submit" name="submit">submit (to do)</button>
-                    </div>
+                                <br></br>
+                                <button type="submit"
+                                    name="submit"
+                                    className="btn btn-primary"
+                                    onClick={submitAnswer}>submit</button>
+                            </div>
+                        </div>}
+                    {inOut.answered &&
+                        <div>
+                            <h3> You answered correctly! <br></br>  Your answer was {inOut.output}</h3>
+                        </div>}
                 </div>
 
 
@@ -110,9 +141,12 @@ function ProbNumberGen() {
             {!currentUser &&
                 <p>To get an Input and get solving, <a href="login.php">login</a> or <a href="signup.php">signup</a>.</p>
             }
-
+            <br></br><br></br>
             <footer className="card-footer">
-                <p>Author: Foulen ben foulen</p>
+                {// all rights reserved
+                }
+                <p>&copy; 2022 FFDV, inc.</p>
+
 
             </footer>
 
