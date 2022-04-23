@@ -17,6 +17,7 @@
     "react-router-dom": "^5.2.0",
     "react-scripts": "3.4.1",
     "react-validation": "^3.0.7",
+    "remarkable": "^2.0.1",
     "validator": "^13.0.0"
   },
   "scripts": {

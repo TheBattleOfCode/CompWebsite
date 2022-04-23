@@ -31,3 +31,34 @@ exports.GetInOut = async (req, res) => {
     }
 }
 
+exports.GenUpdateInOut = async (req, res) => {
+
+    try{
+        const InOut = await generatedInOut.findOneAndUpdate({
+            userId: req.params.userId,
+            problemId: req.params.problemId
+        },[{
+            $set: { answered:  true}
+        }],{
+            new:true
+        })
+
+            return res.status(201).send({'success':true,message:'inOut Updated'})
+
+    }catch(err){
+
+        return res.status(500).send({ message: err })
+    }
+
+}
+
+exports.DeleteInOut = async (req, res) => {
+    try{
+        const InOut = await generatedInOut.findOneAndDelete({_id:req.params.id}) 
+        res.send({'success':true, message:'inOut deleted'})
+    
+    }catch(err){
+        res.status(500).send({ message: err });
+    }
+}
+

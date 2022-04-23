@@ -1,4 +1,4 @@
-const { SaveInOut, GetInOut } = require("../controllers/generatedInOut.controller");
+const { SaveInOut, GetInOut, GenUpdateInOut, DeleteInOut } = require("../controllers/generatedInOut.controller");
 
 
 module.exports = (app)=>{
@@ -13,5 +13,9 @@ module.exports = (app)=>{
   app.post("/api/generatedInOut/add", SaveInOut )
 
   app.get("/api/generatedInOut/getOne/:userId/:problemId", GetInOut)
+
+  app.post("/api/generatedInOut/UpdateOne/:userId/:problemId", GenUpdateInOut)
+
+  app.delete("/api/generatedInOut/DeleteOne/:id", DeleteInOut)
 
 }
