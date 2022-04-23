@@ -5,13 +5,19 @@
 #### Roadmap
 
 - [X] Authentification and account managment 
+
 - [ ] Number gen type problem :
   - [X] Create problem
   - [X] open problem
-  - [ ] generate input/output
+  - [X] generate input/output
   - [ ] submit answer 
   - [ ] affecting score
-- [ ] tableau de bord (admin/ user(classement par pay/...))
+
+- [ ] making buttons' effect visible 
+
+- [ ] Dashboarding
+  - [ ]  Admin Dashboard (number of accounts, number of problems, list of problems with number of times solved (in number and %), ...)
+  - [ ]  User Dashboard (ranking(country/establishment/world), list of solved problems, ...)
 
 
 #### Assets :
