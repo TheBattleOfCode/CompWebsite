@@ -38,7 +38,7 @@ exports.GenUpdateInOut = async (req, res) => {
             userId: req.params.userId,
             problemId: req.params.problemId
         },[{
-            $set: { answered:  true}
+            $set: { answered:  true, genOutput: req.params.answer }
         }],{
             new:true
         })

@@ -16,7 +16,12 @@ const GetGenProb = (idUser, idGenProb) => {
     return axios.get(API_URL+"getOne/"+idUser+'/'+idGenProb);
 }
 
+const UpdateGenProb = (idUser, idGenProb, answer) => {
+    return axios.post(API_URL+"UpdateOne/"+idUser+'/'+idGenProb+'/'+answer);
+}
+
 export default {
     SaveGenProb, 
-    GetGenProb
+    GetGenProb,
+    UpdateGenProb
 };

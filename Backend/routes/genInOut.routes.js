@@ -14,7 +14,7 @@ module.exports = (app)=>{
 
   app.get("/api/generatedInOut/getOne/:userId/:problemId", GetInOut)
 
-  app.post("/api/generatedInOut/UpdateOne/:userId/:problemId", GenUpdateInOut)
+  app.post("/api/generatedInOut/UpdateOne/:userId/:problemId/:answer", GenUpdateInOut)
 
   app.delete("/api/generatedInOut/DeleteOne/:id", DeleteInOut)
 

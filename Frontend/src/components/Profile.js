@@ -19,6 +19,9 @@ const Profile = () => {
         <strong>Id:</strong> {currentUser.id}
       </p>
       <p>
+        <strong>score:</strong> {currentUser.indivScore}
+      </p>
+      <p>
         <strong>Email:</strong> {currentUser.email}
       </p>
       <strong>Authorities:</strong>

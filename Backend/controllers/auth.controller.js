@@ -12,7 +12,11 @@ exports.signup = (req, res) => {
     email: req.body.email,
     indivScore:0,
     teamScore:0,
-    password: bcrypt.hashSync(req.body.password, 8)
+    password: bcrypt.hashSync(req.body.password, 8),
+    teamName: null,
+    country: null,
+    city: null,
+    organization: null
   });
 
   user.save((err, user) => {
@@ -105,7 +109,8 @@ exports.signin = (req, res) => {
         username: user.username,
         email: user.email,
         roles: authorities,
-        accessToken: token
+        accessToken: token,
+        indivScore: user.indivScore,
       });
     });
 };

@@ -4,6 +4,7 @@ import authService from "../services/auth.service";
 import genProblemService from "../services/gen-problem.service";
 import { createHash } from "crypto";
 import probService from "../services/prob.service";
+import userService from "../services/user.service";
 
 function ProbNumberGen() {
     let { id } = useParams();
@@ -77,11 +78,28 @@ function ProbNumberGen() {
     function submitAnswer() {
         let encrypted = hash(answerTry);
         // 505 for AKS
+        // encrypted = twYNAA9I04dZ8FlA7rVuFZ1INzO6B1XOuEcxV1+uOks=
         if (encrypted === inOut.output) {
             setInOut({ "input": inOut.input, "output": answerTry, "answered": true });
             // change it in the database
-
-            // add score to the user
+            genProblemService.UpdateGenProb(currentUser.id, id,answerTry).then(
+                (response) => {
+                    console.log(response);
+                },
+                (error) => {
+                    console.log(error);
+                }
+            );
+        
+        // add score to the user
+        userService.UpdateUser(currentUser.id, { "indivScore": currentUser.indivScore + prob.score }).then(
+            (response) => {
+                console.log(response);
+            }
+        );
+        // update score in local storage
+        currentUser.indivScore = currentUser.indivScore + prob.score;
+        localStorage.setItem("user", JSON.stringify(currentUser));
         }
         else {
             alert("Incorrect!");
@@ -114,7 +132,7 @@ function ProbNumberGen() {
                         <div>
                             
                             <div className="form-group w-25">
-                                <label for="submission"><h4>submission</h4></label>
+                                <label htmlFor="submission"><h4>submission</h4></label>
                                 <input type="text"
                                     className="form-control"
                                     name="submission"
