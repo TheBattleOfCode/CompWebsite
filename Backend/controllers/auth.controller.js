@@ -10,7 +10,13 @@ exports.signup = (req, res) => {
   const user = new User({
     username: req.body.username,
     email: req.body.email,
-    password: bcrypt.hashSync(req.body.password, 8)
+    indivScore:0,
+    teamScore:0,
+    password: bcrypt.hashSync(req.body.password, 8),
+    teamName: null,
+    country: null,
+    city: null,
+    organization: null
   });
 
   user.save((err, user) => {
@@ -103,7 +109,8 @@ exports.signin = (req, res) => {
         username: user.username,
         email: user.email,
         roles: authorities,
-        accessToken: token
+        accessToken: token,
+        indivScore: user.indivScore,
       });
     });
 };

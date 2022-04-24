@@ -15,6 +15,7 @@ import BoardUser from "./components/BoardUser";
 import BoardModerator from "./components/BoardModerator";
 import BoardAdmin from "./components/BoardAdmin";
 import CreateProblem from "./components/CreateProblem";
+import ProbNumberGen from "./components/ProbNumberGen";
 
 // import AuthVerify from "./common/AuthVerify";
 import EventBus from "./common/EventBus";
@@ -139,7 +140,7 @@ const App = () => {
         )}
       </nav>
 
-      <div className="container mt-3">
+      <div className="mw-100 w-100 p-3">
         <Switch>
           <Route exact path={[ "/", "/home" ]} component={Home} />
           <Route exact path="/login" component={Login} />
@@ -151,6 +152,7 @@ const App = () => {
           <Route exact path="/contest" component={Contest} />
           <Route exact path="/standings" component={Standings} />
           <Route exact path="/createProb" component={CreateProblem} />
+          <Route exact path="/ProbNumberGen/:id" component={ProbNumberGen} />
         </Switch>
       </div>
 
