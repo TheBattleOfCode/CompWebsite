@@ -6,12 +6,12 @@
 
 - [X] Authentification and account managment 
 
-- [ ] Number gen type problem :
+- [X] Number gen type problem :
   - [X] Create problem
   - [X] open problem
   - [X] generate input/output
-  - [ ] submit answer 
-  - [ ] affecting score
+  - [X] submit answer 
+  - [X] affecting score
 
 - [ ] making buttons' effect visible 
 
