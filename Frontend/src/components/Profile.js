@@ -4,6 +4,12 @@ import AuthService from "../services/auth.service";
 const Profile = () => {
   const currentUser = AuthService.getCurrentUser();
 
+  //edit profile first on click of edit button
+  const editProfile = () => {
+    console.log("edit profile");
+  };
+
+
   return (
     <div className="container">
       <div className="main-body">
@@ -24,7 +30,7 @@ const Profile = () => {
                   <div className="mt-3">
                     <h4>{currentUser.username}</h4>
                     <p className="text-secondary mb-1">Full Stack Developer</p>
-                    <p className="text-muted font-size-sm">{currentUser.city} , {currentUser.country}</p>
+                    <p className="text-muted font-size-sm">{currentUser.city===null ?"--":currentUser.city} , {currentUser.country===null ?"--":currentUser.country}</p>
                     <button className="btn btn-primary">Follow</button>
                     <button className="btn btn-outline-primary">Message</button>
                   </div>
@@ -65,7 +71,7 @@ const Profile = () => {
                     <h6 className="mb-0">Full Name</h6>
                   </div>
                   <div className="col-sm-9 text-secondary">
-                    {currentUser.firstName} {currentUser.lastName}
+                    {currentUser.firstName===null ?"--":currentUser.firstName} {currentUser.lastName===null ?"--":currentUser.lastName}
                   </div>
                 </div>
                 <hr />
@@ -83,7 +89,7 @@ const Profile = () => {
                     <h6 className="mb-0">Phone</h6>
                   </div>
                   <div className="col-sm-9 text-secondary">
-                    {currentUser.phone}
+                    {currentUser.phone===null ?"--":currentUser.phone}
                   </div>
                 </div>
                 <hr />
@@ -101,13 +107,13 @@ const Profile = () => {
                     <h6 className="mb-0">Address</h6>
                   </div>
                   <div className="col-sm-9 text-secondary">
-                    {currentUser.city} , {currentUser.country}
+                    {currentUser.city===null ?"--":currentUser.city} , {currentUser.country===null ?"--":currentUser.country}
                   </div>
                 </div>
                 <hr />
                 <div className="row">
                   <div className="col-sm-12">
-                    <a className="btn btn-info " target="__blank" href="/testprofile">Edit</a>
+                    <button className="btn btn-primary" onClick={editProfile}>Edit</button>
                   </div>
                 </div>
 
