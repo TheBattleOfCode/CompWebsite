@@ -117,7 +117,8 @@ exports.signin = (req, res) => {
         city: user.city,
         organization: user.organization,
         roles: authorities,
-        accessToken: token
+        accessToken: token,
+        indivScore: user.indivScore,
       });
     });
 };

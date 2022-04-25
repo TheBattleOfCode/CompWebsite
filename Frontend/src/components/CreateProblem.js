@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import probService from "../services/prob.service";
-
+import { Remarkable } from 'remarkable';
 
 
 const CreateProblem = () => {
@@ -19,10 +19,10 @@ const CreateProblem = () => {
 
   const submitNumberGen = () => {
     console.log("To check input");
-
+    const md = new Remarkable();
     probService.SaveProb(
       probTitle,
-      probDesc,
+      md.render(probDesc),
       probScore,
       probFile,
       "NumberGen").then(

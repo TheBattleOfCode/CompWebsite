@@ -141,7 +141,7 @@ const App = () => {
         )}
       </nav>
 
-      <div className="container mt-3">
+      <div className="mw-100 w-100 p-3">
         <Switch>
           <Route exact path={[ "/", "/home" ]} component={Home} />
           <Route exact path="/login" component={Login} />

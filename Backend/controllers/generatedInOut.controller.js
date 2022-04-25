@@ -9,7 +9,7 @@ exports.SaveInOut= (req, res) => {
         answered:false
         
     })
-    prob.save((err, InOut) => {
+    InOut.save((err, InOut) => {
         if (err) {
             return res.status(500).send({ message: err });
         }
@@ -25,6 +25,37 @@ exports.GetInOut = async (req, res) => {
     try{
         const InOut = await generatedInOut.findOne({userId:req.params.userId, problemId:req.params.problemId}) 
         res.send(InOut)
+    
+    }catch(err){
+        res.status(500).send({ message: err });
+    }
+}
+
+exports.GenUpdateInOut = async (req, res) => {
+
+    try{
+        const InOut = await generatedInOut.findOneAndUpdate({
+            userId: req.params.userId,
+            problemId: req.params.problemId
+        },[{
+            $set: { answered:  true, genOutput: req.params.answer }
+        }],{
+            new:true
+        })
+
+            return res.status(201).send({'success':true,message:'inOut Updated'})
+
+    }catch(err){
+
+        return res.status(500).send({ message: err })
+    }
+
+}
+
+exports.DeleteInOut = async (req, res) => {
+    try{
+        const InOut = await generatedInOut.findOneAndDelete({_id:req.params.id}) 
+        res.send({'success':true, message:'inOut deleted'})
     
     }catch(err){
         res.status(500).send({ message: err });
