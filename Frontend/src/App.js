@@ -21,6 +21,7 @@ import ProbNumberGen from "./components/ProbNumberGen";
 import EventBus from "./common/EventBus";
 import Contest from "./components/Contest";
 import Standings from "./components/Standings";
+import TestProfile from "./components/testProfile";
 
 const App = () => {
   const [ showModeratorBoard, setShowModeratorBoard ] = useState(false);
@@ -153,6 +154,7 @@ const App = () => {
           <Route exact path="/standings" component={Standings} />
           <Route exact path="/createProb" component={CreateProblem} />
           <Route exact path="/ProbNumberGen/:id" component={ProbNumberGen} />
+          <Route exact path={"/TestProfile"} component ={TestProfile} />
         </Switch>
       </div>
 

@@ -19,9 +19,16 @@ const getAdminBoard = () => {
   return axios.get(API_URL + "admin", { headers: authHeader() });
 };
 
+const UpdateUser = (id, data) => {
+  return axios.put(API_URL + "update/" + id,data ,{ headers: authHeader() });
+};
+
+
+
 export default {
   getPublicContent,
   getUserBoard,
   getModeratorBoard,
   getAdminBoard,
+  UpdateUser,
 };
