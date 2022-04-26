@@ -1,13 +1,84 @@
 import React from "react";
 import AuthService from "../services/auth.service";
+import userService from "../services/user.service";
 
 const Profile = () => {
   const currentUser = AuthService.getCurrentUser();
+  const [editMsg, setEditMsg] = React.useState(false);
+  const [firstName, setFirstName] = React.useState(currentUser.firstName);
+  const [lastName, setLastName] = React.useState(currentUser.lastName);
+  const [phone, setPhone] = React.useState(currentUser.phone);
+  const [city, setCity] = React.useState(currentUser.city);
+  const [country, setCountry] = React.useState(currentUser.country);
+  const [successful, setSuccessful] = React.useState(false);
+  const [message, setMessage] = React.useState("");
+  const [cancelMsg, setCancelMsg] = React.useState(false);
+
 
   //edit profile first on click of edit button
   const editProfile = () => {
-    console.log("edit profile");
+    setEditMsg(!editMsg);
+    setSuccessful(false);
+    setCancelMsg(false);
+    console.log(editMsg);
   };
+
+  //Cancel edit profile
+  const cancelEdit = () => {
+    setEditMsg(!editMsg);
+    setCancelMsg(!cancelMsg);
+    console.log(editMsg);
+    setMessage(false);
+  };
+
+
+  //save profile after editing
+  const saveProfile = () => {
+    userService.UpdateUser(currentUser.id, { firstName: firstName, lastName: lastName , phone:phone , city:city , country : country}).then(
+      (response) => {
+        console.log(response);
+        setEditMsg(!editMsg);
+        setSuccessful(true);
+      }
+
+    );
+
+    currentUser.firstName = firstName;
+    currentUser.lastName = lastName;
+    currentUser.phone = phone;
+    currentUser.city = city;
+    currentUser.country = country;
+
+
+
+    localStorage.setItem("user", JSON.stringify(currentUser));
+
+
+
+
+  };
+
+  const onChangeFirstName = (e) => {
+    setFirstName(e.target.value);
+  };
+
+  const onChangeLastName = (e) => {
+    setLastName(e.target.value);
+  };
+
+  const onChangePhone = (e) => {
+    setPhone(e.target.value);
+  };
+
+  const onChangeCity = (e) => {
+    setCity(e.target.value);
+  };
+
+  const onChangeCountry = (e) => {
+    setCountry(e.target.value);
+  };
+
+
 
 
   return (
@@ -29,8 +100,8 @@ const Profile = () => {
                   <img src="https://bootdey.com/img/Content/avatar/avatar7.png" alt="Admin" className="rounded-circle" width="150" />
                   <div className="mt-3">
                     <h4>{currentUser.username}</h4>
-                    <p className="text-secondary mb-1">Full Stack Developer</p>
-                    <p className="text-muted font-size-sm">{currentUser.city===null ?"--":currentUser.city} , {currentUser.country===null ?"--":currentUser.country}</p>
+                    <p className="text-secondary mb-1">{currentUser.indivScore}</p>
+                    <p className="text-muted font-size-sm">{currentUser.city === null ? "--" : currentUser.city} , {currentUser.country === null ? "--" : currentUser.country}</p>
                     <button className="btn btn-primary">Follow</button>
                     <button className="btn btn-outline-primary">Message</button>
                   </div>
@@ -70,9 +141,27 @@ const Profile = () => {
                   <div className="col-sm-3">
                     <h6 className="mb-0">Full Name</h6>
                   </div>
-                  <div className="col-sm-9 text-secondary">
-                    {currentUser.firstName===null ?"--":currentUser.firstName} {currentUser.lastName===null ?"--":currentUser.lastName}
+
+                  {editMsg ? <div className="row"><div className="col">
+                    <input
+                      type="text"
+                      className="form-control"
+                      value={firstName}
+                      name="firstName"
+                      placeholder="First Name"
+                      onChange={onChangeFirstName} />
                   </div>
+                    <div className="col">
+                      <input
+                        type="text"
+                        className="form-control"
+                        value={lastName}
+                        placeholder="Last Name"
+                        name="lastName"
+                        onChange={onChangeLastName} />
+                    </div></div> : <div className="col-sm-9 text-secondary">
+                    {currentUser.firstName} {currentUser.lastName}
+                  </div>}
                 </div>
                 <hr />
                 <div className="row">
@@ -88,9 +177,17 @@ const Profile = () => {
                   <div className="col-sm-3">
                     <h6 className="mb-0">Phone</h6>
                   </div>
-                  <div className="col-sm-9 text-secondary">
-                    {currentUser.phone===null ?"--":currentUser.phone}
-                  </div>
+                  {editMsg ? <div className="col">
+                    <input
+                      type="text"
+                      className="form-control"
+                      value={phone}
+                      name="phone"
+                      placeholder="phone"
+                      onChange={onChangePhone} />
+                  </div> : <div className="col-sm-9 text-secondary">
+                  {currentUser.phone === null ? "--" : currentUser.phone} 
+                  </div>}
                 </div>
                 <hr />
                 <div className="row">
@@ -105,15 +202,45 @@ const Profile = () => {
                 <div className="row">
                   <div className="col-sm-3">
                     <h6 className="mb-0">Address</h6>
+                  </div>{editMsg ? <div className="row"><div className="col">
+                    <input
+                      type="text"
+                      className="form-control"
+                      value={city}
+                      name="city"
+                      placeholder="city"
+                      onChange={onChangeCity} />
                   </div>
-                  <div className="col-sm-9 text-secondary">
-                    {currentUser.city===null ?"--":currentUser.city} , {currentUser.country===null ?"--":currentUser.country}
-                  </div>
+                    <div className="col">
+                      <input
+                        type="text"
+                        className="form-control"
+                        value={country}
+                        placeholder="country"
+                        name="country"
+                        onChange={onChangeCountry} />
+                    </div></div> : <div className="col-sm-9 text-secondary">
+                    {currentUser.city === null ? "--" : currentUser.city} , {currentUser.country === null ? "--" : currentUser.country}
+                  </div>}
                 </div>
                 <hr />
                 <div className="row">
                   <div className="col-sm-12">
-                    <button className="btn btn-primary" onClick={editProfile}>Edit</button>
+                    {!editMsg ? <button
+                      className="btn btn-primary"
+                      onClick={editProfile}>Edit</button> :
+                      <button
+                        className="btn btn-outline-primary"
+                        onClick={cancelEdit}>Cancel</button>}
+                        {cancelMsg && <div className="alert alert-danger">
+                        Profile update canceled
+                        </div>}
+                    {editMsg && <button
+                      className="btn btn-success"
+                      onClick={saveProfile}>Save</button>}
+                      {successful && <div className="alert alert-success">
+                        Profile updated successfully
+                        </div>}
                   </div>
                 </div>
 

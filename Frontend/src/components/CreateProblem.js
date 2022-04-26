@@ -6,12 +6,14 @@ import { Remarkable } from 'remarkable';
 const CreateProblem = () => {
 
 
-  const [ selectValue, setSelectValue ] = useState("");
+  const [selectValue, setSelectValue] = useState("");
 
-  const [ probTitle, setProbTitle ] = useState("");
-  const [ probDesc, setProbDesc ] = useState("");
-  const [ probScore, setProbScore ] = useState("");
-  const [ probFile, setProbFile ] = useState("");
+  const [probTitle, setProbTitle] = useState("");
+  const [probDesc, setProbDesc] = useState("");
+  const [probScore, setProbScore] = useState("");
+  const [probFile, setProbFile] = useState("");
+  const [successful, setSuccessful] = useState(false);
+  const [fail,setFail] = useState(false);
 
 
 
@@ -31,9 +33,11 @@ const CreateProblem = () => {
         },
         (error) => {
           console.log(error);
+          setFail(false);
         }
       );
 
+    setSuccessful(true);
     console.log("done");
 
 
@@ -64,7 +68,7 @@ const CreateProblem = () => {
           type="text"
           className="form-control"
           name="Title"
-          value={probTitle}
+          value={successful ? "":probTitle}
           onChange={(e) => setProbTitle(e.target.value)}
         />
       </div>
@@ -75,7 +79,7 @@ const CreateProblem = () => {
           type="text"
           className="form-control"
           name="Description"
-          value={probDesc}
+          value={successful ? "":probDesc}
           onChange={(e) => setProbDesc(e.target.value)}
         />
       </div>
@@ -87,7 +91,7 @@ const CreateProblem = () => {
           type="text"
           className="form-control"
           name="Score"
-          value={probScore}
+          value={successful ? "":probScore}
           onChange={(e) => setProbScore(e.target.value)}
         />
       </div>
@@ -106,7 +110,7 @@ const CreateProblem = () => {
                 type="text"
                 className="form-control"
                 name="File"
-                value={probFile}
+                value={successful ? "":probFile}
                 onChange={(e) => setProbFile(e.target.value)}
               />
             </div>
@@ -117,6 +121,20 @@ const CreateProblem = () => {
             <div className="form-group">
               <button className="btn btn-primary btn-block" onClick={submitNumberGen}>Submit</button>
             </div>
+            {successful && (
+              <div className="form-group">
+                <div className="alert alert-success" role="alert">
+                  Problem created successfully!
+                </div>
+              </div>)
+            }
+            {fail && (
+              
+                <div className="form-group">
+                  <div className="alert alert-danger" role="alert">
+                    Problem creation failed!
+                  </div>
+                </div>)}
           </div>
         }
 
