@@ -1,35 +1,36 @@
-# Battle Of Code 
+# Battle Of Code
 
-#### A problem solving platform 
+## A problem solving platform
 
-#### Roadmap
+## Roadmap
 
-- [X] Authentification and account managment 
+- [X] Authentification and account managment
 
 - [X] Number gen type problem :
   - [X] Create problem
   - [X] open problem
   - [X] generate input/output
-  - [X] submit answer 
+  - [X] submit answer
   - [X] affecting score
 
-- [ ] making buttons' effect visible 
+- [ ] making buttons' effect visible
 
 - [ ] Dashboarding
   - [ ]  Admin Dashboard (number of accounts, number of problems, list of problems with number of times solved (in number and %), ...)
   - [ ]  User Dashboard (ranking(country/establishment/world), list of solved problems, ...)
 
+## Assets
 
-#### Assets :
+### Class Diagram
 
-## Class Diagram :
 ![Class diag](https://i.imgur.com/L3lJPE9.png)
 
-## Use case Diagram
+### Use case Diagram
+
 ![UC diag](https://i.imgur.com/Gnjh6sD.png)
 
+## A project by
 
-## A project by :
   [**Ahmed Khalil SEDDIK**](https://www.linkedin.com/in/ahmed-khalil-seddik/)
 
   [**Houssam MOUSSA**](https://www.linkedin.com/in/houssem-moussa-aa7402188/)
