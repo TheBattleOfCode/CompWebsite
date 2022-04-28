@@ -7,13 +7,18 @@
 - [X] Authentification and account managment
 
 - [X] Number gen type problem :
-  - [X] Create problem
-  - [X] open problem
-  - [X] generate input/output
-  - [X] submit answer
-  - [X] affecting score
+  - [ ] Creating  
+    - [X] add problem to DB
+    - [X] input controles
+    - [ ] adequate text areas for in/output generators
+    - [ ] preview in/output
+  - [X] Reading
+    - [X] open problem
+    - [X] generate input/output
+    - [X] submit answer
+    - [X] affecting score
 
-- [ ] making buttons' effect visible
+- [X] making buttons' effect visible
 
 - [ ] Dashboarding
   - [ ]  Admin Dashboard (number of accounts, number of problems, list of problems with number of times solved (in number and %), ...)
