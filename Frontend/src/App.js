@@ -22,7 +22,7 @@ import EventBus from "./common/EventBus";
 import Contest from "./components/Contest";
 import Standings from "./components/Standings";
 import TestProfile from "./components/testProfile";
-import Navbar from "./components/components/Navbar";
+import Navbar from "./components/Navbar/Navbar";
 
 const App = () => {
   const [ showModeratorBoard, setShowModeratorBoard ] = useState(false);

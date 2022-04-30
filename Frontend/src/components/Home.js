@@ -3,8 +3,10 @@ import React, { useState, useEffect } from "react";
 import UserService from "../services/user.service";
 
 import { Link } from "react-router-dom";
+import Homescreen from "./screens/HomeScreen";
+import TestGenProbModal from "./screens/TestGenProbModal";
 const Home = () => {
-  const [content, setContent] = useState("");
+  /*const [content, setContent] = useState("");
 
   useEffect(() => {
     UserService.getPublicContent().then(
@@ -21,16 +23,12 @@ const Home = () => {
       }
     );
   }, []);
-
+*/
   return (
     <div className="container">
-      <header className="jumbotron">
-        <h3>{content}</h3>
-        <p>
-        <Link to={"/ProbNumberGen/6244c1af0a11e1a39bdd7068"} className="nav-link">
-              Go test the number Gen problem
-            </Link></p>
-      </header>
+      
+      <TestGenProbModal />
+      <Homescreen />
     </div>
   );
 };

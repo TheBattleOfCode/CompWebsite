@@ -38,7 +38,7 @@ function Navbar() {
   };
   return (
     <>
-      <nav className="navbar">
+      <nav className="navbar rounded">
         <Link to="/" className="navbar-logo">
         CompWeb
         </Link>
