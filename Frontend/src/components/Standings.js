@@ -2,42 +2,57 @@ import React, { useEffect, useState } from "react";
 import userService from "../services/user.service";
   
   const Standings = () =>{
+
     const  [users, setUsers] = useState([]);
+
     const getUser = async() => {
-      const data = await userService.getUsers();     
-      setUsers( data.data.sort( (a, b) => b.indivScore - a.indivScore ) );     
+      const Userdata = await userService.getUsers();     
+
+      setUsers( Userdata.data.sort( (a, b) => b.indivScore - a.indivScore ) );  
+      users.forEach(element => {
+        
+      });   
       users.sort( (a, b) => b.indivScore - a.indivScore );        
     }      
+
+    
     
     useEffect(() => {     
       getUser();    
-    } , []);     
+
+    } , []);   
+
     
     return(         
     <table class="table">     
       <thead class="thead-dark">      
        <tr>        
         <th scope="col">#</th>        
-        <th scope="col">TEAM_Name</th>         
-        <th scope="col">MP</th>         
-        <th scope="col">MW</th>         
-        <th scope="col">ML</th>         
-        <th scope="col">Score</th>         
+        <th scope="col">Country</th>         
+        <th scope="col">Organization</th>         
+        <th scope="col">Username</th>         
+        <th scope="col">Firstname</th>         
+        <th scope="col">Lastname</th>         
+        <th scope="col">Team name</th>         
         <th scope="col">Bonus</th>         
-        <th scope="col">Last 5 Rounds</th>       
+        <th scope="col">Score</th>         
+        <th scope="col">Solved problems</th>       
       </tr>     </thead>     
       <tbody>          
           {users.map( (user, index) => {        
               return(         
-                  <tr key={index}>             
-                    <td >{user.teamName}</td>               
-                    <td >{user.lastName}</td> 
-                    <td >{user.firstName}</td>
+                  <tr key={index}>
+
+                    <td >{index+1}</td>               
+                    <td >{user.country}</td>               
+                    <td >{user.organization}</td> 
+                    <td >{user.username}</td>
                     <td >{user.firstName}</td>             
-                    <td >{user.phone}</td> 
-                    <td>{user.teamScore}</td>
-                    <td>{user.indivScore}</td>
-                    <td>0.0</td>          
+                    <td >{user.lastName}</td> 
+                    <td>{user.teamName}</td>
+                    <td>0</td>
+                    <td>{user.indivScore}</td>          
+                    <td>{user.countSolved}</td>          
                   </tr>         
                 )}        
               )}     

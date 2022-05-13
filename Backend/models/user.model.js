@@ -15,6 +15,7 @@ const User = mongoose.model(
     country: String,
     city: String,
     organization: String,
+    countSolved:Number,
     roles: [
       {
         type: mongoose.Schema.Types.ObjectId,

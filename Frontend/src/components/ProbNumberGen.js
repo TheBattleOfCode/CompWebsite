@@ -92,12 +92,13 @@ function ProbNumberGen() {
             );
         
         // add score to the user
-        userService.UpdateUser(currentUser.id, { "indivScore": currentUser.indivScore + prob.score }).then(
+        userService.UpdateUser(currentUser.id, { "indivScore": currentUser.indivScore + prob.score,"countSolved":currentUser.countSolved+1 }).then(
             (response) => {
                 console.log(response);
             }
         );
         // update score in local storage
+        currentUser.countSolved +=1;
         currentUser.indivScore = currentUser.indivScore + prob.score;
         localStorage.setItem("user", JSON.stringify(currentUser));
         }

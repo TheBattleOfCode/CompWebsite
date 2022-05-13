@@ -38,6 +38,7 @@ exports.UpdateUser = async (req, res) => {
         country: req.body.country != null? req.body.country: oldUser.country,
         city: req.body.city != null? req.body.city: oldUser.city,
         organization: req.body.organization != null? req.body.organization: oldUser.organization,
+        countSolved: req.body.countSolved != null? req.body.countSolved: oldUser.countSolved
       }
     }],{
       new:true

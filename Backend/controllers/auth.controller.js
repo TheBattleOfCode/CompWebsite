@@ -18,6 +18,7 @@ exports.signup = (req, res) => {
     country: null,
     city: null,
     organization: null,
+    countSolved:0,
     password: bcrypt.hashSync(req.body.password, 8)
   });
 
@@ -119,6 +120,7 @@ exports.signin = (req, res) => {
         roles: authorities,
         accessToken: token,
         indivScore: user.indivScore,
+        countSolved: user.countSolved
       });
     });
 };
