@@ -50,8 +50,8 @@ function ProbNumberGen() {
     React.useEffect(() => {
         if (generatedInOut.output) {
             console.log(generatedInOut);
-            setInOut({ "input": generatedInOut.input, "output": generatedInOut.output, "answered": false });
             let encrypted = hash(generatedInOut.output);
+            setInOut({ "input": generatedInOut.input, "output": encrypted, "answered": false });
             console.log(encrypted);
             genProblemService.SaveGenProb(
                 generatedInOut.input.toString(),

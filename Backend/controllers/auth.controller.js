@@ -9,14 +9,16 @@ var bcrypt = require("bcryptjs");
 exports.signup = (req, res) => {
   const user = new User({
     username: req.body.username,
+    firstName: null,
+    lastName: null,
     email: req.body.email,
-    indivScore:0,
-    teamScore:0,
-    password: bcrypt.hashSync(req.body.password, 8),
-    teamName: null,
+    phone: null,
+    indivScore: 0,
+    teamScore: 0,
     country: null,
     city: null,
-    organization: null
+    organization: null,
+    password: bcrypt.hashSync(req.body.password, 8)
   });
 
   user.save((err, user) => {
@@ -106,8 +108,14 @@ exports.signin = (req, res) => {
       }
       res.status(200).send({
         id: user._id,
+        firstName: user.firstName,
+        lastName: user.lastName,
         username: user.username,
         email: user.email,
+        phone: user.phone,
+        country: user.country,
+        city: user.city,
+        organization: user.organization,
         roles: authorities,
         accessToken: token,
         indivScore: user.indivScore,

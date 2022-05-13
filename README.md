@@ -1,41 +1,42 @@
-# Battle Of Code 
+# Battle Of Code
 
-#### A problem solving platform, where participant play various types of games, solving problems with coding, maths, common knowledge...
-#### Solvers compete against each others individually or in teams to win badges, XP, and eventually cash prizes  
+### A problem solving platform, where participant play various types of games, solving problems with coding, maths, common knowledge...
+### Solvers compete against each others individually or in teams to win badges, XP, and eventually cash prizes
 
-#### Roadmap
+## Roadmap
 
-- [X] Authentification and account managment 
+- [X] Authentification and account managment
 
 - [X] Number gen type problem :
   - [ ] Creating  
     - [X] add problem to DB
     - [X] input controles
     - [ ] adequate text areas for in/output generators
-    - [ ] preview in/output 
+    - [ ] preview in/output
   - [X] Reading
     - [X] open problem
     - [X] generate input/output
-    - [X] submit answer 
+    - [X] submit answer
     - [X] affecting score
 
-- [X] making buttons' effect visible 
+- [X] making buttons' effect visible
 
 - [ ] Dashboarding
   - [ ]  Admin Dashboard (number of accounts, number of problems, list of problems with number of times solved (in number and %), ...)
   - [ ]  User Dashboard (ranking(country/establishment/world), list of solved problems, ...)
 
+## Assets
 
-#### Assets :
+### Class Diagram
 
-## Class Diagram :
 ![Class diag](https://i.imgur.com/L3lJPE9.png)
 
-## Use case Diagram
+### Use case Diagram
+
 ![UC diag](https://i.imgur.com/Gnjh6sD.png)
 
+## A project by
 
-## A project by :
   [**Ahmed Khalil SEDDIK**](https://www.linkedin.com/in/ahmed-khalil-seddik/)
 
   [**Houssam MOUSSA**](https://www.linkedin.com/in/houssem-moussa-aa7402188/)
