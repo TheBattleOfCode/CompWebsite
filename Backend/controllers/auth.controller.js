@@ -9,7 +9,16 @@ var bcrypt = require("bcryptjs");
 exports.signup = (req, res) => {
   const user = new User({
     username: req.body.username,
+    firstName: null,
+    lastName: null,
     email: req.body.email,
+    phone: null,
+    indivScore: 0,
+    teamScore: 0,
+    country: null,
+    city: null,
+    organization: null,
+    countSolved:0,
     password: bcrypt.hashSync(req.body.password, 8)
   });
 
@@ -100,10 +109,18 @@ exports.signin = (req, res) => {
       }
       res.status(200).send({
         id: user._id,
+        firstName: user.firstName,
+        lastName: user.lastName,
         username: user.username,
         email: user.email,
+        phone: user.phone,
+        country: user.country,
+        city: user.city,
+        organization: user.organization,
         roles: authorities,
-        accessToken: token
+        accessToken: token,
+        indivScore: user.indivScore,
+        countSolved: user.countSolved
       });
     });
 };
