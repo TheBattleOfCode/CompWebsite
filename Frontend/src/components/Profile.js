@@ -1,20 +1,21 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import AuthService from "../services/auth.service";
 import countryService from "../services/country.service";
 import userService from "../services/user.service";
 
 const Profile = () => {
   const currentUser = AuthService.getCurrentUser();
-  const [ countries, setCountries ] = React.useState([]);
-  const [ editMsg, setEditMsg ] = React.useState(false);
-  const [ firstName, setFirstName ] = React.useState(currentUser.firstName);
-  const [ lastName, setLastName ] = React.useState(currentUser.lastName);
-  const [ phone, setPhone ] = React.useState(currentUser.phone);
-  const [ city, setCity ] = React.useState(currentUser.city);
-  const [ country, setCountry ] = React.useState(currentUser.country);
-  const [ successful, setSuccessful ] = React.useState(false);
-  const [ message, setMessage ] = React.useState("");
-  const [ cancelMsg, setCancelMsg ] = React.useState(false);
+  const [ countries, setCountries ] = useState([]);
+  const [ editMsg, setEditMsg ] = useState(false);
+  const [ firstName, setFirstName ] = useState(currentUser.firstName);
+  const [ lastName, setLastName ] = useState(currentUser.lastName);
+  const [ phone, setPhone ] = useState(currentUser.phone);
+  const [ city, setCity ] = useState(currentUser.city);
+  const [ country, setCountry ] = useState(currentUser.country);
+  const [ successful, setSuccessful ] = useState(false);
+  const [ message, setMessage ] = useState("");
+  const [ cancelMsg, setCancelMsg ] = useState(false);
+  const [ loading, setLoading ] = useState(false);
 
 
   //edit profile first on click of edit button
@@ -55,21 +56,29 @@ const Profile = () => {
 
     localStorage.setItem("user", JSON.stringify(currentUser));
 
-
-
-
   };
+
 
   //get countries from api
   const getCountries = async () => {
-    const countries = await countryService.GetAllCounties();
-    setCountries(countries);
-    console.log(countries.data[0]);
+    if (localStorage.getItem("countries") === null) {
+      const countriesLocal = await countryService.GetAllCounties();
+      setCountries(countriesLocal.data.sort((c1, c2) => c1.name.common.localeCompare(c2.name.common)));
+      console.log(countriesLocal.data[ 0 ]);
+      localStorage.setItem("countries", JSON.stringify(countriesLocal.data.sort((c1, c2) => c1.name.common.localeCompare(c2.name.common))));
+    }
+    else {
+      const countries = JSON.parse(localStorage.getItem("countries"));
+      setCountries(countries);
+    }
   }
 
 
   useEffect(() => {
-    getCountries();
+    setLoading(true);
+    getCountries().then(() => {
+      setLoading(false);
+    });
   }, []);
 
 
@@ -226,7 +235,7 @@ const Profile = () => {
 
                         <select id="dropdown" onChange={(e) => setCountry(e.target.value)}>
                           <option value="N/A">Choose a country</option>
-                          {countries.data.map((country, index) => {
+                          {countries.map((country, index) => {
                             return <option key={index} value={country.name.common}>{country.name.common}</option>
                           })}
                         </select>
@@ -251,7 +260,12 @@ const Profile = () => {
                   <div className="col-sm-12">
                     {!editMsg ? <button
                       className="btn btn-primary"
-                      onClick={editProfile}>Edit</button> :
+                      onClick={editProfile} disabled={loading}>
+                      {loading && (
+                        <span className="spinner-border spinner-border-sm"></span>
+                      )}
+                      <span>Edit</span>
+                    </button> :
                       <button
                         className="btn btn-outline-primary"
                         onClick={cancelEdit}>Cancel</button>}

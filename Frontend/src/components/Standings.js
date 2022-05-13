@@ -6,23 +6,25 @@ import "./Standings.css";
 
 const Standings = () => {
   const currentUser = authService.getCurrentUser();
-  const [users, setUsers] = useState([]);
-  const [filtredUsers, setFiltredUsers ] = useState([]);
-  const [countries, setCountries] = React.useState([]);
-  const [countryFilter, setCountryFilter] = React.useState("");
-  
+  const [ users, setUsers ] = useState([]);
+  const [ filtredUsers, setFiltredUsers ] = useState([]);
+  const [ countries, setCountries ] = React.useState([]);
+  const [ countryFilter, setCountryFilter ] = React.useState("");
+  const [ loading, setLoading ] = useState(false);
+
 
 
   //get countries from api
   const getCountries = async () => {
-    const countrties = await countryService.GetAllCounties()
-    setCountries(countrties.data.sort((cc, cb) =>cc.name.common < cb.name.common));
+    const countriesLocal = await countryService.GetAllCounties()
+    setCountries(countriesLocal.data.sort((c1, c2) => c1.name.common.localeCompare(c2.name.common)));
+    localStorage.setItem("countries", JSON.stringify(countriesLocal.data.sort((c1, c2) => c1.name.common.localeCompare(c2.name.common))));
   }
 
   const getCountryImage = (name) => {
     let country = countries.filter(country => country.name.common === name);
     console.log(country)
-    return country.length ? country[0].flags.png : "https://flagcdn.com/w320/uy.png";
+    return country.length ? country[ 0 ].flags.png : "https://flagcdn.com/w320/uy.png";
   }
 
   const getUser = async () => {
@@ -41,17 +43,27 @@ const Standings = () => {
   }, []);
 
   useEffect(() => {
-    getCountries();
+    setLoading(true);
+    if (localStorage.getItem("countries") !== null) {
+      setCountries(JSON.parse(localStorage.getItem("countries")));
+      setLoading(false);
+    }
+    else {
+      getCountries().then(() => {
+        setLoading(false);
+      });
+    }
 
   }, []);
 
-  useEffect(()=>{
-    if (countryFilter=="N/A"){
+  useEffect(() => {
+    if (countryFilter == "N/A") {
       setFiltredUsers(users);
     }
-    else{
-    setFiltredUsers(users.filter( ers => ers.country == countryFilter ))
-}},[countryFilter])
+    else {
+      setFiltredUsers(users.filter(ers => ers.country == countryFilter))
+    }
+  }, [ countryFilter ])
 
   return (
     <table className="table">
@@ -61,8 +73,8 @@ const Standings = () => {
           <th scope="col">
             <select id="dropdown" onChange={(e) => setCountryFilter(e.target.value)}>
               <option value="N/A">Country (All)</option>
-              <option value={currentUser.country? currentUser.country: "Uruguay"}>Same as me</option>
-              {countries.sort((cc, cb) =>cc.name.common < cb.name.common).map((country, index) => {
+              <option value={currentUser.country ? currentUser.country : "Uruguay"}>Same as me</option>
+              {countries.sort((cc, cb) => cc.name.common < cb.name.common).map((country, index) => {
                 return <option key={index} value={country.name.common}>{country.name.common}</option>
               })}
 
@@ -83,7 +95,7 @@ const Standings = () => {
             <tr key={index} className={currentUser.id == user._id ? "table-active" : ""}>
 
               <td >{index + 1}</td>
-              <td ><img className="flag" src={getCountryImage(user.country)} /> {user.country ? user.country : "ffdv"}</td>
+              <td >{loading ? <span className="spinner-border spinner-border-sm"></span>:<img className="flag" src={getCountryImage(user.country)} />} {user.country ? user.country : "ffdv"}</td>
               <td >{user.organization}</td>
               <td >{user.username}</td>
               <td >{user.firstName}</td>

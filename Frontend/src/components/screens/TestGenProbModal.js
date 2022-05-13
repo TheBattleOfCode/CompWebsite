@@ -34,7 +34,7 @@ const TestGenProbModal = () => {
 
                 <div className='w-100 m-1'>
                     <button className="btn btn-outline-primary" >
-                        <a href="/ProbNumberGen/6244c1af0a11e1a39bdd7068">GO To test</a>
+                        <a href="/ProbNumberGen/627ec7ff13603a13d16be928">GO To test</a>
                     </button>
                 </div>
 
