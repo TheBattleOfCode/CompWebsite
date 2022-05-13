@@ -1,6 +1,7 @@
 # Battle Of Code
 
 ### A problem solving platform, where participant play various types of games, solving problems with coding, maths, common knowledge...
+
 ### Solvers compete against each others individually or in teams to win badges, XP, and eventually cash prizes
 
 ## Roadmap
