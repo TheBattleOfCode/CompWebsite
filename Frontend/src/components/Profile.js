@@ -1,18 +1,20 @@
-import React from "react";
+import React, { useEffect } from "react";
 import AuthService from "../services/auth.service";
+import countryService from "../services/country.service";
 import userService from "../services/user.service";
 
 const Profile = () => {
   const currentUser = AuthService.getCurrentUser();
-  const [editMsg, setEditMsg] = React.useState(false);
-  const [firstName, setFirstName] = React.useState(currentUser.firstName);
-  const [lastName, setLastName] = React.useState(currentUser.lastName);
-  const [phone, setPhone] = React.useState(currentUser.phone);
-  const [city, setCity] = React.useState(currentUser.city);
-  const [country, setCountry] = React.useState(currentUser.country);
-  const [successful, setSuccessful] = React.useState(false);
-  const [message, setMessage] = React.useState("");
-  const [cancelMsg, setCancelMsg] = React.useState(false);
+  const [ countries, setCountries ] = React.useState([]);
+  const [ editMsg, setEditMsg ] = React.useState(false);
+  const [ firstName, setFirstName ] = React.useState(currentUser.firstName);
+  const [ lastName, setLastName ] = React.useState(currentUser.lastName);
+  const [ phone, setPhone ] = React.useState(currentUser.phone);
+  const [ city, setCity ] = React.useState(currentUser.city);
+  const [ country, setCountry ] = React.useState(currentUser.country);
+  const [ successful, setSuccessful ] = React.useState(false);
+  const [ message, setMessage ] = React.useState("");
+  const [ cancelMsg, setCancelMsg ] = React.useState(false);
 
 
   //edit profile first on click of edit button
@@ -34,7 +36,7 @@ const Profile = () => {
 
   //save profile after editing
   const saveProfile = () => {
-    userService.UpdateUser(currentUser.id, { firstName: firstName, lastName: lastName , phone:phone , city:city , country : country}).then(
+    userService.UpdateUser(currentUser.id, { firstName: firstName, lastName: lastName, phone: phone, city: city, country: country }).then(
       (response) => {
         console.log(response);
         setEditMsg(!editMsg);
@@ -57,6 +59,21 @@ const Profile = () => {
 
 
   };
+
+  //get countries from api
+  const getCountries = async () => {
+    const countries = await countryService.GetAllCounties();
+    setCountries(countries);
+    console.log(countries.data[0]);
+  }
+
+
+  useEffect(() => {
+    getCountries();
+  }, []);
+
+
+
 
   const onChangeFirstName = (e) => {
     setFirstName(e.target.value);
@@ -146,7 +163,7 @@ const Profile = () => {
                     <input
                       type="text"
                       className="form-control"
-                      value={firstName}
+                      value={firstName ? firstName : ''}
                       name="firstName"
                       placeholder="First Name"
                       onChange={onChangeFirstName} />
@@ -155,7 +172,7 @@ const Profile = () => {
                       <input
                         type="text"
                         className="form-control"
-                        value={lastName}
+                        value={lastName ? lastName : ''}
                         placeholder="Last Name"
                         name="lastName"
                         onChange={onChangeLastName} />
@@ -181,12 +198,12 @@ const Profile = () => {
                     <input
                       type="text"
                       className="form-control"
-                      value={phone}
+                      value={phone ? phone : ''}
                       name="phone"
                       placeholder="phone"
                       onChange={onChangePhone} />
                   </div> : <div className="col-sm-9 text-secondary">
-                  {currentUser.phone === null ? "--" : currentUser.phone} 
+                    {currentUser.phone === null ? "--" : currentUser.phone}
                   </div>}
                 </div>
                 <hr />
@@ -202,26 +219,32 @@ const Profile = () => {
                 <div className="row">
                   <div className="col-sm-3">
                     <h6 className="mb-0">Address</h6>
-                  </div>{editMsg ? <div className="row"><div className="col">
-                    <input
-                      type="text"
-                      className="form-control"
-                      value={city}
-                      name="city"
-                      placeholder="city"
-                      onChange={onChangeCity} />
-                  </div>
-                    <div className="col">
-                      <input
-                        type="text"
-                        className="form-control"
-                        value={country}
-                        placeholder="country"
-                        name="country"
-                        onChange={onChangeCountry} />
-                    </div></div> : <div className="col-sm-9 text-secondary">
-                    {currentUser.city === null ? "--" : currentUser.city} , {currentUser.country === null ? "--" : currentUser.country}
-                  </div>}
+                  </div>{editMsg ?
+                    <div className="row">
+                      <div className="col">
+
+
+                        <select id="dropdown" onChange={(e) => setCountry(e.target.value)}>
+                          <option value="N/A">Choose a country</option>
+                          {countries.data.map((country, index) => {
+                            return <option key={index} value={country.name.common}>{country.name.common}</option>
+                          })}
+                        </select>
+
+
+
+                      </div>
+                      <div className="col">
+                        <input
+                          type="text"
+                          className="form-control"
+                          value={city ? city : ''}
+                          name="city"
+                          placeholder="city"
+                          onChange={onChangeCity} />
+                      </div></div> : <div className="col-sm-9 text-secondary">
+                      {currentUser.city === null ? "--" : currentUser.city} , {currentUser.country === null ? "--" : currentUser.country}
+                    </div>}
                 </div>
                 <hr />
                 <div className="row">
@@ -232,15 +255,15 @@ const Profile = () => {
                       <button
                         className="btn btn-outline-primary"
                         onClick={cancelEdit}>Cancel</button>}
-                        {cancelMsg && <div className="alert alert-danger">
-                        Profile update canceled
-                        </div>}
+                    {cancelMsg && <div className="alert alert-danger">
+                      Profile update canceled
+                    </div>}
                     {editMsg && <button
                       className="btn btn-success"
                       onClick={saveProfile}>Save</button>}
-                      {successful && <div className="alert alert-success">
-                        Profile updated successfully
-                        </div>}
+                    {successful && <div className="alert alert-success">
+                      Profile updated successfully
+                    </div>}
                   </div>
                 </div>
 
