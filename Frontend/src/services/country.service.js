@@ -4,8 +4,8 @@ const API_URL = "https://restcountries.com/v3.1/";
 
 
 
-const GetAllCounties = (id) => {
-  return axios.get(API_URL+"all");
+const GetAllCounties = () => {
+  return  axios.get(API_URL+"all");
 }
 
 

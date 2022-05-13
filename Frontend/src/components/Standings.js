@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import authService from "../services/auth.service";
 import countryService from "../services/country.service";
 import userService from "../services/user.service";
+import  "./Standings.css";
 
 const Standings = () => {
   const currentUser = authService.getCurrentUser();
@@ -11,15 +12,14 @@ const Standings = () => {
 
   //get countries from api
   const getCountries = async () => {
-    await setCountries( countryService.GetAllCounties());
-    console.log(countries);
+    const countrties = await countryService.GetAllCounties()
+    setCountries(countrties.data);    
   }
 
-  function getCountryImage(name){
-    console.log(countries);
-    while (!countries){}
-    const country = countries.data.filter(country => country.name === name);
-    return country[0].flags.png;
+   const getCountryImage = (name) => {
+    let country = countries.filter(country => country.name.common === name);
+    console.log(country)
+    return country.length ?country[0].flags.png : "https://flagcdn.com/w320/uy.png" ;  
   }
 
   const getUser = async () => {
@@ -34,10 +34,13 @@ const Standings = () => {
 
   useEffect(() => {
     getUser();
-    getCountries();
 
   }, []);
 
+  useEffect(() => {
+    getCountries();
+
+  }, []);
 
   return (
     <table className="table">
@@ -60,7 +63,7 @@ const Standings = () => {
             <tr key={index} className={currentUser.id == user._id ? "table-active" : ""}>
 
               <td >{index + 1}</td>
-              <td ><img src={getCountryImage(user.country)} /> {user.country}</td>
+              <td ><img className="flag" src={getCountryImage(user.country)}/> {user.country? user.country: "ffdv"}</td>
               <td >{user.organization}</td>
               <td >{user.username}</td>
               <td >{user.firstName}</td>
