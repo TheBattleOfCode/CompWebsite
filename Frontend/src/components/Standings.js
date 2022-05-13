@@ -1,17 +1,17 @@
 import React, { useEffect, useState } from "react";
+import authService from "../services/auth.service";
 import userService from "../services/user.service";
   
   const Standings = () =>{
-
+    const currentUser = authService.getCurrentUser();
     const  [users, setUsers] = useState([]);
+
 
     const getUser = async() => {
       const Userdata = await userService.getUsers();     
 
       setUsers( Userdata.data.sort( (a, b) => b.indivScore - a.indivScore ) );  
-      users.forEach(element => {
-        
-      });   
+      
       users.sort( (a, b) => b.indivScore - a.indivScore );        
     }      
 
@@ -41,7 +41,7 @@ import userService from "../services/user.service";
       <tbody>          
           {users.map( (user, index) => {        
               return(         
-                  <tr key={index}>
+                  <tr key={index} className={currentUser.id==user._id?"table-active":""}>
 
                     <td >{index+1}</td>               
                     <td >{user.country}</td>               
