@@ -2,31 +2,34 @@ import React, { useEffect, useState } from "react";
 import authService from "../services/auth.service";
 import countryService from "../services/country.service";
 import userService from "../services/user.service";
-import  "./Standings.css";
+import "./Standings.css";
 
 const Standings = () => {
   const currentUser = authService.getCurrentUser();
-  const [ users, setUsers ] = useState([]);
-  const [ countries, setCountries ] = React.useState([]);
+  const [users, setUsers] = useState([]);
+  const [filtredUsers, setFiltredUsers ] = useState([]);
+  const [countries, setCountries] = React.useState([]);
+  const [countryFilter, setCountryFilter] = React.useState("");
   
+
 
   //get countries from api
   const getCountries = async () => {
     const countrties = await countryService.GetAllCounties()
-    setCountries(countrties.data);    
+    setCountries(countrties.data.sort((cc, cb) =>cc.name.common < cb.name.common));
   }
 
-   const getCountryImage = (name) => {
+  const getCountryImage = (name) => {
     let country = countries.filter(country => country.name.common === name);
     console.log(country)
-    return country.length ?country[0].flags.png : "https://flagcdn.com/w320/uy.png" ;  
+    return country.length ? country[0].flags.png : "https://flagcdn.com/w320/uy.png";
   }
 
   const getUser = async () => {
     const Userdata = await userService.getUsers();
 
     setUsers(Userdata.data.sort((a, b) => b.indivScore - a.indivScore));
-
+    setFiltredUsers(Userdata.data.sort((a, b) => b.indivScore - a.indivScore));
     users.sort((a, b) => b.indivScore - a.indivScore);
   }
 
@@ -42,12 +45,29 @@ const Standings = () => {
 
   }, []);
 
+  useEffect(()=>{
+    if (countryFilter=="N/A"){
+      setFiltredUsers(users);
+    }
+    else{
+    setFiltredUsers(users.filter( ers => ers.country == countryFilter ))
+}},[countryFilter])
+
   return (
     <table className="table">
       <thead className="thead-dark">
         <tr>
           <th scope="col">#</th>
-          <th scope="col">Country</th>
+          <th scope="col">
+            <select id="dropdown" onChange={(e) => setCountryFilter(e.target.value)}>
+              <option value="N/A">Country (All)</option>
+              <option value={currentUser.country? currentUser.country: "Uruguay"}>Same as me</option>
+              {countries.sort((cc, cb) =>cc.name.common < cb.name.common).map((country, index) => {
+                return <option key={index} value={country.name.common}>{country.name.common}</option>
+              })}
+
+            </select>
+          </th>
           <th scope="col">Organization</th>
           <th scope="col">Username</th>
           <th scope="col">Firstname</th>
@@ -58,12 +78,12 @@ const Standings = () => {
           <th scope="col">Solved problems</th>
         </tr>     </thead>
       <tbody>
-        {users.map((user, index) => {
+        {filtredUsers.map((user, index) => {
           return (
             <tr key={index} className={currentUser.id == user._id ? "table-active" : ""}>
 
               <td >{index + 1}</td>
-              <td ><img className="flag" src={getCountryImage(user.country)}/> {user.country? user.country: "ffdv"}</td>
+              <td ><img className="flag" src={getCountryImage(user.country)} /> {user.country ? user.country : "ffdv"}</td>
               <td >{user.organization}</td>
               <td >{user.username}</td>
               <td >{user.firstName}</td>
