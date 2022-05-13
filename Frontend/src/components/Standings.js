@@ -29,9 +29,11 @@ const Standings = () => {
 
   const getUser = async () => {
     const Userdata = await userService.getUsers();
-
-    setUsers(Userdata.data.sort((a, b) => b.indivScore - a.indivScore));
-    setFiltredUsers(Userdata.data.sort((a, b) => b.indivScore - a.indivScore));
+    const usersLocal = Userdata.data
+    .filter(user => (!user.roles.includes("619a62a8e8934539f45022c9") || currentUser.roles.includes("ROLE_ADMIN")))
+    .sort((a, b) => b.indivScore - a.indivScore);
+    setUsers(usersLocal);
+    setFiltredUsers(usersLocal);
     users.sort((a, b) => b.indivScore - a.indivScore);
   }
 
@@ -96,7 +98,7 @@ const Standings = () => {
 
               <td >{index + 1}</td>
               <td >{loading ? <span className="spinner-border spinner-border-sm"></span>:<img className="flag" src={getCountryImage(user.country)} />} {user.country ? user.country : "ffdv"}</td>
-              <td >{user.organization}</td>
+              <td >{ user.roles.includes("619a62a8e8934539f45022c9")  ? <span class="badge badge-danger">Admin</span>:user.organization}</td>
               <td >{user.username}</td>
               <td >{user.firstName}</td>
               <td >{user.lastName}</td>
