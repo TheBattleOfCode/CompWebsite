@@ -30,4 +30,6 @@ module.exports = function(app) {
     [authJwt.verifyToken],
     controller.UpdateUser
   );
+  
+  app.get("/api/test/getUsers",controller.getUsers);
 };

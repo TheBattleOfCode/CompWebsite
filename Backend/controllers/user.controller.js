@@ -16,6 +16,14 @@ exports.moderatorBoard = (req, res) => {
   res.status(200).send("Moderator Content.");
 };
 
+exports.getUsers = async (req, res) => {
+  User.find()
+    .then(users => {
+      res.status(200).json(users);
+    }).catch(err => {
+      res.status(500).json(err);
+    })
+}
 exports.UpdateUser = async (req, res) => {
   const oldUser = await User.findById(req.params.id)
     User.findOneAndUpdate({_id:req.params.id},[{
