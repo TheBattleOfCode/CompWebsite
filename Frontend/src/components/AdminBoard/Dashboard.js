@@ -8,7 +8,7 @@ import probService from '../../services/prob.service';
 const Dashboard = () => {
 
     const [admins, setAdmins] = useState([]);
-    const [country, setCountry] = useState([]);
+    const [uniqueCountry, setuniqueCountry] = useState([]);
     const [problems, setProblems] = useState([]);
     const [allUsers, setAllUsers] = useState([]);
 
@@ -23,12 +23,15 @@ const Dashboard = () => {
     }
 
 
-
-    const getCountry = async () => {
+    //get unique country
+    const getUniqueCountry = async () => {
         const Userdata = await userService.getUsers();
-        setCountry(Userdata.data.map(user => user.country));
-        console.log(country);
+        const country = Userdata.data.map(user => user.country);
+        const uniqueCountry = [...new Set(country)];
+        setuniqueCountry(uniqueCountry);
     }
+
+
 
 
     const getProblems = async () => {
@@ -52,7 +55,7 @@ const Dashboard = () => {
   
 
     useEffect(() => {
-        getCountry();
+        getUniqueCountry();
     }, []);
 
 
@@ -112,7 +115,7 @@ const Dashboard = () => {
                                 <i className="fab fa-twitter fa-4x"></i>
                             </div>
                             <h6 className="text-uppercase">Countries</h6>
-                            <h1 className="display-4">{country.length - 5}</h1>
+                            <h1 className="display-4">{uniqueCountry.length}</h1>
                         </div>
                     </div>
                 </div>
