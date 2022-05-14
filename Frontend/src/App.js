@@ -13,7 +13,7 @@ import Home from "./components/Home";
 import Profile from "./components/Profile";
 import BoardUser from "./components/BoardUser";
 import BoardModerator from "./components/BoardModerator";
-import BoardAdmin from "./components/BoardAdmin";
+import BoardAdmin from "./components/AdminBoard/BoardAdmin";
 import CreateProblem from "./components/CreateProblem";
 import ProbNumberGen from "./components/ProbNumberGen";
 

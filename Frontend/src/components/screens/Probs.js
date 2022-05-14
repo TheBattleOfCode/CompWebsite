@@ -3,8 +3,6 @@ import { Modal } from "react-bootstrap";
 import probService from '../../services/prob.service';
 
 export default function Prob({ prob }) {
-    const [quantity, setQuantity] = useState(1)
-    const [varient, setVarient] = useState('small')
     const [show, setShow] = useState(false);
 
     const handleClose = () => setShow(false);
@@ -34,7 +32,7 @@ export default function Prob({ prob }) {
 
                 <div className='w-100 m-1'>
                     <button className="btn btn-outline-primary" onClick={handleShow}>
-                        View
+                        Enter
                     </button>
                 </div>
 
