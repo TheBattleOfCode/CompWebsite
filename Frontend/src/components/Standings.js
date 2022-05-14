@@ -11,7 +11,7 @@ const Standings = () => {
   const [ countries, setCountries ] = React.useState([]);
   const [ countryFilter, setCountryFilter ] = React.useState("");
   const [ loading, setLoading ] = useState(false);
-
+  const idAdmin = "619a62a8e8934539f45022c9";
 
 
   //get countries from api
@@ -30,8 +30,8 @@ const Standings = () => {
   const getUser = async () => {
     const Userdata = await userService.getUsers();
     const usersLocal = Userdata.data
-    .filter(user => (!user.roles.includes("619a62a8e8934539f45022c9") || currentUser.roles.includes("ROLE_ADMIN")))
-    .sort((a, b) => b.indivScore - a.indivScore);
+      .filter(user => (!user.roles.includes(idAdmin) || currentUser.roles.includes("ROLE_ADMIN")))
+      .sort((a, b) => b.indivScore - a.indivScore);
     setUsers(usersLocal);
     setFiltredUsers(usersLocal);
     users.sort((a, b) => b.indivScore - a.indivScore);
@@ -79,7 +79,6 @@ const Standings = () => {
               {countries.sort((cc, cb) => cc.name.common < cb.name.common).map((country, index) => {
                 return <option key={index} value={country.name.common}>{country.name.common}</option>
               })}
-
             </select>
           </th>
           <th scope="col">Organization</th>
@@ -95,10 +94,9 @@ const Standings = () => {
         {filtredUsers.map((user, index) => {
           return (
             <tr key={index} className={currentUser.id == user._id ? "table-active" : ""}>
-
               <td >{index + 1}</td>
-              <td >{loading ? <span className="spinner-border spinner-border-sm"></span>:<img className="flag" src={getCountryImage(user.country)} />} {user.country ? user.country : "ffdv"}</td>
-              <td >{ user.roles.includes("619a62a8e8934539f45022c9")  ? <span class="badge badge-danger">Admin</span>:user.organization}</td>
+              <td >{loading ? <span className="spinner-border spinner-border-sm"></span> : <img className="flag" src={getCountryImage(user.country)} />} {user.country ? user.country : "ffdv"}</td>
+              <td >{user.roles.includes(idAdmin) ? <span className="badge badge-danger">Admin</span> : user.organization}</td>
               <td >{user.username}</td>
               <td >{user.firstName}</td>
               <td >{user.lastName}</td>
