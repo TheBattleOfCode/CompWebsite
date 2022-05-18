@@ -313,7 +313,8 @@ const Profile = () => {
 
 
                         <select id="dropdown" onChange={(e) => setCountry(e.target.value)}>
-                          <option value="N/A">Choose a country</option>
+                          {currentUser.country ? <option value={currentUser.country}>{currentUser.country}</option> : <option value="N/A">Select Country</option>}
+
                           {countries.map((country, index) => {
                             return <option key={index} value={country.name.common}>{country.name.common}</option>
                           })}
