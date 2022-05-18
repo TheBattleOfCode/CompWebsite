@@ -192,7 +192,7 @@ const Profile = () => {
                         <input type="file" onChange={(e) => encodeImageFileAsURL(e.target)} name="myFile" />
                       </div><br />
 
-                      <span className={profilePicture == currentUser.profilePicture?"text-danger":"text-success"} ><strong><em>{uploadName ? uploadName : "No file chosen"} </em></strong></span><br />
+                      <span className={profilePicture == currentUser.profilePicture ? "text-danger" : "text-success"} ><strong><em>{uploadName ? uploadName : "No file chosen"} </em></strong></span><br />
 
                       <button className="btn btn-primary mt-3" onClick={() => saveProfilePicture()} disabled={profilePicture == currentUser.profilePicture}>
                         {loading && (
@@ -347,13 +347,19 @@ const Profile = () => {
                     </button> :
                       <button
                         className="btn btn-outline-primary"
-                        onClick={cancelEdit}>Cancel</button>}
+                        onClick={cancelEdit} disabled={loading}>
+                        {loading && (
+                          <span className="spinner-border spinner-border-sm"></span>)}
+
+                        Cancel</button>}
                     {cancelMsg && <div className="alert alert-danger">
                       Profile update canceled
                     </div>}
                     {editMsg && <button
                       className="btn btn-success"
-                      onClick={saveProfile}>Save</button>}
+                      onClick={saveProfile} disabled={loading}>
+                      {loading && (<span className="spinner-border spinner-border-sm"></span>)}
+                      Save</button>}
                     {successful && <div className="alert alert-success">
                       Profile updated successfully
                     </div>}
