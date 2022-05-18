@@ -1,0 +1,80 @@
+.image_container {
+    position: relative;
+
+    width: 200px;
+    height: 200px;
+}
+
+.image_overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0);
+    transition: background 0.5s ease;
+}
+
+.image_container:hover .image_overlay {
+
+    background: rgba(0, 0, 0, .3);
+}
+
+.profile_image {
+    position: absolute;
+    width: 200px;
+    height: 200px;
+    left: 0;
+}
+
+
+.image_container:hover {
+    top: 0px;
+}
+
+.change_pp_button {
+    position: absolute;
+    width: 200px;
+    left: 0;
+    top: 150px;
+    text-align: center;
+    opacity: 0.5;
+    transition: opacity .35s ease;
+}
+
+.change_pp_button a {
+    width: 200px;
+    padding: 12px 48px;
+    text-align: center;
+    color: white;
+    border: solid 2px white;
+    z-index: 1;
+}
+
+.image_container:hover .change_pp_button {
+    opacity: 1;
+}
+
+.upload-btn-wrapper {
+    position: relative;
+    overflow: hidden;
+    display: inline-block;
+}
+
+.upload_btn {
+    border: 2px solid gray;
+    color: gray;
+    background-color: white;
+    padding: 8px 20px;
+    border-radius: 8px;
+    font-size: 20px;
+    font-weight: bold;
+}
+
+.upload-btn-wrapper input[type=file] {
+    font-size: 100px;
+    position: absolute;
+    left: 0;
+    top: 0;
+    opacity: 0;
+}

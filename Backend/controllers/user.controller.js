@@ -32,6 +32,7 @@ exports.UpdateUser = async (req, res) => {
         lastName: req.body.lastName != null?req.body.lastName:oldUser.lastName,
         phone: req.body.phone != null?req.body.phone:oldUser.phone,
         email: req.body.email != null?req.body.email:oldUser.email,
+        profilePicture: req.body.profilePicture != null?req.body.profilePicture:oldUser.profilePicture,
         teamName: req.body.teamName != null?req.body.teamName: oldUser.teamName,
         indivScore: req.body.indivScore != null?req.body.indivScore: oldUser.indivScore,
         teamScore: req.body.teamScore != null?req.body.teamScore: oldUser.teamScore,

@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import AuthService from "../services/auth.service";
 import countryService from "../services/country.service";
 import userService from "../services/user.service";
+import "./Profile.css";
 
 const Profile = () => {
   const currentUser = AuthService.getCurrentUser();
@@ -12,10 +13,13 @@ const Profile = () => {
   const [ phone, setPhone ] = useState(currentUser.phone);
   const [ city, setCity ] = useState(currentUser.city);
   const [ country, setCountry ] = useState(currentUser.country);
+  const [ profilePicture, setProfilePicture ] = useState(currentUser.profilePicture);
   const [ successful, setSuccessful ] = useState(false);
   const [ message, setMessage ] = useState("");
   const [ cancelMsg, setCancelMsg ] = useState(false);
   const [ loading, setLoading ] = useState(false);
+  const [ editImage, setEditImage ] = useState(false);
+  const [ uploadName, setUploadName ] = useState("");
 
 
   //edit profile first on click of edit button
@@ -37,10 +41,12 @@ const Profile = () => {
 
   //save profile after editing
   const saveProfile = () => {
+    setLoading(true);
     userService.UpdateUser(currentUser.id, { firstName: firstName, lastName: lastName, phone: phone, city: city, country: country }).then(
       (response) => {
         console.log(response);
-        setEditMsg(!editMsg);
+        if (editMsg) { setEditMsg(!editMsg); }
+        setLoading(false);
         setSuccessful(true);
       }
 
@@ -51,12 +57,30 @@ const Profile = () => {
     currentUser.phone = phone;
     currentUser.city = city;
     currentUser.country = country;
+    currentUser.profilePicture = profilePicture;
+
 
 
 
     localStorage.setItem("user", JSON.stringify(currentUser));
 
   };
+
+
+  // save profile picture
+  const saveProfilePicture = () => {
+    setLoading(true);
+    userService.UpdateUser(currentUser.id, { profilePicture: profilePicture }).then(
+      (response) => {
+        console.log(response);
+        if (editImage) { setEditImage(!editImage); }
+        setLoading(false);
+      });
+    currentUser.profilePicture = profilePicture;
+    localStorage.setItem("user", JSON.stringify(currentUser));
+    setUploadName("");
+  }
+
 
 
   //get countries from api
@@ -73,6 +97,30 @@ const Profile = () => {
     }
   }
 
+
+  function encodeImageFileAsURL(element) {
+    var file = element.files[ 0 ];
+    var reader = new FileReader();
+    reader.onloadend = function () {
+      if (reader.result.length > 100000) {
+        alert("Image size is too big\nMax size is 100kb\nYour image size is " + reader.result.length / 1000 + "kb");
+      }
+      else {
+        if (reader.result == currentUser.profilePicture) {
+          setUploadName("You chose your old profile picture");
+        }
+        else {
+          setUploadName(file.name);
+        }
+        console.log('RESULT', reader.result);
+        setProfilePicture(reader.result);
+        console.log(reader.result.length);
+
+      }
+    }
+    reader.readAsDataURL(file);
+
+  }
 
   useEffect(() => {
     setLoading(true);
@@ -123,7 +171,38 @@ const Profile = () => {
             <div className="card">
               <div className="card-body">
                 <div className="d-flex flex-column align-items-center text-center">
-                  <img src="https://bootdey.com/img/Content/avatar/avatar7.png" alt="Admin" className="rounded-circle" width="150" />
+
+                  <div className="image_container">
+
+                    <img src={profilePicture} alt="Admin" className="rounded-circle profile_image" />
+
+                    {!editImage ?
+                      <div className="change_pp_button">
+                        <button className="btn btn-secondary" onClick={() => setEditImage(!editImage)}>Change</button>
+                      </div> : null}
+
+                  </div>
+
+
+                  {editImage ? <div className="form-group">
+                    <div className="mt-3">
+
+                      <div class="upload-btn-wrapper">
+                        <button class="upload_btn">Choose a file</button>
+                        <input type="file" onChange={(e) => encodeImageFileAsURL(e.target)} name="myFile" />
+                      </div><br />
+
+                      <span className={profilePicture == currentUser.profilePicture?"text-danger":"text-success"} ><strong><em>{uploadName ? uploadName : "No file chosen"} </em></strong></span><br />
+
+                      <button className="btn btn-primary mt-3" onClick={() => saveProfilePicture()} disabled={profilePicture == currentUser.profilePicture}>
+                        {loading && (
+                          <span className="spinner-border spinner-border-sm"></span>
+                        )} Save</button>
+                      <button className="btn btn-danger mt-3" onClick={() => { setProfilePicture(currentUser.profilePicture); setEditImage(false); }}>Cancel</button>
+                    </div>
+                  </div> : null}
+
+
                   <div className="mt-3">
                     <h4>{currentUser.username}</h4>
                     <p className="text-secondary mb-1">{currentUser.indivScore}</p>

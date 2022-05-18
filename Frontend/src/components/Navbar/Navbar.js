@@ -40,7 +40,7 @@ function Navbar() {
     <>
       <nav className="navbar rounded">
         <Link to="/" className="navbar-logo">
-        CompWeb
+        Battle Of Code
         </Link>
         <div className="nav-items">
                 <li className="nav-item">
