@@ -21,12 +21,12 @@ const TestGenProbModal = () => {
             <div className="flex-container">
 
                 <div className='w-100 m-1'>
-                    <p>score : </p>
+                    <p>score : 100</p>
 
                 </div>
 
                 <div className='w-100 m-1'>
-                    <p>type :  </p>
+                    <p>type : NumberGen</p>
 
 
 

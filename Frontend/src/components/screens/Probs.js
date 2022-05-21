@@ -31,8 +31,14 @@ export default function Prob({ prob }) {
                 </div>
 
                 <div className='w-100 m-1'>
-                    <button className="btn btn-outline-primary" onClick={handleShow}>
+                    <button className="btn btn-outline-primary" >
+                        <a href={'/ProbNumberGen/'+prob._id}>
                         Enter
+                        </a>
+                    </button>
+
+                    <button className="btn btn-outline-primary" onClick={handleShow}>
+                        Details
                     </button>
                 </div>
 

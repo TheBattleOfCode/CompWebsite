@@ -31,7 +31,7 @@ const Homescreen = () => {
 
     return (
         <div>
-            <div className="row">
+            <div className="row  d-flex justify-content-around">
                 {probs.map(prob => (
                     <div className="col-md2">
                         <div>
