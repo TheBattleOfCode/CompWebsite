@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from "react";
 
-import UserService from "../services/user.service";
-import EventBus from "../common/EventBus";
+import UserService from "../../services/user.service";
+import EventBus from "../../common/EventBus";
+import Sidebar from "./sidebar/Sidebar";
+import Dashboard from "./Dashboard";
 
 const BoardAdmin = () => {
   const [content, setContent] = useState("");
@@ -29,10 +31,14 @@ const BoardAdmin = () => {
   }, []);
 
   return (
-    <div className="container">
-      <header className="jumbotron">
-        <h3>{content}</h3>
-      </header>
+    <div>
+      <div className="container-fluid" id="main">
+                 <div className="row row-offcanvas row-offcanvas-left">
+                   <Sidebar/>
+                  <Dashboard/>
+                
+             </div>
+            </div>  
     </div>
   );
 };
