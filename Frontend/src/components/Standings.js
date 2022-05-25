@@ -3,6 +3,8 @@ import authService from "../services/auth.service";
 import countryService from "../services/country.service";
 import userService from "../services/user.service";
 import "./Standings.css";
+import { FaSort } from 'react-icons/fa';
+
 
 const Standings = () => {
   const currentUser = authService.getCurrentUser();
@@ -11,6 +13,7 @@ const Standings = () => {
   const [ countries, setCountries ] = React.useState([]);
   const [ countryFilter, setCountryFilter ] = React.useState("");
   const [ loading, setLoading ] = useState(false);
+  const [ sortBy, setSortBy ] = useState([ "score", true ]);
   const idAdmin = "619a62a8e8934539f45022c9";
 
 
@@ -23,7 +26,7 @@ const Standings = () => {
 
   const getCountryImage = (name) => {
     let country = countries.filter(country => country.name.common === name);
-    console.log(country)
+
     return country.length ? country[ 0 ].flags.png : "https://flagcdn.com/w320/uy.png";
   }
 
@@ -37,11 +40,40 @@ const Standings = () => {
     users.sort((a, b) => b.indivScore - a.indivScore);
   }
 
+  useEffect(() => {
+    console.log(sortBy);
+    let filterLocal=filtredUsers;
+    switch (sortBy[ 0 ]) {
+      /*case "org":
+        filterLocal =filtredUsers.sort((a, b) => b.country.localeCompare(a.country)));
+        break;*/
+      case "username":
+        filterLocal = filtredUsers.sort((a, b) => b.username.localeCompare(a.username)).slice();
+        break;
+      case "bonus":
+        filterLocal = filtredUsers.sort((a, b) => b.bonus - a.bonus).slice();
+        break;
+      case "score":
+        filterLocal = filtredUsers.sort((a, b) => b.indivScore - a.indivScore).slice();
+        break;
+      case "NbSolved":
+        filterLocal = filtredUsers.sort((a, b) => b.countSolved - a.countSolved).slice();
+        console.log(filtredUsers);
+        break;
+    }
+    if (sortBy[ 1 ]) {
+      setFiltredUsers(filterLocal.reverse());
+    }
+    else {
+      setFiltredUsers(filterLocal);
+    }
+  }, [ sortBy ]);
+
+
 
 
   useEffect(() => {
     getUser();
-
   }, []);
 
   useEffect(() => {
@@ -70,7 +102,7 @@ const Standings = () => {
   return (
     <table className="table">
       <thead className="thead-dark">
-        <tr>
+        <tr className="">
           <th scope="col">#</th>
           <th scope="col">
             <select id="dropdown" onChange={(e) => setCountryFilter(e.target.value)}>
@@ -81,14 +113,14 @@ const Standings = () => {
               })}
             </select>
           </th>
-          <th scope="col">Organization</th>
-          <th scope="col">Username</th>
+          <th scope="col">  <FaSort style={{ display: "inline"}} onClick={() => setSortBy([ "org", sortBy[ 0 ] != "org" ? true : !sortBy[ 1 ] ].slice())}/> Organization</th>
+          <th scope="col">  <FaSort style={{ display: "inline" }} onClick={() => setSortBy([ "username", sortBy[ 0 ] != "username" ? true : !sortBy[ 1 ] ].slice())}/>   Username</th>
           <th scope="col">Firstname</th>
           <th scope="col">Lastname</th>
           <th scope="col">Team name</th>
-          <th scope="col">Bonus</th>
-          <th scope="col">Score</th>
-          <th scope="col">Solved problems</th>
+          <th scope="col">  <FaSort style={{ display: "inline" }} onClick={() => setSortBy([ "bonus", sortBy[ 0 ] != "bonus" ? true : !sortBy[ 1 ] ].slice())}/>      Bonus</th>
+          <th scope="col">  <FaSort style={{ display: "inline" }} onClick={() => setSortBy([ "score", sortBy[ 0 ] != "score" ? true : !sortBy[ 1 ] ].slice())} />     Score</th>
+          <th scope="col">  <FaSort style={{ display: "inline" }} onClick={() => setSortBy([ "NbSolved", sortBy[ 0 ] != "NbSolved" ? true : !sortBy[ 1 ] ].slice())} /> Solved problems</th>
         </tr>     </thead>
       <tbody>
         {filtredUsers.map((user, index) => {
