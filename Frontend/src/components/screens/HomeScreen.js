@@ -1,5 +1,6 @@
 import React, { Component, useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import authService from "../../services/auth.service";
 import probService from "../../services/prob.service";
 import TestProfile from "../testProfile";
 import Prob from "./Probs";
@@ -7,22 +8,32 @@ import Prob from "./Probs";
 
 const Homescreen = () => {
 
-    const [probs, setProbs] = useState([]);
+    const currentUser = authService.getCurrentUser();
 
-    // const probs = probService.GetProbs();
+    const [probs, setProbs] = useState([]);
+    const [typeProbs, setTypeProbs] = useState({});
+    const [filtredProbs, setFiltredProbs] = useState([]);
 
     //getting the problems
     const getData = async () => {
         const data = await probService.GetProbs();
         console.log(data);
         setProbs(data.data);
+        setFiltredProbs(data.data);
     };
 
 
+    //sort the problems by its type
+    const sortByType = (type) => {
+        if (type === "all") {
+            setFiltredProbs(probs);
+        } else {
+        const sortedProbs = probs.filter(prob => prob.type === type);
+        setFiltredProbs(sortedProbs);
+        }
+    };
 
-    const clickProb = () => {
-        console.log(probs);
-    }
+
 
     useEffect(() => {
         getData();
@@ -31,15 +42,32 @@ const Homescreen = () => {
 
     return (
         <div>
-            <div className="row">
-                {probs.map(prob => (
-                    <div className="col-md2">
-                        <div>
-                            <Prob prob={prob} />
-                        </div>
-                    </div>
-                ))}
-            </div>
+            <select id="dropdown" onChange={(e) => sortByType(e.target.value)}>
+                <option value="all">ALL</option>
+                <option value="gen">gen</option>
+                <option value="NumberGen">NumberGen</option>
+                <option value="Qna">Qna</option>
+                
+            </select>
+
+            <table className="table table-sm shadow-lg p-3 mb-5 bg-white rounded">
+                <thead>
+                    <tr>
+                        <th scope="col">Title</th>
+                        <th scope="col">Type</th>
+                        <th scope="col">Enter</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {filtredProbs.map((prob, index) => (
+
+
+                        <Prob key={index} prob={prob} />
+
+                    ))}
+
+                </tbody>
+            </table>
         </div>
     );
 }

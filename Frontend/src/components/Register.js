@@ -58,12 +58,12 @@ const Register = (props) => {
 
   const onChangeUsername = (e) => {
     const username = e.target.value;
-    setUsername(username);
+    setUsername(username.trim().toUpperCase());	
   };
 
   const onChangeEmail = (e) => {
     const email = e.target.value;
-    setEmail(email);
+    setEmail(email.trim().toLowerCase());
   };
 
   const onChangePassword = (e) => {

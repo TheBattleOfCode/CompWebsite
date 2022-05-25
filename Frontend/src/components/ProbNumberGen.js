@@ -76,11 +76,10 @@ function ProbNumberGen() {
 
 
     function submitAnswer() {
-        let encrypted = hash(answerTry);
-        // 505 for AKS
-        // encrypted = twYNAA9I04dZ8FlA7rVuFZ1INzO6B1XOuEcxV1+uOks=
+        let encrypted = hash(answerTry.trim().toUpperCase());
+
         if (encrypted === inOut.output) {
-            setInOut({ "input": inOut.input, "output": answerTry, "answered": true });
+            setInOut({ "input": inOut.input, "output": answerTry.trim().toUpperCase(), "answered": true });
             // change it in the database
             genProblemService.UpdateGenProb(currentUser.id, id,answerTry).then(
                 (response) => {
@@ -127,8 +126,10 @@ function ProbNumberGen() {
 
             {!!currentUser && <div className="row justify-content-start" id="aa">
                 <div className="col-9">
+                    {prob.type == "NumberGen" &&<div>
                     <h4 className="h4">Click to get your input</h4>
                     <button onClick={() => navigator.clipboard.writeText(inOut.input)} className="btn btn-warning " >Copy</button>
+                    </div>}
                     {!inOut.answered &&
                         <div>
                             
