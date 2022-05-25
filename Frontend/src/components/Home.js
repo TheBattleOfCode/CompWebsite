@@ -4,7 +4,6 @@ import UserService from "../services/user.service";
 
 import { Link } from "react-router-dom";
 import Homescreen from "./screens/HomeScreen";
-import TestGenProbModal from "./screens/TestGenProbModal";
 const Home = () => {
   /*const [content, setContent] = useState("");
 
@@ -26,8 +25,6 @@ const Home = () => {
 */
   return (
     <div className="container">
-      
-      <TestGenProbModal />
       <Homescreen />
     </div>
   );
