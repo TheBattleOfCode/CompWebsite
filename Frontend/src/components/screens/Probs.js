@@ -1,72 +1,43 @@
-import React, { useState } from 'react';
-import { Modal } from "react-bootstrap";
-import probService from '../../services/prob.service';
+import React, { useEffect, useState } from 'react';
+import authService from '../../services/auth.service';
+import genProblemService from '../../services/gen-problem.service';
+import genInOutProbs from '../../services/gen-problem.service';
 
 export default function Prob({ prob }) {
-    const [show, setShow] = useState(false);
+    const [genProbs, setGenProbs] = useState([]);
+    const currentUser = authService.getCurrentUser();
+    const [stateProb, setStateProb] = useState("white");
+    const [inOut, setInOut] = useState([]);
+    //get gen problems
+    const getGenProbs = async () => {
+        const inOutlocal = genProblemService.GetGenProb(currentUser.id, prob._id);
+        setInOut(await inOutlocal);
+       
+    };
 
-    const handleClose = () => setShow(false);
-    const handleShow = () => setShow(true);
+    useEffect(() => {
+        if (inOut.data) {
+            setStateProb(inOut.data.answered? "bg-success" : "table-active");
+        }
+    }, [inOut]);
+    useEffect(() => {
+        getGenProbs();
+    }, []);
+
 
 
     return (
-        <div style={{ margin: '40px' }} className="shadow-lg p-3 mb-5 bg-white rounded">
-            <div onClick={handleShow} >
-                <h1>{prob.title}</h1>
-
-            </div>
-
-            <div className="flex-container">
-
-                <div className='w-100 m-1'>
-                    <p>score :{prob.score} </p>
-
-                </div>
-
-                <div className='w-100 m-1'>
-                    <p>type : {prob.type} </p>
-
-
-
-                </div>
-
-                <div className='w-100 m-1'>
-                    <button className="btn btn-outline-primary" >
-                        <a href={'/ProbNumberGen/'+prob._id}>
+        <tr className={stateProb +" rounded"}>
+            <td>{prob.title}</td>
+            <td>{prob.type} </td>
+            <td>
+                <button className={stateProb != "bg-success" ?"btn btn-outline-primary":"btn btn-outline-dark"} >
+                    <a href={'/ProbNumberGen/' + prob._id} style={{color:stateProb == "bg-success"?"black":"blue"}}>
                         Enter
-                        </a>
-                    </button>
+                    </a>
+                </button>
+            </td>
 
-                    <button className="btn btn-outline-primary" onClick={handleShow}>
-                        Details
-                    </button>
-                </div>
-
-
-
-            </div>
-
-
-
-
-
-
-            <Modal show={show} onHide={handleClose}>
-                <Modal.Header >
-                    <Modal.Title>{prob.title}</Modal.Title>
-                </Modal.Header>
-
-                <Modal.Body>
-                    <p>Score : {prob.score}</p>
-                    <hr/>
-                    <p>Description : {prob.description}</p>
-                </Modal.Body>
-
-                <Modal.Footer>
-                    <button className="btn" onClick={handleClose}>Close</button>
-                </Modal.Footer>
-            </Modal>
-
-        </div>
+        </tr>
     );
 }
