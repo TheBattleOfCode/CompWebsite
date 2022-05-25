@@ -230,7 +230,7 @@ const CreateProblem = () => {
 
   return (
 
-    <div>
+    <div className="d-flex align-items-center flex-column">
       <h1>Create Problem</h1>
       <h2>Select the problem style :</h2>
 
