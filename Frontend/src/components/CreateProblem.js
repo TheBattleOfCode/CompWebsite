@@ -15,6 +15,7 @@ const CreateProblem = () => {
   const [ probQnaAnswer, setProbQnaAnswer ] = useState("");
   const [ successful, setSuccessful ] = useState(false);
   const [ fail, setFail ] = useState(false);
+  
 
 
   const submitNumberGen = (event) => {
@@ -51,7 +52,7 @@ const CreateProblem = () => {
     event.preventDefault();
     console.log("To check input");
     const md = new Remarkable();
-    let file = "function generateInput(){return \"\";}function generateOutput(input){return \""+probQnaAnswer.trim().toUpperCase()+"\";}const input=generateInput();setGeneratedInOut({\"input\":input,\"output\":generateOutput(input)});";
+    let file = "function generateInput(){return \"\";}function generateOutput(input){return \"" + probQnaAnswer.trim().toUpperCase() + "\";}const input=generateInput();setGeneratedInOut({\"input\":input,\"output\":generateOutput(input)});";
     probService.SaveProb(
       probTitle,
       md.render(probDesc),
@@ -78,7 +79,7 @@ const CreateProblem = () => {
     console.log("done");
 
 
-  
+
   }
 
 
@@ -159,21 +160,81 @@ const CreateProblem = () => {
     )
   }
 
+  const CommonInput = () => {
+    return (
+      <div>
+        </div>
+    )
+  }
+
+  const SelectInput = () => {
+
+    return (
+      <div className="d-flex justify-content-center" >
+
+        <label class={"btn btn"+(selectValue=="Number gen"?"":"-outline")+"-success"} for="NumberGen">
+          <input type="radio"
+            class="btn-check"
+            name="options"
+            id="NumberGen"
+            value="Number gen"
+            
+            checked={selectValue == "NumberGen"}
+            onChange={(e) => setSelectValue(e.target.value)}
+            autocomplete="off"
+            style={{display:"none"}} /> 
+          Number generator</label>
+
+        <label class={"btn btn"+(selectValue=="QnA"?"":"-outline")+"-success"} for="QnA">
+          <input type="radio" 
+          class="btn-check"
+          name="options" 
+          id="QnA" 
+          value="QnA" 
+          checked={selectValue == "QnA"}
+           onChange={(e) => setSelectValue(e.target.value)}
+           style={{display:"none"}}
+            autocomplete="off" />
+          QnA</label>
+
+          <label class={"btn btn"+(selectValue=="Compiler"?"":"-outline")+"-success"} for="Compiler">
+          <input type="radio" 
+          class="btn-check"
+          name="options" 
+          id="Compiler" 
+          value="Compiler" 
+          checked={selectValue == "Compiler"}
+           onChange={(e) => setSelectValue(e.target.value)}
+           style={{display:"none"}}
+            autocomplete="off" />
+          Compiler (under Construction)</label>
+
+          <label class={"btn btn"+(selectValue=="FileGen"?"":"-outline")+"-success"} for="FileGen">
+          <input type="radio" 
+          class="btn-check"
+          name="options" 
+          id="FileGen" 
+          value="File Generator" 
+          checked={selectValue == "FileGen"}
+           onChange={(e) => setSelectValue(e.target.value)}
+           style={{display:"none"}}
+            autocomplete="off" />
+          File Generator (under Construction)</label>
+
+
+      </div>
+    )
+
+  }
+
+
   return (
 
     <div>
       <h1>Create Problem</h1>
       <h2>Select the problem style :</h2>
 
-      <div>
-        <select id="dropdown" onChange={(e) => setSelectValue(e.target.value)}>
-          <option value="N/A">Choose a problem style</option>
-          <option value="Number gen">Number gen</option>
-          <option value="QnA">QnA</option>
-          <option value="3">3</option>
-          <option value="4">4</option>
-        </select>
-      </div>
+      <SelectInput />
 
       <h3>{selectValue}</h3>
 
@@ -186,8 +247,12 @@ const CreateProblem = () => {
             case "QnA":
               submitQnA(event);
               break;
-        }
-      }}>
+          }
+        }}>
+
+        
+        
+<div>
         <div className="form-group">
           <label htmlFor="Title">Title</label>
           <input
@@ -228,6 +293,8 @@ const CreateProblem = () => {
             required
           />
         </div>
+      </div>
+
 
         {selectValue === "Number gen" && numberGenInput()}
         {selectValue === "QnA" && QnAInput()}
