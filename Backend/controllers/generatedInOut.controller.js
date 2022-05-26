@@ -31,6 +31,17 @@ exports.GetInOut = async (req, res) => {
     }
 }
 
+
+exports.GetAllGenProbByProb = async (req, res) => {
+    try{
+        const InOut = await generatedInOut.find({problemId:req.params.problemId})
+        res.send(InOut)
+
+    }catch(err){
+        res.status(500).send({ message: err });
+    }
+}
+
 exports.GenUpdateInOut = async (req, res) => {
 
     try{

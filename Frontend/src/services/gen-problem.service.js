@@ -16,6 +16,10 @@ const GetGenProb = (idUser, idGenProb) => {
     return axios.get(API_URL+"getOne/"+idUser+'/'+idGenProb);
 }
 
+const GetAllGenProbByProb = (idGenProb) => {
+    return axios.get(API_URL+"getAllByProb/"+idGenProb);
+}
+
 const UpdateGenProb = (idUser, idGenProb, answer) => {
     return axios.post(API_URL+"UpdateOne/"+idUser+'/'+idGenProb+'/'+answer);
 }
@@ -23,5 +27,6 @@ const UpdateGenProb = (idUser, idGenProb, answer) => {
 export default {
     SaveGenProb, 
     GetGenProb,
-    UpdateGenProb
+    UpdateGenProb,
+    GetAllGenProbByProb
 };

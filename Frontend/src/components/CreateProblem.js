@@ -15,7 +15,7 @@ const CreateProblem = () => {
   const [ probQnaAnswer, setProbQnaAnswer ] = useState("");
   const [ successful, setSuccessful ] = useState(false);
   const [ fail, setFail ] = useState(false);
-  
+
 
 
   const submitNumberGen = (event) => {
@@ -116,7 +116,12 @@ const CreateProblem = () => {
           {
             <div>
               <div className="form-group">
-                <label htmlFor="File">File</label>
+                <label htmlFor="File">
+                  <details>
+                    <summary>File (Generator)</summary>
+                    <p>Get your code template <a target="_blank" href="https://jsfiddle.net/TheOtherAKS/81tdm9fh/2/">here</a></p>
+                  </details>
+                </label>
                 <textarea
                   type="text"
                   className="form-control"
@@ -141,7 +146,12 @@ const CreateProblem = () => {
           {
             <div>
               <div className="form-group">
-                <label htmlFor="File">Answer</label>
+                <label htmlFor="File">
+                <details>
+                    <summary>Answer</summary>
+                    <p>Your answer will be case insensitive</p>
+                  </details>
+                </label>
                 <textarea
                   type="text"
                   className="form-control"
@@ -163,7 +173,7 @@ const CreateProblem = () => {
   const CommonInput = () => {
     return (
       <div>
-        </div>
+      </div>
     )
   }
 
@@ -172,52 +182,52 @@ const CreateProblem = () => {
     return (
       <div className="d-flex justify-content-center" >
 
-        <label class={"btn btn"+(selectValue=="Number gen"?"":"-outline")+"-success"} for="NumberGen">
+        <label class={"btn btn" + (selectValue == "Number gen" ? "" : "-outline") + "-success"} for="NumberGen">
           <input type="radio"
             class="btn-check"
             name="options"
             id="NumberGen"
             value="Number gen"
-            
+
             checked={selectValue == "NumberGen"}
             onChange={(e) => setSelectValue(e.target.value)}
             autocomplete="off"
-            style={{display:"none"}} /> 
+            style={{ display: "none" }} />
           Number generator</label>
 
-        <label class={"btn btn"+(selectValue=="QnA"?"":"-outline")+"-success"} for="QnA">
-          <input type="radio" 
-          class="btn-check"
-          name="options" 
-          id="QnA" 
-          value="QnA" 
-          checked={selectValue == "QnA"}
-           onChange={(e) => setSelectValue(e.target.value)}
-           style={{display:"none"}}
+        <label class={"btn btn" + (selectValue == "QnA" ? "" : "-outline") + "-success"} for="QnA">
+          <input type="radio"
+            class="btn-check"
+            name="options"
+            id="QnA"
+            value="QnA"
+            checked={selectValue == "QnA"}
+            onChange={(e) => setSelectValue(e.target.value)}
+            style={{ display: "none" }}
             autocomplete="off" />
           QnA</label>
 
-          <label class={"btn btn"+(selectValue=="Compiler"?"":"-outline")+"-success"} for="Compiler">
-          <input type="radio" 
-          class="btn-check"
-          name="options" 
-          id="Compiler" 
-          value="Compiler" 
-          checked={selectValue == "Compiler"}
-           onChange={(e) => setSelectValue(e.target.value)}
-           style={{display:"none"}}
+        <label class={"btn btn" + (selectValue == "Compiler" ? "" : "-outline") + "-success"} for="Compiler">
+          <input type="radio"
+            class="btn-check"
+            name="options"
+            id="Compiler"
+            value="Compiler"
+            checked={selectValue == "Compiler"}
+            onChange={(e) => setSelectValue(e.target.value)}
+            style={{ display: "none" }}
             autocomplete="off" />
           Compiler (under Construction)</label>
 
-          <label class={"btn btn"+(selectValue=="FileGen"?"":"-outline")+"-success"} for="FileGen">
-          <input type="radio" 
-          class="btn-check"
-          name="options" 
-          id="FileGen" 
-          value="File Generator" 
-          checked={selectValue == "FileGen"}
-           onChange={(e) => setSelectValue(e.target.value)}
-           style={{display:"none"}}
+        <label class={"btn btn" + (selectValue == "FileGen" ? "" : "-outline") + "-success"} for="FileGen">
+          <input type="radio"
+            class="btn-check"
+            name="options"
+            id="FileGen"
+            value="File Generator"
+            checked={selectValue == "FileGen"}
+            onChange={(e) => setSelectValue(e.target.value)}
+            style={{ display: "none" }}
             autocomplete="off" />
           File Generator (under Construction)</label>
 
@@ -250,50 +260,57 @@ const CreateProblem = () => {
           }
         }}>
 
-        
-        
-<div>
-        <div className="form-group">
-          <label htmlFor="Title">Title</label>
-          <input
-            type="text"
-            className="form-control"
-            id="Title"
-            name="Title"
-            value={probTitle}
-            onChange={(e) => setProbTitle(e.target.value)}
-            required
-          />
-        </div>
 
-        <div className="form-group">
-          <label htmlFor="Description">Description</label>
-          <textarea
-            type="text"
-            className="form-control"
-            name="Description"
-            id="Description"
-            value={probDesc}
-            onChange={(e) => setProbDesc(e.target.value)}
-            required
-          />
-        </div>
 
-        <div className="form-group">
-          <label htmlFor="Score">Score = {probScore}</label>
-          <input
-            type="range"
-            className="form-control"
-            name="Score"
-            id="Score"
-            min="0" max="1000"
-            step="50"
-            value={probScore}
-            onChange={(e) => setProbScore(e.target.value)}
-            required
-          />
+        <div>
+          <span style={{ visibility: "hidden" }} >Write in Markdown, seek documentation here</span>
+          <div className="form-group">
+            <label htmlFor="Title">Title</label>
+            <input
+              type="text"
+              className="form-control"
+              id="Title"
+              name="Title"
+              value={probTitle}
+              onChange={(e) => setProbTitle(e.target.value)}
+              required
+            />
+          </div>
+
+          <div className="form-group">
+            <label htmlFor="Description">
+              <details>
+                <summary>Description</summary>
+                <p>Write in Markdown, seek documentation <a target="_blank" href="https://docs.github.com/en/get-started/writing-on-github/getting-started-with-writing-and-formatting-on-github/basic-writing-and-formatting-syntax">here</a></p>
+              </details>
+            </label>
+            <textarea
+              type="text"
+              className="form-control"
+              name="Description"
+              id="Description"
+              value={probDesc}
+              onChange={(e) => setProbDesc(e.target.value)}
+              required
+            />
+          </div>
+
+          <div className="form-group">
+            <label htmlFor="Score">Score = {probScore}</label>
+            <input
+              type="range"
+              className="form-control"
+              name="Score"
+              id="Score"
+              min="0" max="1000"
+              step="50"
+              value={probScore}
+              onChange={(e) => setProbScore(e.target.value)}
+              required
+            />
+          </div>
+
         </div>
-      </div>
 
 
         {selectValue === "Number gen" && numberGenInput()}

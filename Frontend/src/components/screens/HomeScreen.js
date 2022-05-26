@@ -42,12 +42,11 @@ const Homescreen = () => {
 
     return (
         <div>
-            <select id="dropdown" onChange={(e) => sortByType(e.target.value)}>
+            <select id="dropdown" className="form-control" onChange={(e) => sortByType(e.target.value)}>
                 <option value="all">ALL</option>
                 <option value="gen">gen</option>
                 <option value="NumberGen">NumberGen</option>
                 <option value="Qna">Qna</option>
-                
             </select>
 
             <table className="table table-sm shadow-lg p-3 mb-5 bg-white rounded">
@@ -55,6 +54,7 @@ const Homescreen = () => {
                     <tr>
                         <th scope="col">Title</th>
                         <th scope="col">Type</th>
+                        <th scope="col">Solving rate</th>
                         <th scope="col">Enter</th>
                     </tr>
                 </thead>

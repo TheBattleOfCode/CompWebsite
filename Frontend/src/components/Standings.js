@@ -105,7 +105,7 @@ const Standings = () => {
         <tr className="">
           <th scope="col">#</th>
           <th scope="col">
-            <select id="dropdown" onChange={(e) => setCountryFilter(e.target.value)}>
+            <select id="dropdown" className="form-control" onChange={(e) => setCountryFilter(e.target.value)}>
               <option value="N/A">Country (All)</option>
               <option value={currentUser.country ? currentUser.country : "Uruguay"}>Same as me</option>
               {countries.sort((cc, cb) => cc.name.common < cb.name.common).map((country, index) => {

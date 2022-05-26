@@ -1,4 +1,4 @@
-const { SaveInOut, GetInOut, GenUpdateInOut, DeleteInOut } = require("../controllers/generatedInOut.controller");
+const { SaveInOut, GetInOut, GenUpdateInOut, DeleteInOut, GetAllGenProbByProb } = require("../controllers/generatedInOut.controller");
 
 
 module.exports = (app)=>{
@@ -13,6 +13,8 @@ module.exports = (app)=>{
   app.post("/api/generatedInOut/add", SaveInOut )
 
   app.get("/api/generatedInOut/getOne/:userId/:problemId", GetInOut)
+
+  app.get("/api/generatedInOut/getAllByProb/:problemId", GetAllGenProbByProb)
 
   app.post("/api/generatedInOut/UpdateOne/:userId/:problemId/:answer", GenUpdateInOut)
 
