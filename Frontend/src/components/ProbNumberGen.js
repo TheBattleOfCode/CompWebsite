@@ -2,7 +2,6 @@ import React from "react";
 import { useParams } from "react-router-dom";
 import authService from "../services/auth.service";
 import genProblemService from "../services/gen-problem.service";
-import { createHash } from "crypto";
 import probService from "../services/prob.service";
 import userService from "../services/user.service";
 
@@ -15,7 +14,9 @@ function ProbNumberGen() {
     const currentUser = authService.getCurrentUser();
 
     function hash(input) {
-        return createHash('sha256').update(id + input + currentUser.id).digest('base64');
+        // Hash function depricated
+        // return createHash('sha256').update(id + input + currentUser.id).digest('base64');
+        return(input);
     }
 
 
