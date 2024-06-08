@@ -1,13 +1,12 @@
 import React, { useState } from "react";
 import probService from "../services/prob.service";
 import { Remarkable } from 'remarkable';
-
+import MuiInput from '@mui/material/Input';
+import { AccordionDetails, Box, Button, Container, FormControl, FormControlLabel, FormLabel, Grid, Radio, RadioGroup, Slider, TextField, Typography, styled } from '@mui/material';
 
 const CreateProblem = () => {
 
-
   const [ selectValue, setSelectValue ] = useState("N/A");
-
   const [ probTitle, setProbTitle ] = useState("");
   const [ probDesc, setProbDesc ] = useState("");
   const [ probScore, setProbScore ] = useState(0);
@@ -16,7 +15,48 @@ const CreateProblem = () => {
   const [ successful, setSuccessful ] = useState(false);
   const [ fail, setFail ] = useState(false);
 
+  const Input = styled(MuiInput)`
+  width: 42px;
+`;
 
+  const handleProblemTypeChange = (event) => {
+    setSelectValue(event.target.value);
+  }
+
+  const onFormSubmit = (event) => {
+    switch (selectValue) {
+      case "Number gen":
+        submitNumberGen(event);
+        break;
+      case "QnA":
+        submitQnA(event);
+        break;
+    }
+  }
+
+  const handleSliderChange = (event, newValue) => {
+    setProbScore(newValue);
+  };
+
+  const handleScoreBlur = () => {
+    if (probScore < 0) {
+      setProbScore(0);
+    } else if (probScore > 1000) {
+      setProbScore(1000);
+    }
+  };
+
+  const handleScoreChange = (event) => {
+    setProbScore(event.target.value === '' ? '' : Number(event.target.value));
+  };
+
+  const onTitleChange = (event) => {
+    setProbTitle(event.target.value);
+  }
+
+  const onDescriptionChange = (event) => {
+    setProbDesc(event.target.value);
+  }
 
   const submitNumberGen = (event) => {
     event.preventDefault();
@@ -43,14 +83,10 @@ const CreateProblem = () => {
     setProbScore("");
     setProbFile("");
 
-    console.log("done");
-
-
   }
 
   const submitQnA = (event) => {
     event.preventDefault();
-    console.log("To check input");
     const md = new Remarkable();
     let file = "function generateInput(){return \"\";}function generateOutput(input){return \"" + probQnaAnswer.trim().toUpperCase() + "\";}const input=generateInput();setGeneratedInOut({\"input\":input,\"output\":generateOutput(input)});";
     probService.SaveProb(
@@ -86,8 +122,8 @@ const CreateProblem = () => {
   const submitButton = () => {
     return (
       <div>
-        <div className="form-group">
-          <button className="btn btn-primary btn-block" type="submit">Submit</button>
+        <div className="form-group" style={{ display: "flex", justifyContent: "center" }}>
+          <Button variant="contained" type="submit">Submit</Button>
         </div>
 
         {successful && (
@@ -106,7 +142,6 @@ const CreateProblem = () => {
           </div>)}
       </div>
     )
-
   }
 
   const numberGenInput = () => {
@@ -122,15 +157,7 @@ const CreateProblem = () => {
                     <p>Get your code template <a target="_blank" href="https://jsfiddle.net/TheOtherAKS/81tdm9fh/2/">here</a></p>
                   </details>
                 </label>
-                <textarea
-                  type="text"
-                  className="form-control"
-                  name="File"
-                  id="File"
-                  value={probFile}
-                  onChange={(e) => setProbFile(e.target.value)}
-                  required
-                />
+                <textarea type="text" className="form-control" name="File" id="File" value={probFile} onChange={(e) => setProbFile(e.target.value)} required />
               </div>
             </div>
           }
@@ -152,15 +179,7 @@ const CreateProblem = () => {
                     <p>Your answer will be case insensitive</p>
                   </details>
                 </label>
-                <textarea
-                  type="text"
-                  className="form-control"
-                  name="File"
-                  id="File"
-                  value={probQnaAnswer}
-                  onChange={(e) => setProbQnaAnswer(e.target.value)}
-                  required
-                />
+                <textarea type="text" className="form-control" name="File" id="File" value={probQnaAnswer} onChange={(e) => setProbQnaAnswer(e.target.value)} required />
               </div>
             </div>
           }
@@ -170,159 +189,68 @@ const CreateProblem = () => {
     )
   }
 
-  const CommonInput = () => {
-    return (
-      <div>
-      </div>
-    )
-  }
-
   const SelectInput = () => {
 
     return (
-      <div className="d-flex justify-content-center" >
+      <Box>
+        <FormControl>
+          <FormLabel id="demo-controlled-radio-buttons-group">Gender</FormLabel>
+          <RadioGroup
+            aria-labelledby="demo-controlled-radio-buttons-group"
+            name="controlled-radio-buttons-group"
+            value={selectValue}
+            onChange={handleProblemTypeChange}
+          >
+            <FormControlLabel value="Number gen" control={<Radio />} label="Number generator" />
+            <FormControlLabel value="QnA" control={<Radio />} label="QnA" />
+            <FormControlLabel value="Compiler (under Construction)" control={<Radio />} label="Compiler (under Construction)" />
+            <FormControlLabel value="File Generator (under Construction)" control={<Radio />} label="File Generator (under Construction)" />
 
-        <label class={"btn btn" + (selectValue == "Number gen" ? "" : "-outline") + "-success"} for="NumberGen">
-          <input type="radio"
-            class="btn-check"
-            name="options"
-            id="NumberGen"
-            value="Number gen"
-
-            checked={selectValue == "NumberGen"}
-            onChange={(e) => setSelectValue(e.target.value)}
-            autocomplete="off"
-            style={{ display: "none" }} />
-          Number generator</label>
-
-        <label class={"btn btn" + (selectValue == "QnA" ? "" : "-outline") + "-success"} for="QnA">
-          <input type="radio"
-            class="btn-check"
-            name="options"
-            id="QnA"
-            value="QnA"
-            checked={selectValue == "QnA"}
-            onChange={(e) => setSelectValue(e.target.value)}
-            style={{ display: "none" }}
-            autocomplete="off" />
-          QnA</label>
-
-        <label class={"btn btn" + (selectValue == "Compiler" ? "" : "-outline") + "-success"} for="Compiler">
-          <input type="radio"
-            class="btn-check"
-            name="options"
-            id="Compiler"
-            value="Compiler"
-            checked={selectValue == "Compiler"}
-            onChange={(e) => setSelectValue(e.target.value)}
-            style={{ display: "none" }}
-            autocomplete="off" />
-          Compiler (under Construction)</label>
-
-        <label class={"btn btn" + (selectValue == "FileGen" ? "" : "-outline") + "-success"} for="FileGen">
-          <input type="radio"
-            class="btn-check"
-            name="options"
-            id="FileGen"
-            value="File Generator"
-            checked={selectValue == "FileGen"}
-            onChange={(e) => setSelectValue(e.target.value)}
-            style={{ display: "none" }}
-            autocomplete="off" />
-          File Generator (under Construction)</label>
-
-
-      </div>
+          </RadioGroup>
+        </FormControl>
+      </Box>
     )
 
   }
 
 
   return (
+    <Container sx={{ marginTop:"64px"}}>
+      <Grid container spacing={8} sx={{ padding:"24px"}}>
+        <Grid item xs={9}>
+          <h1>Create Problem</h1>
+          <h2>{`Select the problem style : ${selectValue ? selectValue : ""}`}</h2>
+          <form onSubmit={onFormSubmit}>
+            <Typography variant="h6">Problem Title</Typography>
+            <TextField label="Title" variant="outlined" value={probTitle} onChange={onTitleChange} required />
 
-    <div className="d-flex align-items-center flex-column">
-      <h1>Create Problem</h1>
-      <h2>Select the problem style :</h2>
+            <AccordionDetails>
+              <p>Write in Markdown, seek documentation <a target="_blank" href="https://docs.github.com/en/get-started/writing-on-github/getting-started-with-writing-and-formatting-on-github/basic-writing-and-formatting-syntax">here</a></p>
+            </AccordionDetails>
 
-      <SelectInput />
+            <Typography variant="h6">Problem Description</Typography>
+            <TextField id="outlined-basic" label="Description" variant="outlined" value={probDesc} onChange={onDescriptionChange} required/>
 
-      <h3>{selectValue}</h3>
-
-      <form onSubmit={
-        (event) => {
-          switch (selectValue) {
-            case "Number gen":
-              submitNumberGen(event);
-              break;
-            case "QnA":
-              submitQnA(event);
-              break;
-          }
-        }}>
-
-
-
-        <div>
-          <span style={{ visibility: "hidden" }} >Write in Markdown, seek documentation here</span>
-          <div className="form-group">
-            <label htmlFor="Title">Title</label>
-            <input
-              type="text"
-              className="form-control"
-              id="Title"
-              name="Title"
-              value={probTitle}
-              onChange={(e) => setProbTitle(e.target.value)}
-              required
-            />
-          </div>
-
-          <div className="form-group">
-            <label htmlFor="Description">
-              <details>
-                <summary>Description</summary>
-                <p>Write in Markdown, seek documentation <a target="_blank" href="https://docs.github.com/en/get-started/writing-on-github/getting-started-with-writing-and-formatting-on-github/basic-writing-and-formatting-syntax">here</a></p>
-              </details>
-            </label>
-            <textarea
-              type="text"
-              className="form-control"
-              name="Description"
-              id="Description"
-              value={probDesc}
-              onChange={(e) => setProbDesc(e.target.value)}
-              required
-            />
-          </div>
-
-          <div className="form-group">
-            <label htmlFor="Score">Score = {probScore}</label>
-            <input
-              type="range"
-              className="form-control"
-              name="Score"
-              id="Score"
-              min="0" max="1000"
-              step="50"
-              value={probScore}
-              onChange={(e) => setProbScore(e.target.value)}
-              required
-            />
-          </div>
-
-        </div>
-
-
-        {selectValue === "Number gen" && numberGenInput()}
-        {selectValue === "QnA" && QnAInput()}
-        {(selectValue != "N/A") && submitButton()}
-      </form>
-
-
-
-    </div>
-
-
+            <Grid container spacing={2} alignItems="center">
+              <Grid item xs>
+                <Slider value={typeof probScore === 'number' ? probScore : 0} onChange={handleSliderChange} aria-labelledby="input-slider" defaultValue={0}
+                        step={50} min={0} max={1000} />
+              </Grid>
+              <Grid item>
+                <Input value={probScore} size="small" onChange={handleScoreChange} onBlur={handleScoreBlur}
+                       inputProps={{ step: 10, min: 0, max: 1000, type: 'number', 'aria-labelledby': 'input-slider' }} />
+              </Grid>
+            </Grid>
+            {selectValue === "Number gen" && numberGenInput()}
+            {selectValue === "QnA" && QnAInput()}
+            {(selectValue != "N/A") && submitButton()}
+          </form>
+        </Grid>
+        <Grid item xs sx={{ p: 2, border: '3px double black', borderRadius:"8px", paddingTop: "0px", marginLeft:"16px", marginRight:"-32px"}} >
+          <SelectInput />
+        </Grid>
+      </Grid>
+    </Container>
   );
 }
 
