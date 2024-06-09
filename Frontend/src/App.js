@@ -23,11 +23,25 @@ import Contest from "./components/Contest";
 import Standings from "./components/Standings";
 import TestProfile from "./components/testProfile";
 import Navbar from "./components/Navbar/Navbar";
+import Navbar2 from './components/Navbar/Navbar2';
+import { ThemeProvider, createTheme } from '@mui/material';
 
 const App = () => {
   const [ showModeratorBoard, setShowModeratorBoard ] = useState(false);
   const [ showAdminBoard, setShowAdminBoard ] = useState(false);
   const [ currentUser, setCurrentUser ] = useState(undefined);
+
+  const theme = createTheme({
+    palette: {
+      mode: 'light',
+      primary: {
+        main: '#e65100'
+      },
+      secondary: {
+        main: '#f50057'
+      }
+    }
+  })
 
   useEffect(() => {
     const user = AuthService.getCurrentUser();
@@ -55,28 +69,25 @@ const App = () => {
   };
 
   return (
-    <div>
-      <Navbar />
+    <ThemeProvider theme={ theme }>
+        <Navbar2 />
+        <Navbar />
+          <Switch>
+            <Route exact path={[ "/", "/home" ]} component={Home} />
+            <Route exact path="/login" component={Login} />
+            <Route exact path="/register" component={Register} />
+            <Route exact path="/profile" component={Profile} />
+            <Route path="/user" component={BoardUser} />
+            <Route path="/mod" component={BoardModerator} />
+            <Route path="/admin" component={BoardAdmin} />
+            <Route exact path="/contest" component={Contest} />
+            <Route exact path="/standings" component={Standings} />
+            <Route exact path="/createProb" component={CreateProblem} />
+            <Route exact path="/ProbNumberGen/:id" component={ProbNumberGen} />
+            <Route exact path={"/TestProfile"} component ={TestProfile} />
+          </Switch>
 
-      <div className="mw-100 w-100 p-3">
-        <Switch>
-          <Route exact path={[ "/", "/home" ]} component={Home} />
-          <Route exact path="/login" component={Login} />
-          <Route exact path="/register" component={Register} />
-          <Route exact path="/profile" component={Profile} />
-          <Route path="/user" component={BoardUser} />
-          <Route path="/mod" component={BoardModerator} />
-          <Route path="/admin" component={BoardAdmin} />
-          <Route exact path="/contest" component={Contest} />
-          <Route exact path="/standings" component={Standings} />
-          <Route exact path="/createProb" component={CreateProblem} />
-          <Route exact path="/ProbNumberGen/:id" component={ProbNumberGen} />
-          <Route exact path={"/TestProfile"} component ={TestProfile} />
-        </Switch>
-      </div>
-
-      {/* <AuthVerify logOut={logOut}/> */}
-    </div>
+      </ThemeProvider>
   );
 };
 

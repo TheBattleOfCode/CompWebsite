@@ -3,6 +3,10 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@emotion/react": "^11.11.4",
+    "@emotion/styled": "^11.11.5",
+    "@mui/icons-material": "^5.15.18",
+    "@mui/material": "^5.15.18",
     "@testing-library/jest-dom": "^4.2.4",
     "@testing-library/react": "^9.3.2",
     "@testing-library/user-event": "^7.1.2",
@@ -13,10 +17,10 @@
     "crypto-hash": "^2.0.1",
     "jquery": "^3.6.0",
     "popper.js": "^1.16.1",
-    "react": "^16.13.1",
+    "react": "^18.3.1",
     "react-bootstrap": "^2.2.2",
     "react-chartjs-2": "^4.1.0",
-    "react-dom": "^16.13.1",
+    "react-dom": "^18.3.1",
     "react-icons": "^4.3.1",
     "react-router-dom": "^5.2.0",
     "react-scripts": "^5.0.1",
@@ -47,6 +51,21 @@
   },
   "devDependencies": {
     "@types/bootstrap": "^5.1.9",
-    "@types/jquery": "^3.5.14"
+    "@types/jquery": "^3.5.14",
+    "prettier": "3.2.5"
+  },
+  "prettier": {
+    "printWidth": 90,
+    "tabWidth": 4,
+    "useTabs": false,
+    "semi": true,
+    "singleQuote": false,
+    "quoteProps": "as-needed",
+    "jsxSingleQuote": false,
+    "trailingComma": "none",
+    "bracketSpacing": true,
+    "jsxBracketSameLine": true,
+    "arrowParens": "always",
+    "singleAttributePerLine": false
   }
 }

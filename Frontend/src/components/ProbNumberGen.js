@@ -109,56 +109,48 @@ function ProbNumberGen() {
 
     return (
         <div className="w-100 p-3">
-
             <div className="container"></div>
-
             <div className="row">
-
                 <div className="col-9 align-self-start">
                     <h1 className="h1 text-center">{prob.title + " (" + prob.score + " points)"}</h1>
                     <h3 className="h3">Description</h3>
                     <div dangerouslySetInnerHTML={{ __html: prob.description }}></div>
-
                 </div>
-
-
             </div>
 
 
-            {!!currentUser && <div className="row justify-content-start" id="aa">
-                <div className="col-9">
-                    {prob.type == "NumberGen" &&<div>
-                    <h4 className="h4">Click to get your input</h4>
-                    <button onClick={() => navigator.clipboard.writeText(inOut.input)} className="btn btn-warning " >Copy</button>
-                    </div>}
-                    {!inOut.answered &&
-                        <div>
-                            
-                            <div className="form-group w-25">
-                                <label htmlFor="submission"><h4>submission</h4></label>
-                                <input type="text"
-                                    className="form-control"
-                                    name="submission"
-                                    placeholder="Your answer here"
-                                    value={answerTry}
-                                    onChange={(e) => setAnswerTry(e.target.value)} />
+            {!!currentUser && 
+                <div className="row justify-content-start" id="aa">
+                    <div className="col-9">
+                        {prob.type == "NumberGen" &&<div>
+                        <h4 className="h4">Click to get your input</h4>
+                        <button onClick={() => navigator.clipboard.writeText(inOut.input)} className="btn btn-warning " >Copy</button>
+                        </div>}
+                        {!inOut.answered &&
+                            <div>
+                                <div className="form-group w-25">
+                                    <label htmlFor="submission"><h4>submission</h4></label>
+                                    <input type="text"
+                                        className="form-control"
+                                        name="submission"
+                                        placeholder="Your answer here"
+                                        value={answerTry}
+                                        onChange={(e) => setAnswerTry(e.target.value)} />
 
-                                <br></br>
-                                <button type="submit"
-                                    name="submit"
-                                    className="btn btn-primary"
-                                    onClick={submitAnswer}>submit</button>
-                            </div>
-                        </div>}
-                    {inOut.answered &&
-                        <div>
-                            <h3> You answered correctly! <br></br>  Your answer was {inOut.output}</h3>
-                        </div>}
+                                    <br></br>
+                                    <button type="submit"
+                                        name="submit"
+                                        className="btn btn-primary"
+                                        onClick={submitAnswer}>submit</button>
+                                </div>
+                            </div>}
+                        {inOut.answered &&
+                            <div>
+                                <h3> You answered correctly! <br></br>  Your answer was {inOut.output}</h3>
+                            </div>}
+                    </div>
                 </div>
-
-
-
-            </div>}
+            }
             {!currentUser &&
                 <p>To get an Input and get solving, <a href="login.php">login</a> or <a href="signup.php">signup</a>.</p>
             }
@@ -167,8 +159,6 @@ function ProbNumberGen() {
                 {// all rights reserved
                 }
                 <p>&copy; 2022 FFDV, inc.</p>
-
-
             </footer>
 
         </div>
