@@ -1,75 +1,79 @@
-import React, { Component, useEffect, useState } from "react";
-import { Link } from "react-router-dom";
-import authService from "../../services/auth.service";
-import probService from "../../services/prob.service";
-import TestProfile from "../testProfile";
-import Prob from "./Probs";
-
+import React, { useEffect, useState } from 'react';
+import {
+	MenuItem,
+	Select,
+	Table,
+	TableBody,
+	TableCell,
+	TableContainer,
+	TableHead,
+	TableRow,
+	Paper,
+	Button,
+} from '@mui/material';
+import authService from '../../services/auth.service';
+import probService from '../../services/prob.service';
+import Prob from './Probs';
 
 const Homescreen = () => {
+	const currentUser = authService.getCurrentUser();
 
-    const currentUser = authService.getCurrentUser();
+	const [probs, setProbs] = useState([]);
+	const [filtredProbs, setFiltredProbs] = useState([]);
 
-    const [probs, setProbs] = useState([]);
-    const [typeProbs, setTypeProbs] = useState({});
-    const [filtredProbs, setFiltredProbs] = useState([]);
+	const getData = async () => {
+		const data = await probService.GetProbs();
+		setProbs(data.data);
+		setFiltredProbs(data.data);
+	};
 
-    //getting the problems
-    const getData = async () => {
-        const data = await probService.GetProbs();
-        console.log(data);
-        setProbs(data.data);
-        setFiltredProbs(data.data);
-    };
+	const sortByType = (type) => {
+		if (type === 'all') {
+			setFiltredProbs(probs);
+		} else {
+			const sortedProbs = probs.filter((prob) => prob.type === type);
+			setFiltredProbs(sortedProbs);
+		}
+	};
 
+	useEffect(() => {
+		getData();
+	}, []);
 
-    //sort the problems by its type
-    const sortByType = (type) => {
-        if (type === "all") {
-            setFiltredProbs(probs);
-        } else {
-        const sortedProbs = probs.filter(prob => prob.type === type);
-        setFiltredProbs(sortedProbs);
-        }
-    };
+	return (
+		<div>
+			<Select
+				id="dropdown"
+				fullWidth
+				variant="outlined"
+				onChange={(e) => sortByType(e.target.value)}
+				defaultValue="all"
+			>
+				<MenuItem value="all">ALL</MenuItem>
+				<MenuItem value="gen">gen</MenuItem>
+				<MenuItem value="NumberGen">NumberGen</MenuItem>
+				<MenuItem value="Qna">Qna</MenuItem>
+			</Select>
 
-
-
-    useEffect(() => {
-        getData();
-    }, []);
-
-
-    return (
-        <div>
-            <select id="dropdown" className="form-control" onChange={(e) => sortByType(e.target.value)}>
-                <option value="all">ALL</option>
-                <option value="gen">gen</option>
-                <option value="NumberGen">NumberGen</option>
-                <option value="Qna">Qna</option>
-            </select>
-
-            <table className="table table-sm shadow-lg p-3 mb-5 bg-white rounded">
-                <thead>
-                    <tr>
-                        <th scope="col">Title</th>
-                        <th scope="col">Type</th>
-                        <th scope="col">Solving rate</th>
-                        <th scope="col">Enter</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {filtredProbs.map((prob, index) => (
-
-
-                        <Prob key={index} prob={prob} />
-
-                    ))}
-
-                </tbody>
-            </table>
-        </div>
-    );
-}
+			<TableContainer component={Paper}>
+				<Table>
+					<TableHead>
+						<TableRow>
+							<TableCell>Title</TableCell>
+							<TableCell>Type</TableCell>
+							<TableCell>Solving rate</TableCell>
+							<TableCell>Enter</TableCell>
+						</TableRow>
+					</TableHead>
+					<TableBody>
+						{filtredProbs.map((prob, index) => (
+							<Prob key={index} prob={prob} />
+						))}
+					</TableBody>
+				</Table>
+			</TableContainer>
+		</div>
+	);
+};
 
 export default Homescreen;

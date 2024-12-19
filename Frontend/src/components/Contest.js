@@ -1,83 +1,83 @@
-import React from "react";
+import React from 'react';
+import {
+	Table,
+	TableBody,
+	TableCell,
+	TableContainer,
+	TableHead,
+	TableRow,
+	Paper,
+	TextField,
+	Button,
+} from '@mui/material';
 
 const Contest = () => {
-    return(
-        <table class="table table-striped table-hover">
-            <thead>
-            <tr>
-                <th scope="col">Competition</th>
-                <th scope="col">Start</th>
-                <th scope="col">End</th>
-                <th scope="col">Number of poblems</th>
-                <th scope="col">Passcode</th>
-                <th scope="col"></th>
-            </tr>
-            </thead>
-            <tbody>
-            <tr>
-                <th scope="row">First Competition</th>
-                <td>15/02/2021  15:45</td>
-                <td>15/02/2021  18:45</td>
-                <td>5</td>
-                
-                <td>
-                <input type="text" value="code"/>
-                </td>
-                <td>
-                <input type="button" value="Enter"/>
-                </td>
-                
-            </tr>
-            
-            <tr>
-                <th scope="row">second Competition no passcode</th>
-                <td>15/02/2021  15:45</td>
-                <td>15/02/2021  18:45</td>
-                <td>7</td>
-                
-                <td>
-                <input type="text"/>
-                </td>
-                <td>
-                <input type="button" value="Enter"/>
-                </td>
-                
-            </tr>
+	return (
+		<TableContainer component={Paper}>
+			<Table>
+				<TableHead>
+					<TableRow>
+						<TableCell>Competition</TableCell>
+						<TableCell>Start</TableCell>
+						<TableCell>End</TableCell>
+						<TableCell>Number of problems</TableCell>
+						<TableCell>Passcode</TableCell>
+						<TableCell></TableCell>
+					</TableRow>
+				</TableHead>
+				<TableBody>
+					<TableRow>
+						<TableCell>First Competition</TableCell>
+						<TableCell>15/02/2021 15:45</TableCell>
+						<TableCell>15/02/2021 18:45</TableCell>
+						<TableCell>5</TableCell>
+						<TableCell>
+							<TextField defaultValue="code" />
+						</TableCell>
+						<TableCell>
+							<Button variant="contained">Enter</Button>
+						</TableCell>
+					</TableRow>
+					<TableRow>
+						<TableCell>Second Competition no passcode</TableCell>
+						<TableCell>15/02/2021 15:45</TableCell>
+						<TableCell>15/02/2021 18:45</TableCell>
+						<TableCell>7</TableCell>
+						<TableCell>
+							<TextField />
+						</TableCell>
+						<TableCell>
+							<Button variant="contained">Enter</Button>
+						</TableCell>
+					</TableRow>
+					<TableRow>
+						<TableCell>Third Competition</TableCell>
+						<TableCell>15/02/2021 15:45</TableCell>
+						<TableCell>15/02/2021 18:45</TableCell>
+						<TableCell>5</TableCell>
+						<TableCell>
+							<TextField />
+						</TableCell>
+						<TableCell>
+							<Button variant="contained">Enter</Button>
+						</TableCell>
+					</TableRow>
+					<TableRow>
+						<TableCell>Fourth Competition</TableCell>
+						<TableCell>15/02/2021 15:45</TableCell>
+						<TableCell>15/02/2021 18:45</TableCell>
+						<TableCell>5</TableCell>
+						<TableCell>
+							<TextField />
+						</TableCell>
+						<TableCell>
+							<Button variant="contained">Enter</Button>
+						</TableCell>
+					</TableRow>
+				</TableBody>
+			</Table>
+		</TableContainer>
+	);
+};
 
-            <tr>
-                <th scope="row">third Competition</th>
-                <td>15/02/2021  15:45</td>
-                <td>15/02/2021  18:45</td>
-                <td>5</td>
-                
-                <td>
-                <input type="text"/>
-                </td>
-                <td>
-                <input type="button" value="Enter"/>
-                </td>
-                
-            </tr>
-
-
-            <tr>
-                <th scope="row">fourth Competition</th>
-                <td>15/02/2021  15:45</td>
-                <td>15/02/2021  18:45</td>
-                <td>5</td>
-                
-                <td>
-                <input type="text"/>
-                </td>
-                <td>
-                <input type="button" value="Enter"/>
-                </td>
-                
-            </tr>
-
-
-            
-            </tbody>
-        </table>
-)}
 export default Contest;
