@@ -1,14 +1,11 @@
-import axios from "axios";
+import axios from 'axios';
 
-const API_URL = "https://restcountries.com/v3.1/";
-
-
+const API_URL = 'https://restcountries.com/v3.1/';
 
 const GetAllCounties = () => {
-  return  axios.get(API_URL+"all");
-}
-
+	return axios.get(API_URL + 'all');
+};
 
 export default {
-    GetAllCounties
+	GetAllCounties,
 };

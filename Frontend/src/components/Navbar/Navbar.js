@@ -1,137 +1,137 @@
-import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
-import {Button } from 'react-bootstrap';
-import "./Navbar.css";
-import Dropdown from "./Dropdown";
-import AuthService from "../../services/auth.service";
-import EventBus from "../../common/EventBus";
-import userImg from "./user.svg";
-import dropIcon from "./icons8-down-10.png"
+import React, { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
+import { Button, AppBar, Toolbar, Typography, Menu, MenuItem, IconButton } from '@mui/material';
+import AccountCircle from '@mui/icons-material/AccountCircle';
+import AuthService from '../../services/auth.service';
+import EventBus from '../../common/EventBus';
 
 function Navbar() {
-  const [dropdown, setDropdown] = useState(false);
-  const [showModeratorBoard, setShowModeratorBoard] = useState(false);
-  const [showAdminBoard, setShowAdminBoard] = useState(false);
-  const [currentUser, setCurrentUser] = useState(undefined);
-  const [switchInOut, setSwitchInOut] = useState(false);
-  const [actives, setActives] = useState('home');
+	const [anchorEl, setAnchorEl] = useState(null);
+	const [showModeratorBoard, setShowModeratorBoard] = useState(false);
+	const [showAdminBoard, setShowAdminBoard] = useState(false);
+	const [currentUser, setCurrentUser] = useState(undefined);
+	const [actives, setActives] = useState('home');
 
-  const Drop = () =>{setSwitchInOut(!switchInOut);}
+	useEffect(() => {
+		const user = AuthService.getCurrentUser();
 
-  
-  useEffect(() => {
-    const user = AuthService.getCurrentUser();
+		if (user) {
+			setCurrentUser(user);
+			setShowModeratorBoard(user.roles.includes('ROLE_MODERATOR'));
+			setShowAdminBoard(user.roles.includes('ROLE_ADMIN'));
+		}
 
-    if (user) {
-      setCurrentUser(user);
-      setShowModeratorBoard(user.roles.includes("ROLE_MODERATOR"));
-      setShowAdminBoard(user.roles.includes("ROLE_ADMIN"));
-    }
+		EventBus.on('logout', () => {
+			logOut();
+		});
 
-    EventBus.on("logout", () => {
-      logOut();
-    });
+		return () => {
+			EventBus.remove('logout');
+		};
+	}, []);
 
-    return () => {
-      EventBus.remove("logout");
-    };
-  }, []);
+	const logOut = () => {
+		AuthService.logout();
+		setShowModeratorBoard(false);
+		setShowAdminBoard(false);
+		setCurrentUser(undefined);
+	};
 
-  const logOut = () => {
-    AuthService.logout();
-    setShowModeratorBoard(false);
-    setShowAdminBoard(false);
-    setCurrentUser(undefined);
-  };
-  return (
-    <>
-      <nav className="navbar rounded">
-        <Link to="/" className="navbar-logo"style={{textDecoration: 'none'}} >
-        Battle Of Code 
-        </Link>
-        <div className="nav-items">
-                <li className="nav-item " >
-                    <Link to={"/home"} id={actives != 'home' ? "" : "active"} onClick={()=>{setActives("home")}} className="nav-link">
-                        Home
-                    </Link>
-                </li>
+	const handleMenu = (event) => {
+		setAnchorEl(event.currentTarget);
+	};
 
-                {showAdminBoard && (
-                    <li className="nav-item">
-                        <Link to={"/admin"} id={actives != 'admin' ? "" : "active"} onClick={()=>setActives("admin")} className="nav-link">
-                            Admin Board
-                        </Link>
-                    </li>
-                )}
+	const handleClose = () => {
+		setAnchorEl(null);
+	};
 
-                {showAdminBoard && (
-                    <li className="nav-item">
-                        <Link to={"/createProb"}  id={actives != 'createproblem' ? "" : "active"} onClick={()=>setActives("createproblem")}className="nav-link">
-                            Create Problem
-                        </Link>
-                    </li>
-                )}
-
-                <li className="nav-item">
-                    <Link to={"/contest"}  id={actives != 'contest' ? "" : "active"} onClick={()=>setActives("contest")}className="nav-link">
-                        Contests
-                    </Link>
-
-                </li>
-                <li className="nav-item">
-                    <Link to={"/standings"}  id={actives != 'standings' ? "" : "active"} onClick={()=>setActives("standings")}className="nav-link">
-                        Standings
-                    </Link>
-                </li>
-        </div>
-            {currentUser ? (
-                <div className="nav-last">
-                    <li className="nav-item">
-                    
-                        <Link className="nav-link"  onClick = {Drop}>
-                                <img src = {userImg}></img>
-                                <span>       </span>
-                                <img src={dropIcon}></img> 
-                        </Link>
-                                     
-                        {
-                            !switchInOut ? <></>:
-                            <div className="drop-down">
-                                <li className="nav-item">
-                                    <Link to={"/profile"} className="nav-link" onClick={()=>{Drop() ;setActives("")}}>
-                                    {currentUser.username}
-                                    </Link>
-                                </li>
-                                <li className="nav-item">
-                                    <Link to={"/login"} className="nav-link" onClick={()=>{logOut(); setActives("")}}>
-                                        Logout
-                                    </Link>
-                                </li>
-                            </div>
-
-                        }
-                    </li>
-                    {/**/}
-                </div>
-            ) : (
-                <div className="nav-last">
-                    <li className="nav-item">
-                        <Link to={"/login"} className="nav-link">
-                        <Button variant="light">Login</Button> 
-                        </Link>
-                    </li>
-
-                    <li className="nav-last">
-                        <Link to={"/register"} className="nav-link">
-                        <Button variant="light">Sign up</Button> 
-                        </Link>
-                    </li>
-                </div>
-            )}
-        
-      </nav>
-    </>
-  );
+	return (
+		<AppBar position="static">
+			<Toolbar>
+				<Typography variant="h6" component={Link} to="/" style={{ textDecoration: 'none', color: 'inherit' }}>
+					Battle Of Code
+				</Typography>
+				<div className="nav-items">
+					<Button component={Link} to="/home" color="inherit" onClick={() => setActives('home')}>
+						Home
+					</Button>
+					{showAdminBoard && (
+						<>
+							<Button component={Link} to="/admin" color="inherit" onClick={() => setActives('admin')}>
+								Admin Board
+							</Button>
+							<Button
+								component={Link}
+								to="/createProb"
+								color="inherit"
+								onClick={() => setActives('createproblem')}
+							>
+								Create Problem
+							</Button>
+						</>
+					)}
+					<Button component={Link} to="/contest" color="inherit" onClick={() => setActives('contest')}>
+						Contests
+					</Button>
+					<Button component={Link} to="/standings" color="inherit" onClick={() => setActives('standings')}>
+						Standings
+					</Button>
+				</div>
+				{currentUser ? (
+					<div className="nav-last">
+						<IconButton
+							edge="end"
+							aria-label="account of current user"
+							aria-controls="menu-appbar"
+							aria-haspopup="true"
+							onClick={handleMenu}
+							color="inherit"
+						>
+							<AccountCircle />
+						</IconButton>
+						<Menu
+							id="menu-appbar"
+							anchorEl={anchorEl}
+							anchorOrigin={{
+								vertical: 'top',
+								horizontal: 'right',
+							}}
+							keepMounted
+							transformOrigin={{
+								vertical: 'top',
+								horizontal: 'right',
+							}}
+							open={Boolean(anchorEl)}
+							onClose={handleClose}
+						>
+							<MenuItem component={Link} to="/profile" onClick={handleClose}>
+								{currentUser.username}
+							</MenuItem>
+							<MenuItem
+								component={Link}
+								to="/login"
+								onClick={() => {
+									logOut();
+									handleClose();
+								}}
+							>
+								Logout
+							</MenuItem>
+						</Menu>
+					</div>
+				) : (
+					<div className="nav-last">
+						<Button component={Link} to="/login" color="inherit">
+							Login
+						</Button>
+						<Button component={Link} to="/register" color="inherit">
+							Sign up
+						</Button>
+					</div>
+				)}
+			</Toolbar>
+		</AppBar>
+	);
 }
 
 export default Navbar;
