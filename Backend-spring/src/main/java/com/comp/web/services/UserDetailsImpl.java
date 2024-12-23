@@ -1,4 +1,4 @@
-package com.comp.web.security.services;
+package com.comp.web.services;
 
 import java.util.Collection;
 import java.util.List;

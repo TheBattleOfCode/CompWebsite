@@ -1,4 +1,4 @@
-package com.comp.web.payload.response;
+package com.comp.web.exception;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -7,8 +7,9 @@ import lombok.Setter;
 
 @Getter
 @Setter
-@NoArgsConstructor
 @AllArgsConstructor
-public class MessageResponse {
-	private String message;
+@NoArgsConstructor
+public class ErrorDetails {
+    private String field;
+    private String issue;
 }
