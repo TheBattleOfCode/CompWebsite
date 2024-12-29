@@ -11,17 +11,14 @@ import Login from './components/Login';
 import Register from './components/Register';
 import Home from './components/Home';
 import Profile from './components/Profile';
-import BoardUser from './components/BoardUser';
-import BoardModerator from './components/BoardModerator';
-import BoardAdmin from './components/AdminBoard/BoardAdmin';
 import CreateProblem from './components/CreateProblem';
 import ProbNumberGen from './components/ProbNumberGen';
-import Contest from './components/Contest';
 import Standings from './components/Standings';
 import TestProfile from './components/testProfile';
 import Navbar from './components/Navbar/Navbar';
 
 import EventBus from './common/EventBus';
+import Navbar2 from './components/Navbar/Navbar2';
 
 const App = () => {
 	const [showModeratorBoard, setShowModeratorBoard] = useState(false);
@@ -30,12 +27,15 @@ const App = () => {
 
 	const theme = createTheme({
 		palette: {
-			mode: 'light',
+			mode: 'dark',
 			primary: {
-				main: '#e65100',
+				main: '#1976d2',
 			},
 			secondary: {
-				main: '#f50057',
+				main: '#9c27b0',
+			},
+			success: {
+				main: '#66bb6a',
 			},
 			default: {
 				main: grey[300],
@@ -72,17 +72,14 @@ const App = () => {
 	return (
 		<ThemeProvider theme={theme}>
 			<CssBaseline />
-			<Navbar />
+			{/* <Navbar /> */}
+			<Navbar2 />
 			<Container>
 				<Switch>
 					<Route exact path={['/', '/home']} component={Home} />
 					<Route exact path="/login" component={Login} />
 					<Route exact path="/register" component={Register} />
 					<Route exact path="/profile" component={Profile} />
-					<Route path="/user" component={BoardUser} />
-					<Route path="/mod" component={BoardModerator} />
-					<Route path="/admin" component={BoardAdmin} />
-					<Route exact path="/contest" component={Contest} />
 					<Route exact path="/standings" component={Standings} />
 					<Route exact path="/createProb" component={CreateProblem} />
 					<Route exact path="/ProbNumberGen/:id" component={ProbNumberGen} />
