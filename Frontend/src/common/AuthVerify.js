@@ -1,6 +1,12 @@
 import React from 'react';
 import { withRouter } from 'react-router-dom';
 
+/**
+ * Parse the JWT token to get the expiration date
+ *
+ * @param {string} token
+ * @return {object}
+ */
 const parseJwt = (token) => {
 	try {
 		return JSON.parse(atob(token.split('.')[1]));
@@ -9,6 +15,12 @@ const parseJwt = (token) => {
 	}
 };
 
+/**
+ * Verify if the user is logged in
+ *
+ * @param {object} props
+ * @return {object} React component
+ */
 const AuthVerify = (props) => {
 	props.history.listen(() => {
 		const user = JSON.parse(localStorage.getItem('user'));
