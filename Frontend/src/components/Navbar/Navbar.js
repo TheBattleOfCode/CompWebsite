@@ -1,131 +1,170 @@
-import React, { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
-import { Button, AppBar, Toolbar, Typography, Menu, MenuItem, IconButton } from '@mui/material';
-import AccountCircle from '@mui/icons-material/AccountCircle';
+import React, { useState } from 'react';
+import AppBar from '@mui/material/AppBar';
+import Box from '@mui/material/Box';
+import Toolbar from '@mui/material/Toolbar';
+import IconButton from '@mui/material/IconButton';
+import Typography from '@mui/material/Typography';
+import Menu from '@mui/material/Menu';
+import MenuIcon from '@mui/icons-material/Menu';
+import Container from '@mui/material/Container';
+import Avatar from '@mui/material/Avatar';
+import Button from '@mui/material/Button';
+import Tooltip from '@mui/material/Tooltip';
+import MenuItem from '@mui/material/MenuItem';
+import AdbIcon from '@mui/icons-material/Adb';
+import { Link, useHistory } from 'react-router-dom';
 import AuthService from '../../services/auth.service';
-import EventBus from '../../common/EventBus';
+
+const pages = [
+	{ ScreenName: 'Problems', link: '/home' },
+	{ ScreenName: 'Create Problem', link: '/createProb' },
+	{ ScreenName: 'Standings', link: '/standings' },
+];
+const settings = ['Profile', 'Logout'];
 
 function Navbar() {
-	const [anchorEl, setAnchorEl] = useState(null);
-	const [showModeratorBoard, setShowModeratorBoard] = useState(false);
-	const [showAdminBoard, setShowAdminBoard] = useState(false);
-	const [currentUser, setCurrentUser] = useState(undefined);
+	const [anchorElNav, setAnchorElNav] = useState(null);
+	const [anchorElUser, setAnchorElUser] = useState(null);
 	const [actives, setActives] = useState('home');
 
-	useEffect(() => {
-		const user = AuthService.getCurrentUser();
+	const currentUser = AuthService.getCurrentUser();
+	const isAdmin = currentUser?.roles.includes('ROLE_ADMIN');
+	const history = useHistory();
 
-		if (user) {
-			setCurrentUser(user);
-			setShowModeratorBoard(user.roles.includes('ROLE_MODERATOR'));
-			setShowAdminBoard(user.roles.includes('ROLE_ADMIN'));
-		}
-
-		EventBus.on('logout', () => {
-			logOut();
-		});
-
-		return () => {
-			EventBus.remove('logout');
-		};
-	}, []);
-
-	const logOut = () => {
-		AuthService.logout();
-		setShowModeratorBoard(false);
-		setShowAdminBoard(false);
-		setCurrentUser(undefined);
+	const handleOpenNavMenu = (event) => {
+		setAnchorElNav(event.currentTarget);
+	};
+	const handleOpenUserMenu = (event) => {
+		setAnchorElUser(event.currentTarget);
 	};
 
-	const handleMenu = (event) => {
-		setAnchorEl(event.currentTarget);
+	const handleCloseNavMenu = () => {
+		setAnchorElNav(null);
 	};
 
-	const handleClose = () => {
-		setAnchorEl(null);
+	const handleCloseUserMenu = () => {
+		setAnchorElUser(null);
 	};
 
 	return (
 		<AppBar position="static">
-			<Toolbar>
-				<Typography variant="h6" component={Link} to="/" style={{ textDecoration: 'none', color: 'inherit' }}>
-					Battle Of Code
-				</Typography>
-				<div className="nav-items">
-					<Button component={Link} to="/home" color="inherit" onClick={() => setActives('home')}>
-						Home
-					</Button>
-					{showAdminBoard && (
-						<>
-							<Button
-								component={Link}
-								to="/createProb"
-								color="inherit"
-								onClick={() => setActives('createproblem')}
-							>
-								Create Problem
-							</Button>
-						</>
-					)}
-					<Button component={Link} to="/standings" color="inherit" onClick={() => setActives('standings')}>
-						Standings
-					</Button>
-				</div>
-				{currentUser ? (
-					<div className="nav-last">
+			<Container maxWidth="xl">
+				<Toolbar disableGutters>
+					<AdbIcon sx={{ display: { xs: 'none', md: 'flex' }, mr: 1 }} />
+					<Typography
+						sx={{
+							mr: 2,
+							display: { xs: 'none', md: 'flex' },
+							fontFamily: 'monospace',
+							fontWeight: 700,
+							letterSpacing: '.3rem',
+							color: 'inherit',
+							textDecoration: 'none',
+						}}
+						variant="h6"
+						noWrap
+						component="a"
+						href="#app-bar-with-responsive-menu"
+					>
+						Battle of Code
+					</Typography>
+					<Box sx={{ flexGrow: 1, display: { xs: 'flex', md: 'none' } }}>
 						<IconButton
-							edge="end"
+							size="large"
 							aria-label="account of current user"
 							aria-controls="menu-appbar"
 							aria-haspopup="true"
-							onClick={handleMenu}
+							onClick={handleOpenNavMenu}
 							color="inherit"
 						>
-							<AccountCircle />
+							<MenuIcon />
 						</IconButton>
 						<Menu
 							id="menu-appbar"
-							anchorEl={anchorEl}
-							anchorOrigin={{
-								vertical: 'top',
-								horizontal: 'right',
-							}}
+							anchorEl={anchorElNav}
+							anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }}
 							keepMounted
-							transformOrigin={{
-								vertical: 'top',
-								horizontal: 'right',
-							}}
-							open={Boolean(anchorEl)}
-							onClose={handleClose}
+							transformOrigin={{ vertical: 'top', horizontal: 'left' }}
+							open={Boolean(anchorElNav)}
+							onClose={handleCloseNavMenu}
+							sx={{ display: { xs: 'block', md: 'none' } }}
 						>
-							<MenuItem component={Link} to="/profile" onClick={handleClose}>
-								{currentUser.username}
-							</MenuItem>
-							<MenuItem
-								component={Link}
-								to="/login"
-								onClick={() => {
-									logOut();
-									handleClose();
-								}}
-							>
-								Logout
-							</MenuItem>
+							{pages.map(({ ScreenName, link }) => (
+								<MenuItem
+									key={ScreenName}
+									onClick={() => {
+										history.push(link);
+										handleCloseNavMenu();
+									}}
+								>
+									<Typography textAlign="center">{ScreenName}</Typography>
+								</MenuItem>
+							))}
 						</Menu>
-					</div>
-				) : (
-					<div className="nav-last">
-						<Button component={Link} to="/login" color="inherit">
-							Login
-						</Button>
-						<Button component={Link} to="/register" color="inherit">
-							Sign up
-						</Button>
-					</div>
-				)}
-			</Toolbar>
+					</Box>
+					<AdbIcon sx={{ display: { xs: 'flex', md: 'none' }, mr: 1 }} />
+					<Typography
+						sx={{
+							mr: 2,
+							display: { xs: 'flex', md: 'none' },
+							flexGrow: 1,
+							fontFamily: 'monospace',
+							fontWeight: 700,
+							letterSpacing: '.3rem',
+							color: 'inherit',
+							textDecoration: 'none',
+						}}
+						variant="h5"
+						noWrap
+						component="a"
+						href="#app-bar-with-responsive-menu"
+					>
+						Battle of Code
+					</Typography>
+					<Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
+						{currentUser &&
+							pages.map(({ ScreenName, link }) => (
+								<Button
+									key={ScreenName}
+									onClick={() => {
+										history.push(link);
+										handleCloseNavMenu();
+									}}
+									sx={{ my: 2, color: 'white', display: 'block' }}
+								>
+									<Typography>{ScreenName}</Typography>
+								</Button>
+							))}
+					</Box>
+
+					{currentUser && (
+						<Box sx={{ flexGrow: 0 }}>
+							<Tooltip title="Open settings">
+								<IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
+									<Avatar alt="Remy Sharp" src="/static/images/avatar/2.jpg" />
+								</IconButton>
+							</Tooltip>
+							<Menu
+								sx={{ mt: '45px' }}
+								id="menu-appbar"
+								anchorEl={anchorElUser}
+								anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+								keepMounted
+								transformOrigin={{ vertical: 'top', horizontal: 'right' }}
+								open={Boolean(anchorElUser)}
+								onClose={handleCloseUserMenu}
+							>
+								{settings.map((setting) => (
+									<MenuItem key={setting} onClick={handleCloseUserMenu}>
+										<Typography textAlign="center">{setting}</Typography>
+									</MenuItem>
+								))}
+							</Menu>
+						</Box>
+					)}
+				</Toolbar>
+			</Container>
 		</AppBar>
 	);
 }
-
 export default Navbar;

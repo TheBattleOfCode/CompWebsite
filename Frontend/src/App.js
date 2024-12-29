@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Switch, Route } from 'react-router-dom';
+import { Switch, Route, Redirect } from 'react-router-dom';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import { grey } from '@mui/material/colors';
 import CssBaseline from '@mui/material/CssBaseline';
@@ -15,15 +15,15 @@ import CreateProblem from './components/CreateProblem';
 import ProbNumberGen from './components/ProbNumberGen';
 import Standings from './components/Standings';
 import TestProfile from './components/testProfile';
-import Navbar from './components/Navbar/Navbar';
 
 import EventBus from './common/EventBus';
-import Navbar2 from './components/Navbar/Navbar2';
+import Navbar from './components/Navbar/Navbar';
 
 const App = () => {
 	const [showModeratorBoard, setShowModeratorBoard] = useState(false);
 	const [showAdminBoard, setShowAdminBoard] = useState(false);
-	const [currentUser, setCurrentUser] = useState(undefined);
+	const [currentUser,
+		setCurrentUser] = useState(null);
 
 	const theme = createTheme({
 		palette: {
@@ -41,6 +41,9 @@ const App = () => {
 				main: grey[300],
 				dark: grey[400],
 			},
+		},
+		typography: {
+			useNextVariants: true,
 		},
 	});
 
@@ -66,14 +69,13 @@ const App = () => {
 		AuthService.logout();
 		setShowModeratorBoard(false);
 		setShowAdminBoard(false);
-		setCurrentUser(undefined);
+		setCurrentUser(null);
 	};
 
 	return (
 		<ThemeProvider theme={theme}>
 			<CssBaseline />
-			{/* <Navbar /> */}
-			<Navbar2 />
+			<Navbar />
 			<Container>
 				<Switch>
 					<Route exact path={['/', '/home']} component={Home} />
@@ -84,6 +86,8 @@ const App = () => {
 					<Route exact path="/createProb" component={CreateProblem} />
 					<Route exact path="/ProbNumberGen/:id" component={ProbNumberGen} />
 					<Route exact path={'/TestProfile'} component={TestProfile} />
+
+					{!currentUser && <Redirect to="/login" />}
 				</Switch>
 			</Container>
 		</ThemeProvider>
