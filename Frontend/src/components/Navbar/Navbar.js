@@ -57,9 +57,6 @@ function Navbar() {
 					</Button>
 					{showAdminBoard && (
 						<>
-							<Button component={Link} to="/admin" color="inherit" onClick={() => setActives('admin')}>
-								Admin Board
-							</Button>
 							<Button
 								component={Link}
 								to="/createProb"
@@ -70,9 +67,6 @@ function Navbar() {
 							</Button>
 						</>
 					)}
-					<Button component={Link} to="/contest" color="inherit" onClick={() => setActives('contest')}>
-						Contests
-					</Button>
 					<Button component={Link} to="/standings" color="inherit" onClick={() => setActives('standings')}>
 						Standings
 					</Button>
