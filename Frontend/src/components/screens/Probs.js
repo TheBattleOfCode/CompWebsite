@@ -11,7 +11,7 @@ export default function Prob({ prob }) {
 	const [Acceptance, setAcceptance] = useState('Not played yet');
 
 	const getGenProbs = async () => {
-		const inOutlocal = genProblemService.GetGenProb(currentUser.id, prob._id);
+		const inOutlocal = genProblemService.GetGenProb(currentUser?.id, prob._id);
 		setInOut(await inOutlocal);
 	};
 
