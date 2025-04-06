@@ -90,6 +90,34 @@ npm run prettier:check
 npm run prettier:write
 ```
 
+### Testing
+
+```bash
+# Run tests in watch mode
+npm test
+
+# Run tests with coverage report
+npm run test:coverage
+```
+
+The project uses Jest and React Testing Library for unit testing. Tests are located next to the files they test with a `.test.js` suffix.
+
+#### Test Structure
+
+- `src/setupTests.js` - Global test setup
+- `src/utils/test-utils.js` - Custom render function and test utilities
+- Component tests - Located in the same folder as the component
+- Service tests - Located in the same folder as the service
+
+#### Coverage Thresholds
+
+The project aims for at least 50% code coverage across:
+
+- Statements
+- Branches
+- Functions
+- Lines
+
 ## Project Structure
 
 ```text
