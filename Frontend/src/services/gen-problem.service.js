@@ -12,6 +12,7 @@ const SaveGenProb = (genInput, genOutput, userId, problemId) => {
 };
 
 const GetGenProb = (idUser, idGenProb) => {
+	// eslint-disable-next-line no-console
 	console.log(idUser, idGenProb);
 	return axios.get(API_URL + 'getOne/' + idUser + '/' + idGenProb);
 };

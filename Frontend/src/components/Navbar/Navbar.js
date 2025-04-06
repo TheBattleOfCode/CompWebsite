@@ -12,28 +12,31 @@ import Button from '@mui/material/Button';
 import Tooltip from '@mui/material/Tooltip';
 import MenuItem from '@mui/material/MenuItem';
 import AdbIcon from '@mui/icons-material/Adb';
-import { Link, useHistory } from 'react-router-dom';
-import AuthService from '../../services/auth.service';
+import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings';
+import { useHistory, useLocation } from 'react-router-dom';
+import PropTypes from 'prop-types';
 
-const pages = [
-	{ ScreenName: 'Problems', link: '/home' },
-	{ ScreenName: 'Create Problem', link: '/createProb' },
-	{ ScreenName: 'Standings', link: '/standings' },
+// Define navigation items
+const publicPages = [
+	{ screenName: 'Problems', link: '/home' },
+	{ screenName: 'Standings', link: '/standings' },
 ];
-const settings = ['Profile', 'Logout'];
 
-function Navbar() {
+const adminPages = [{ screenName: 'Create Problem', link: '/createProb', adminOnly: true }];
+
+function Navbar({ currentUser, logOut, isAdmin }) {
 	const [anchorElNav, setAnchorElNav] = useState(null);
 	const [anchorElUser, setAnchorElUser] = useState(null);
-	const [actives, setActives] = useState('home');
-
-	const currentUser = AuthService.getCurrentUser();
-	const isAdmin = currentUser?.roles.includes('ROLE_ADMIN');
 	const history = useHistory();
+	const location = useLocation();
+
+	// Combine pages based on user role
+	const availablePages = [...publicPages, ...(isAdmin ? adminPages : [])];
 
 	const handleOpenNavMenu = (event) => {
 		setAnchorElNav(event.currentTarget);
 	};
+
 	const handleOpenUserMenu = (event) => {
 		setAnchorElUser(event.currentTarget);
 	};
@@ -46,12 +49,41 @@ function Navbar() {
 		setAnchorElUser(null);
 	};
 
+	const handleUserMenuAction = (setting) => {
+		handleCloseUserMenu();
+
+		if (setting === 'Profile') {
+			history.push('/profile');
+		} else if (setting === 'Logout') {
+			logOut();
+			history.push('/login');
+		}
+	};
+
+	const handleNavigation = (link) => {
+		history.push(link);
+		handleCloseNavMenu();
+	};
+
+	// Check if a nav item is active
+	const isActive = (path) => {
+		if (path === '/home' && (location.pathname === '/' || location.pathname === '/home')) {
+			return true;
+		}
+		return location.pathname === path;
+	};
+
 	return (
 		<AppBar position="static">
 			<Container maxWidth="xl">
 				<Toolbar disableGutters>
+					{/* Logo - Desktop */}
 					<AdbIcon sx={{ display: { xs: 'none', md: 'flex' }, mr: 1 }} />
 					<Typography
+						variant="h6"
+						noWrap
+						component="a"
+						onClick={() => history.push('/')}
 						sx={{
 							mr: 2,
 							display: { xs: 'none', md: 'flex' },
@@ -60,18 +92,17 @@ function Navbar() {
 							letterSpacing: '.3rem',
 							color: 'inherit',
 							textDecoration: 'none',
+							cursor: 'pointer',
 						}}
-						variant="h6"
-						noWrap
-						component="a"
-						href="#app-bar-with-responsive-menu"
 					>
 						Battle of Code
 					</Typography>
+
+					{/* Mobile Menu */}
 					<Box sx={{ flexGrow: 1, display: { xs: 'flex', md: 'none' } }}>
 						<IconButton
 							size="large"
-							aria-label="account of current user"
+							aria-label="menu"
 							aria-controls="menu-appbar"
 							aria-haspopup="true"
 							onClick={handleOpenNavMenu}
@@ -89,21 +120,36 @@ function Navbar() {
 							onClose={handleCloseNavMenu}
 							sx={{ display: { xs: 'block', md: 'none' } }}
 						>
-							{pages.map(({ ScreenName, link }) => (
-								<MenuItem
-									key={ScreenName}
-									onClick={() => {
-										history.push(link);
-										handleCloseNavMenu();
-									}}
-								>
-									<Typography textAlign="center">{ScreenName}</Typography>
-								</MenuItem>
-							))}
+							{currentUser &&
+								availablePages.map(({ screenName, link }) => (
+									<MenuItem
+										key={screenName}
+										onClick={() => handleNavigation(link)}
+										selected={isActive(link)}
+									>
+										<Typography textAlign="center">{screenName}</Typography>
+									</MenuItem>
+								))}
+							{!currentUser && (
+								<>
+									<MenuItem onClick={() => handleNavigation('/login')}>
+										<Typography textAlign="center">Login</Typography>
+									</MenuItem>
+									<MenuItem onClick={() => handleNavigation('/register')}>
+										<Typography textAlign="center">Register</Typography>
+									</MenuItem>
+								</>
+							)}
 						</Menu>
 					</Box>
+
+					{/* Logo - Mobile */}
 					<AdbIcon sx={{ display: { xs: 'flex', md: 'none' }, mr: 1 }} />
 					<Typography
+						variant="h5"
+						noWrap
+						component="a"
+						onClick={() => history.push('/')}
 						sx={{
 							mr: 2,
 							display: { xs: 'flex', md: 'none' },
@@ -113,35 +159,82 @@ function Navbar() {
 							letterSpacing: '.3rem',
 							color: 'inherit',
 							textDecoration: 'none',
+							cursor: 'pointer',
 						}}
-						variant="h5"
-						noWrap
-						component="a"
-						href="#app-bar-with-responsive-menu"
 					>
 						Battle of Code
 					</Typography>
+
+					{/* Desktop Menu */}
 					<Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
 						{currentUser &&
-							pages.map(({ ScreenName, link }) => (
+							availablePages.map(({ screenName, link, adminOnly }) => (
 								<Button
-									key={ScreenName}
-									onClick={() => {
-										history.push(link);
-										handleCloseNavMenu();
+									key={screenName}
+									onClick={() => handleNavigation(link)}
+									sx={{
+										my: 2,
+										color: 'white',
+										display: 'flex',
+										alignItems: 'center',
+										backgroundColor: isActive(link) ? 'rgba(255, 255, 255, 0.1)' : 'transparent',
+										'&:hover': {
+											backgroundColor: isActive(link)
+												? 'rgba(255, 255, 255, 0.2)'
+												: 'rgba(255, 255, 255, 0.1)',
+										},
 									}}
-									sx={{ my: 2, color: 'white', display: 'block' }}
+									startIcon={adminOnly ? <AdminPanelSettingsIcon /> : null}
 								>
-									<Typography>{ScreenName}</Typography>
+									{screenName}
 								</Button>
 							))}
+						{!currentUser && (
+							<>
+								<Button
+									onClick={() => handleNavigation('/login')}
+									sx={{
+										my: 2,
+										color: 'white',
+										display: 'block',
+										backgroundColor: isActive('/login')
+											? 'rgba(255, 255, 255, 0.1)'
+											: 'transparent',
+									}}
+								>
+									Login
+								</Button>
+								<Button
+									onClick={() => handleNavigation('/register')}
+									sx={{
+										my: 2,
+										color: 'white',
+										display: 'block',
+										backgroundColor: isActive('/register')
+											? 'rgba(255, 255, 255, 0.1)'
+											: 'transparent',
+									}}
+								>
+									Register
+								</Button>
+							</>
+						)}
 					</Box>
 
+					{/* User Menu */}
 					{currentUser && (
-						<Box sx={{ flexGrow: 0 }}>
+						<Box sx={{ flexGrow: 0, display: 'flex', alignItems: 'center' }}>
+							{isAdmin && (
+								<Tooltip title="Admin">
+									<AdminPanelSettingsIcon sx={{ mr: 1, color: 'secondary.main' }} />
+								</Tooltip>
+							)}
 							<Tooltip title="Open settings">
 								<IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-									<Avatar alt="Remy Sharp" src="/static/images/avatar/2.jpg" />
+									<Avatar
+										alt={currentUser.username}
+										src={currentUser.profilePicture || '/static/images/avatar/2.jpg'}
+									/>
 								</IconButton>
 							</Tooltip>
 							<Menu
@@ -154,11 +247,12 @@ function Navbar() {
 								open={Boolean(anchorElUser)}
 								onClose={handleCloseUserMenu}
 							>
-								{settings.map((setting) => (
-									<MenuItem key={setting} onClick={handleCloseUserMenu}>
-										<Typography textAlign="center">{setting}</Typography>
-									</MenuItem>
-								))}
+								<MenuItem onClick={() => handleUserMenuAction('Profile')}>
+									<Typography textAlign="center">Profile</Typography>
+								</MenuItem>
+								<MenuItem onClick={() => handleUserMenuAction('Logout')}>
+									<Typography textAlign="center">Logout</Typography>
+								</MenuItem>
 							</Menu>
 						</Box>
 					)}
@@ -167,4 +261,15 @@ function Navbar() {
 		</AppBar>
 	);
 }
+
+Navbar.propTypes = {
+	currentUser: PropTypes.object,
+	logOut: PropTypes.func.isRequired,
+	isAdmin: PropTypes.bool,
+};
+
+Navbar.defaultProps = {
+	isAdmin: false,
+};
+
 export default Navbar;

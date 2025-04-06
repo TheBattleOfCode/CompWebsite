@@ -1,97 +1,145 @@
-## React Hooks: JWT Authentication (without Redux) example
+# Battle of Code - Frontend
 
-For more detail, please visit:
-> [React Hooks: JWT Authentication & Authorization (without Redux) example](https://bezkoder.com/react-hooks-jwt-auth/)
+A competitive coding platform where users can solve programming challenges, track their progress, and compete with others.
 
-> [React Redux Login, Logout, Registration example with Hooks](https://bezkoder.com/react-hooks-redux-login-registration-example/)
+## Features
 
-> [React (Components) JWT Authentication & Authorization example](https://bezkoder.com/react-jwt-auth/)
+- **User Authentication**: Secure login and registration system with JWT
+- **Problem Solving**: Various types of programming challenges (Number Generator, Q&A, General)
+- **User Profiles**: Customizable profiles with personal information and statistics
+- **Leaderboards**: Track your progress against other users
+- **Admin Panel**: Create and manage problems (admin-only access)
+- **Responsive Design**: Works on desktop and mobile devices
 
-Fullstack (JWT Authentication & Authorization example):
-> [React + Spring Boot](https://bezkoder.com/spring-boot-react-jwt-auth/)
+## Tech Stack
 
-> [React + Node.js Express](https://bezkoder.com/react-express-authentication-jwt/)
+- **React**: Frontend library for building user interfaces
+- **Material-UI**: React component library implementing Google's Material Design
+- **React Router**: Navigation and routing
+- **Axios**: HTTP client for API requests
+- **JWT**: Authentication using JSON Web Tokens
+- **ESLint & Prettier**: Code quality and formatting
+- **Husky**: Git hooks for pre-commit linting
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+## Prerequisites
 
-### Set port
-.env
-```
-PORT=8081
-```
+- Node.js (v14.x or higher)
+- npm (v6.x or higher)
 
-### Note:
-Open `src/services/auth-header.js` and modify `return` statement for appropriate back-end (found in the tutorial).
+## Installation
 
-```js
-export default function authHeader() {
-  const user = JSON.parse(localStorage.getItem('user'));
+1. Clone the repository:
 
-  if (user && user.accessToken) {
-    // return { Authorization: 'Bearer ' + user.accessToken }; // for Spring Boot back-end
-    return { 'x-access-token': user.accessToken };             // for Node.js Express back-end
-  } else {
-    return {};
-  }
-}
-```
+   ```bash
+   git clone <repository-url>
+   cd CompWebsite/Frontend
+   ```
 
-### Project setup
+2. Install dependencies:
 
-In the project directory, you can run:
+   ```bash
+   npm install
+   ```
 
-```
-npm install
-# or
-yarn install
-```
+3. Set up environment variables:
+   Create a `.env` file in the root directory with the following content:
 
-or
+   ```env
+   PORT=8081
+   REACT_APP_API_URL=http://localhost:8080/api
+   NODE_ENV=development
+   ```
 
-### Compiles and hot-reloads for development
+## Running the Application
 
-```
+### Development Mode
+
+```bash
 npm start
-# or
-yarn start
 ```
 
-Open [http://localhost:8081](http://localhost:8081) to view it in the browser.
+This will start the development server at [http://localhost:8081](http://localhost:8081).
 
-The page will reload if you make edits.
+### Production Build
 
-### Related Posts
-> [In-depth Introduction to JWT-JSON Web Token](https://bezkoder.com/jwt-json-web-token/)
+```bash
+npm run build
+```
 
-> [React CRUD example using Hooks](https://bezkoder.com/react-hooks-crud-axios-api/)
+This creates a production-ready build in the `build` folder.
 
-> [React Pagination using Hooks example](https://bezkoder.com/react-pagination-hooks/)
+## Code Quality
 
-> [React Hooks File Upload example](https://bezkoder.com/react-hooks-file-upload/)
+### Linting
 
-Fullstack with Node.js Express:
-> [React.js + Node.js Express + MySQL](https://bezkoder.com/react-node-express-mysql/)
+```bash
+# Run ESLint
+npm run lint
 
-> [React.js + Node.js Express + PostgreSQL](https://bezkoder.com/react-node-express-postgresql/)
+# Fix linting issues automatically
+npm run lint:fix
+```
 
-> [React.js + Node.js Express + MongoDB](https://bezkoder.com/react-node-express-mongodb-mern-stack/)
+### Formatting
 
-Fullstack with Spring Boot:
-> [React.js + Spring Boot + MySQL](https://bezkoder.com/react-spring-boot-crud/)
+```bash
+# Check formatting
+npm run prettier:check
 
-> [React.js + Spring Boot + PostgreSQL](https://bezkoder.com/spring-boot-react-postgresql/)
+# Fix formatting issues
+npm run prettier:write
+```
 
-> [React.js + Spring Boot + MongoDB](https://bezkoder.com/react-spring-boot-mongodb/)
+## Project Structure
 
-Fullstack with Django:
-> [React.js Hooks + Django Rest Framework](https://bezkoder.com/django-react-hooks/)
+```text
+Frontend/
+├── public/                 # Static files
+├── src/
+│   ├── common/             # Common utilities
+│   ├── components/         # React components
+│   │   ├── CreateProblem/  # Admin component for creating problems
+│   │   ├── Home/           # Home screen components
+│   │   ├── Login/          # Login components
+│   │   ├── Navbar/         # Navigation components
+│   │   ├── ProbNumberGen/  # Problem solving components
+│   │   ├── Profile/        # User profile components
+│   │   ├── Register/       # Registration components
+│   │   ├── Standings/      # Leaderboard components
+│   │   └── common/         # Shared components
+│   ├── services/           # API services
+│   ├── App.js              # Main application component
+│   └── index.js            # Application entry point
+├── .env                    # Environment variables
+├── .eslintrc.js            # ESLint configuration
+├── .prettierrc.json        # Prettier configuration
+└── package.json            # Project dependencies and scripts
+```
 
-Serverless:
-> [React Hooks Firebase Realtime Database: CRUD App ](https://bezkoder.com/react-firebase-hooks-crud/)
+## Authentication
 
-> [React Hooks Firestore example: CRUD App](https://bezkoder.com/react-hooks-firestore/)
+The application uses JWT (JSON Web Tokens) for authentication. When a user logs in, a token is stored in local storage and included in the headers of subsequent API requests.
 
-Integration (run back-end & front-end on same server/port)
-> [Integrate React with Spring Boot](https://bezkoder.com/integrate-reactjs-spring-boot/)
+## Role-Based Access Control
 
-> [Integrate React with Node.js Express](https://bezkoder.com/integrate-react-express-same-server-port/)
+The application implements role-based access control:
+
+- **Public routes**: Login, Register
+- **Protected routes**: Home, Profile, Standings, Problem Solving
+- **Admin-only routes**: Create Problem
+
+## API Integration
+
+The frontend communicates with a backend API. The base URL for API requests is configured in the `.env` file.
+
+## Contributing
+
+1. Make sure your code passes linting and formatting checks
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add some amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
+
+## License
+
+This project is licensed under the MIT License.

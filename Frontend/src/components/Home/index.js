@@ -1,11 +1,11 @@
 import React from 'react';
 import Container from '@mui/material/Container';
-import Homescreen from './screens/HomeScreen';
+import HomeScreen from './HomeScreen';
 
 const Home = () => {
 	return (
 		<Container>
-			<Homescreen />
+			<HomeScreen />
 		</Container>
 	);
 };
