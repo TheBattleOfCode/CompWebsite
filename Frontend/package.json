@@ -106,6 +106,9 @@
         "functions": 50,
         "lines": 50
       }
-    }
+    },
+    "testMatch": [
+      "<rootDir>/src/__tests__/**/*.test.{js,jsx}"
+    ]
   }
 }

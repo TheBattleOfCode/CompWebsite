@@ -100,14 +100,18 @@ npm test
 npm run test:coverage
 ```
 
-The project uses Jest and React Testing Library for unit testing. Tests are located next to the files they test with a `.test.js` suffix.
+The project uses Jest and React Testing Library for unit testing. All tests are centralized in the `__tests__` directory with a structure that mirrors the main source code.
 
 #### Test Structure
 
+All tests are organized in a dedicated `__tests__` directory structure that mirrors the main source code:
+
 - `src/setupTests.js` - Global test setup
-- `src/utils/test-utils.js` - Custom render function and test utilities
-- Component tests - Located in the same folder as the component
-- Service tests - Located in the same folder as the service
+- `src/__tests__/utils/test-utils.js` - Custom render function and test utilities
+- `src/__tests__/components/` - Component tests organized by feature
+- `src/__tests__/services/` - Service tests
+
+This organization keeps tests separate from implementation code while maintaining a parallel structure for easy navigation.
 
 #### Coverage Thresholds
 
@@ -124,6 +128,13 @@ The project aims for at least 50% code coverage across:
 Frontend/
 ├── public/                 # Static files
 ├── src/
+│   ├── __tests__/          # Test files
+│   │   ├── components/     # Component tests
+│   │   │   ├── Home/       # Home component tests
+│   │   │   ├── Login/      # Login component tests
+│   │   │   └── common/     # Common component tests
+│   │   ├── services/       # Service tests
+│   │   └── utils/          # Test utilities
 │   ├── common/             # Common utilities
 │   ├── components/         # React components
 │   │   ├── CreateProblem/  # Admin component for creating problems
