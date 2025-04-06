@@ -1,7 +1,7 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { Switch, Route, Redirect } from 'react-router-dom';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
-import { grey } from '@mui/material/colors';
+import { grey, blue, purple, green } from '@mui/material/colors';
 import CssBaseline from '@mui/material/CssBaseline';
 import Container from '@mui/material/Container';
 import PropTypes from 'prop-types';
@@ -55,28 +55,80 @@ const App = () => {
 	const [showAdminBoard, setShowAdminBoard] = useState(false);
 	const [currentUser, setCurrentUser] = useState(null);
 	const [loading, setLoading] = useState(true);
-
-	const theme = createTheme({
-		palette: {
-			mode: 'dark',
-			primary: {
-				main: '#1976d2',
-			},
-			secondary: {
-				main: '#9c27b0',
-			},
-			success: {
-				main: '#66bb6a',
-			},
-			default: {
-				main: grey[300],
-				dark: grey[400],
-			},
-		},
-		typography: {
-			useNextVariants: true,
-		},
+	const [mode, setMode] = useState(() => {
+		// Try to get the theme mode from localStorage
+		const savedMode = localStorage.getItem('themeMode');
+		return savedMode || 'dark';
 	});
+
+	// Create a theme instance based on the current mode
+	const theme = useMemo(
+		() =>
+			createTheme({
+				palette: {
+					mode,
+					primary: {
+						main: blue[700],
+						light: blue[400],
+						dark: blue[800],
+					},
+					secondary: {
+						main: purple[500],
+						light: purple[300],
+						dark: purple[700],
+					},
+					success: {
+						main: green[600],
+						light: green[400],
+						dark: green[800],
+					},
+					background: {
+						default: mode === 'dark' ? '#121212' : '#f5f5f5',
+						paper: mode === 'dark' ? '#1e1e1e' : '#ffffff',
+					},
+					text: {
+						primary: mode === 'dark' ? '#ffffff' : '#000000',
+						secondary: mode === 'dark' ? grey[400] : grey[700],
+					},
+				},
+				typography: {
+					fontFamily: '"Roboto", "Helvetica", "Arial", sans-serif',
+					useNextVariants: true,
+				},
+				shape: {
+					borderRadius: 8,
+				},
+				components: {
+					MuiButton: {
+						styleOverrides: {
+							root: {
+								textTransform: 'none',
+								fontWeight: 500,
+							},
+						},
+					},
+					MuiCard: {
+						styleOverrides: {
+							root: {
+								borderRadius: 12,
+								boxShadow:
+									mode === 'dark'
+										? '0 8px 16px 0 rgba(0, 0, 0, 0.4)'
+										: '0 8px 16px 0 rgba(0, 0, 0, 0.1)',
+							},
+						},
+					},
+				},
+			}),
+		[mode],
+	);
+
+	// Toggle theme mode function
+	const toggleThemeMode = () => {
+		const newMode = mode === 'dark' ? 'light' : 'dark';
+		setMode(newMode);
+		localStorage.setItem('themeMode', newMode);
+	};
 
 	useEffect(() => {
 		const initializeAuth = async () => {
@@ -127,7 +179,13 @@ const App = () => {
 	return (
 		<ThemeProvider theme={theme}>
 			<CssBaseline />
-			<Navbar currentUser={currentUser} logOut={logOut} isAdmin={showAdminBoard} />
+			<Navbar
+				currentUser={currentUser}
+				logOut={logOut}
+				isAdmin={showAdminBoard}
+				themeMode={mode}
+				toggleThemeMode={toggleThemeMode}
+			/>
 			<Container>
 				<Switch>
 					{/* Public routes */}
