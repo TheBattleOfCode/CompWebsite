@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
 	Container,
 	Card,
@@ -11,27 +11,50 @@ import {
 	Alert,
 	CircularProgress,
 } from '@mui/material';
-import AuthService from '../../services/auth.service';
-import countryService from '../../services/country.service';
-import userService from '../../services/user.service';
+import { useSelector } from 'react-redux';
+import { useGetCountriesQuery, useUpdateUserMutation } from '../../services';
+import { selectCurrentUser } from '../../features/auth/authSlice';
 import { encodeImageFileAsURL } from './utils';
 import './styles.css';
 
 const Profile = () => {
-	const currentUser = AuthService.getCurrentUser();
-	const [countries, setCountries] = useState([]);
+	// Get current user from Redux store
+	const currentUser = useSelector(selectCurrentUser);
+
+	// RTK Query hooks
+	const { data: countries = [] } = useGetCountriesQuery();
+	const [updateUser, { isLoading: isUpdating }] = useUpdateUserMutation();
+
+	// Local state
 	const [editMode, setEditMode] = useState(false);
-	const [firstName, setFirstName] = useState(currentUser.firstName);
-	const [lastName, setLastName] = useState(currentUser.lastName);
-	const [phone, setPhone] = useState(currentUser.phone);
-	const [city, setCity] = useState(currentUser.city);
-	const [country, setCountry] = useState(currentUser.country);
-	const [profilePicture, setProfilePicture] = useState(currentUser.profilePicture);
+	const [firstName, setFirstName] = useState(currentUser?.firstName || '');
+	const [lastName, setLastName] = useState(currentUser?.lastName || '');
+	const [phone, setPhone] = useState(currentUser?.phone || '');
+	const [city, setCity] = useState(currentUser?.city || '');
+	const [country, setCountry] = useState(currentUser?.country || '');
+	const [profilePicture, setProfilePicture] = useState(
+		currentUser?.profilePicture || 'https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mp&f=y',
+	);
 	const [successful, setSuccessful] = useState(false);
 	const [message, setMessage] = useState('');
 	const [loading, setLoading] = useState(false);
 	const [editImage, setEditImage] = useState(false);
 	const [uploadName, setUploadName] = useState('');
+
+	// Update local state when currentUser changes
+	useEffect(() => {
+		if (currentUser) {
+			setFirstName(currentUser.firstName || '');
+			setLastName(currentUser.lastName || '');
+			setPhone(currentUser.phone || '');
+			setCity(currentUser.city || '');
+			setCountry(currentUser.country || '');
+			setProfilePicture(
+				currentUser.profilePicture ||
+					'https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mp&f=y',
+			);
+		}
+	}, [currentUser]);
 
 	const toggleEditMode = () => {
 		setEditMode(!editMode);
@@ -43,9 +66,18 @@ const Profile = () => {
 		setEditMode(false);
 		setMessage('Profile update canceled');
 		setSuccessful(false);
+
+		// Reset form values to current user values
+		if (currentUser) {
+			setFirstName(currentUser.firstName || '');
+			setLastName(currentUser.lastName || '');
+			setPhone(currentUser.phone || '');
+			setCity(currentUser.city || '');
+			setCountry(currentUser.country || '');
+		}
 	};
 
-	const saveProfile = () => {
+	const saveProfile = async () => {
 		setLoading(true);
 
 		const updatedUserData = {
@@ -56,87 +88,90 @@ const Profile = () => {
 			country,
 		};
 
-		userService
-			.UpdateUser(currentUser.id, updatedUserData)
-			.then(() => {
-				// Update local storage with new user data
-				const updatedUser = {
-					...currentUser,
-					...updatedUserData,
-					profilePicture,
-				};
+		try {
+			// Update user using RTK Query mutation
+			await updateUser({
+				id: currentUser.id,
+				data: updatedUserData,
+			}).unwrap();
 
-				localStorage.setItem('user', JSON.stringify(updatedUser));
+			// Update local storage with new user data
+			try {
+				const storedUser = JSON.parse(localStorage.getItem('user'));
+				if (storedUser) {
+					const updatedUser = {
+						...storedUser,
+						...updatedUserData,
+						profilePicture,
+					};
+					localStorage.setItem('user', JSON.stringify(updatedUser));
+				}
+			} catch (error) {
+				console.error('Error updating user in localStorage:', error);
+			}
 
-				setEditMode(false);
-				setSuccessful(true);
-				setMessage('Profile updated successfully');
-			})
-			.catch((error) => {
-				setSuccessful(false);
-				setMessage('Error updating profile: ' + error.message);
-			})
-			.finally(() => {
-				setLoading(false);
-			});
+			setEditMode(false);
+			setSuccessful(true);
+			setMessage('Profile updated successfully');
+		} catch (error) {
+			setSuccessful(false);
+			setMessage('Error updating profile: ' + (error.data?.message || error.error || 'Unknown error'));
+		} finally {
+			setLoading(false);
+		}
 	};
 
-	const saveProfilePicture = () => {
+	const saveProfilePicture = async () => {
 		setLoading(true);
 
-		userService
-			.UpdateUser(currentUser.id, { profilePicture })
-			.then(() => {
-				// Update local storage with new profile picture
-				const updatedUser = {
-					...currentUser,
-					profilePicture,
-				};
+		try {
+			// Update user profile picture using RTK Query mutation
+			await updateUser({
+				id: currentUser.id,
+				data: { profilePicture },
+			}).unwrap();
 
-				localStorage.setItem('user', JSON.stringify(updatedUser));
+			// Update local storage with new profile picture
+			try {
+				const storedUser = JSON.parse(localStorage.getItem('user'));
+				if (storedUser) {
+					const updatedUser = {
+						...storedUser,
+						profilePicture,
+					};
+					localStorage.setItem('user', JSON.stringify(updatedUser));
+				}
+			} catch (error) {
+				console.error('Error updating profile picture in localStorage:', error);
+			}
 
-				setEditImage(false);
-				setUploadName('');
-				setSuccessful(true);
-				setMessage('Profile picture updated successfully');
-			})
-			.catch((error) => {
-				setSuccessful(false);
-				setMessage('Error updating profile picture: ' + error.message);
-			})
-			.finally(() => {
-				setLoading(false);
-			});
+			setEditImage(false);
+			setUploadName('');
+			setSuccessful(true);
+			setMessage('Profile picture updated successfully');
+		} catch (error) {
+			setSuccessful(false);
+			setMessage('Error updating profile picture: ' + (error.data?.message || error.error || 'Unknown error'));
+		} finally {
+			setLoading(false);
+		}
 	};
 
 	const handleImageUpload = (element) => {
 		encodeImageFileAsURL(element, currentUser.profilePicture, setProfilePicture, setUploadName);
 	};
 
-	const fetchCountries = async () => {
-		setLoading(true);
+	// If no user is logged in, show a message
+	if (!currentUser) {
+		return (
+			<Container>
+				<Alert severity="warning">Please log in to view your profile.</Alert>
+			</Container>
+		);
+	}
 
-		try {
-			if (localStorage.getItem('countries') === null) {
-				const response = await countryService.GetAllCounties();
-				const sortedCountries = response.data.sort((a, b) => a.name.common.localeCompare(b.name.common));
-
-				setCountries(sortedCountries);
-				localStorage.setItem('countries', JSON.stringify(sortedCountries));
-			} else {
-				const cachedCountries = JSON.parse(localStorage.getItem('countries'));
-				setCountries(cachedCountries);
-			}
-		} catch (error) {
-			console.error('Error fetching countries:', error);
-		} finally {
-			setLoading(false);
-		}
-	};
-
-	useEffect(() => {
-		fetchCountries();
-	}, []);
+	// Sort countries alphabetically
+	const sortedCountries = [...countries].sort((a, b) => a.name?.common?.localeCompare(b.name?.common));
 
 	return (
 		<Container>
@@ -147,11 +182,11 @@ const Profile = () => {
 					{/* Profile Picture Section */}
 					<div className="image_container">
 						<img src={profilePicture} alt="Profile" className="rounded-circle profile_image" />
-						{!editImage ? (
+						{editImage ? null : (
 							<Button variant="contained" color="secondary" onClick={() => setEditImage(true)}>
 								Change
 							</Button>
-						) : null}
+						)}
 					</div>
 
 					{/* Profile Picture Edit Form */}
@@ -177,9 +212,9 @@ const Profile = () => {
 									variant="contained"
 									color="primary"
 									onClick={saveProfilePicture}
-									disabled={profilePicture === currentUser.profilePicture || loading}
+									disabled={profilePicture === currentUser.profilePicture || loading || isUpdating}
 								>
-									{loading && <CircularProgress size={24} />}
+									{(loading || isUpdating) && <CircularProgress size={24} />}
 									Save
 								</Button>
 								<Button
@@ -221,7 +256,7 @@ const Profile = () => {
 									variant="outlined"
 									fullWidth
 									margin="normal"
-									value={firstName || ''}
+									value={firstName}
 									onChange={(e) => setFirstName(e.target.value)}
 								/>
 								<TextField
@@ -229,13 +264,13 @@ const Profile = () => {
 									variant="outlined"
 									fullWidth
 									margin="normal"
-									value={lastName || ''}
+									value={lastName}
 									onChange={(e) => setLastName(e.target.value)}
 								/>
 							</div>
 						) : (
 							<Typography color="textSecondary">
-								{currentUser.firstName} {currentUser.lastName}
+								{currentUser.firstName || '--'} {currentUser.lastName || '--'}
 							</Typography>
 						)}
 					</div>
@@ -255,7 +290,7 @@ const Profile = () => {
 								variant="outlined"
 								fullWidth
 								margin="normal"
-								value={phone || ''}
+								value={phone}
 								onChange={(e) => setPhone(e.target.value)}
 							/>
 						) : (
@@ -269,7 +304,7 @@ const Profile = () => {
 						{editMode ? (
 							<div className="row">
 								<Select
-									value={country || ''}
+									value={country}
 									onChange={(e) => setCountry(e.target.value)}
 									fullWidth
 									variant="outlined"
@@ -280,9 +315,9 @@ const Profile = () => {
 									) : (
 										<MenuItem value="">Select Country</MenuItem>
 									)}
-									{countries.map((country, index) => (
-										<MenuItem key={index} value={country.name.common}>
-											{country.name.common}
+									{sortedCountries.map((country, index) => (
+										<MenuItem key={index} value={country.name?.common}>
+											{country.name?.common}
 										</MenuItem>
 									))}
 								</Select>
@@ -291,7 +326,7 @@ const Profile = () => {
 									variant="outlined"
 									fullWidth
 									margin="normal"
-									value={city || ''}
+									value={city}
 									onChange={(e) => setCity(e.target.value)}
 								/>
 							</div>
@@ -304,21 +339,36 @@ const Profile = () => {
 
 					{/* Action Buttons */}
 					<div className="mt-3">
-						{!editMode ? (
-							<Button variant="contained" color="primary" onClick={toggleEditMode} disabled={loading}>
-								{loading && <CircularProgress size={24} />}
-								Edit
+						{editMode ? (
+							<Button
+								variant="outlined"
+								color="primary"
+								onClick={cancelEdit}
+								disabled={loading || isUpdating}
+							>
+								{(loading || isUpdating) && <CircularProgress size={24} />}
+								Cancel
 							</Button>
 						) : (
-							<Button variant="outlined" color="primary" onClick={cancelEdit} disabled={loading}>
-								{loading && <CircularProgress size={24} />}
-								Cancel
+							<Button
+								variant="contained"
+								color="primary"
+								onClick={toggleEditMode}
+								disabled={loading || isUpdating}
+							>
+								{(loading || isUpdating) && <CircularProgress size={24} />}
+								Edit
 							</Button>
 						)}
 
 						{editMode && (
-							<Button variant="contained" color="success" onClick={saveProfile} disabled={loading}>
-								{loading && <CircularProgress size={24} />}
+							<Button
+								variant="contained"
+								color="success"
+								onClick={saveProfile}
+								disabled={loading || isUpdating}
+							>
+								{(loading || isUpdating) && <CircularProgress size={24} />}
 								Save
 							</Button>
 						)}

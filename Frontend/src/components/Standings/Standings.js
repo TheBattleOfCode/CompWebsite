@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import {
 	Table,
 	TableBody,
@@ -14,145 +14,161 @@ import {
 	CircularProgress,
 	Container,
 	Typography,
+	Alert,
 } from '@mui/material';
 import { FaSort, FaSortUp, FaSortDown } from 'react-icons/fa';
-import authService from '../../services/auth.service';
-import countryService from '../../services/country.service';
-import userService from '../../services/user.service';
-import { fetchUsers, fetchCountries, sortUsers, filterUsersByCountry } from './utils';
-import './styles.css';
+import { useSelector } from 'react-redux';
+import { useGetUsersQuery, useGetCountriesQuery } from '../../services';
+import { selectCurrentUser } from '../../features/auth/authSlice';
 
 const Standings = () => {
-	const currentUser = authService.getCurrentUser();
-	const [users, setUsers] = useState([]);
-	const [filteredUsers, setFilteredUsers] = useState([]);
-	const [countries, setCountries] = useState([]);
-	const [countryFilter, setCountryFilter] = useState('');
-	const [loading, setLoading] = useState(false);
-	const [sortConfig, setSortConfig] = useState({ key: 'indivScore', direction: 'desc' });
+	const currentUser = useSelector(selectCurrentUser);
 
-	// Admin ID for special handling
-	const ADMIN_ID = '619a62a8e8934539f45022c9';
+	// RTK Query hooks
+	const { data: users = [], isLoading: isLoadingUsers, error: usersError } = useGetUsersQuery();
+	const { data: countries = [], isLoading: isLoadingCountries } = useGetCountriesQuery();
 
-	// Load users and countries on component mount
-	useEffect(() => {
-		const loadData = async () => {
-			setLoading(true);
+	// Local state
+	const [sortField, setSortField] = useState('indivScore');
+	const [sortDirection, setSortDirection] = useState('desc');
+	const [selectedCountry, setSelectedCountry] = useState('All');
 
-			try {
-				// Fetch users
-				const usersData = await fetchUsers(userService);
-				setUsers(usersData);
-				setFilteredUsers(usersData);
+	// Sort countries alphabetically - keeping this for future use
+	// eslint-disable-next-line no-unused-vars
+	const sortedCountries = useMemo(() => {
+		return [...(countries || [])].sort((a, b) => a.name?.common?.localeCompare(b.name?.common));
+	}, [countries]);
 
-				// Fetch countries
-				const countriesData = await fetchCountries(countryService);
-				setCountries(countriesData);
-			} catch (error) {
-				console.error('Error loading data:', error);
-			} finally {
-				setLoading(false);
+	// Get unique countries from users
+	const uniqueUserCountries = useMemo(() => {
+		const countrySet = new Set();
+		users.forEach((user) => {
+			if (user.country) {
+				countrySet.add(user.country);
 			}
-		};
+		});
+		return Array.from(countrySet).sort();
+	}, [users]);
 
-		loadData();
-	}, []);
+	// Filter and sort users
+	const filteredAndSortedUsers = useMemo(() => {
+		// Filter by country if needed
+		let filtered = [...users];
+		if (selectedCountry !== 'All') {
+			filtered = filtered.filter((user) => user.country === selectedCountry);
+		}
 
-	// Handle sorting
-	const handleSort = (key) => {
-		const direction = sortConfig.key === key && sortConfig.direction === 'asc' ? 'desc' : 'asc';
+		// Sort users
+		return filtered.sort((a, b) => {
+			const aValue = a[sortField] || 0;
+			const bValue = b[sortField] || 0;
 
-		setSortConfig({ key, direction });
+			if (sortDirection === 'asc') {
+				return aValue > bValue ? 1 : -1;
+			} else {
+				return aValue < bValue ? 1 : -1;
+			}
+		});
+	}, [users, selectedCountry, sortField, sortDirection]);
 
-		const sortedUsers = sortUsers(filteredUsers, key, direction);
-		setFilteredUsers(sortedUsers);
+	const handleSort = (field) => {
+		if (sortField === field) {
+			setSortDirection(sortDirection === 'asc' ? 'desc' : 'asc');
+		} else {
+			setSortField(field);
+			setSortDirection('desc');
+		}
 	};
 
-	// Handle country filter change
-	const handleCountryFilterChange = (event) => {
-		const country = event.target.value;
-		setCountryFilter(country);
-
-		const filtered = filterUsersByCountry(users, country);
-		setFilteredUsers(filtered);
+	const getSortIcon = (field) => {
+		if (sortField !== field) {
+			return <FaSort />;
+		}
+		return sortDirection === 'asc' ? <FaSortUp /> : <FaSortDown />;
 	};
 
-	// Get sort icon based on current sort configuration
-	const getSortIcon = (key) => {
-		if (sortConfig.key !== key) return <FaSort />;
-		return sortConfig.direction === 'asc' ? <FaSortUp /> : <FaSortDown />;
-	};
+	// Loading state
+	if (isLoadingUsers || isLoadingCountries) {
+		return (
+			<Container sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}>
+				<CircularProgress />
+			</Container>
+		);
+	}
+
+	// Error state
+	if (usersError) {
+		return (
+			<Container sx={{ mt: 4 }}>
+				<Alert severity="error">
+					Error loading standings: {usersError.data?.message || usersError.error || 'Unknown error'}
+				</Alert>
+			</Container>
+		);
+	}
 
 	return (
-		<Container>
+		<Container sx={{ mt: 4 }}>
 			<Typography variant="h4" gutterBottom>
 				Standings
 			</Typography>
 
-			{loading ? (
-				<div className="loading-container">
-					<CircularProgress />
-				</div>
-			) : (
-				<>
-					{/* Country Filter */}
-					<FormControl variant="outlined" fullWidth margin="normal">
-						<InputLabel id="country-filter-label">Filter by Country</InputLabel>
-						<Select
-							labelId="country-filter-label"
-							value={countryFilter}
-							onChange={handleCountryFilterChange}
-							label="Filter by Country"
-						>
-							<MenuItem value="">All Countries</MenuItem>
-							{countries.map((country, index) => (
-								<MenuItem key={index} value={country.name.common}>
-									{country.name.common}
-								</MenuItem>
-							))}
-						</Select>
-					</FormControl>
+			{/* Country Filter */}
+			<FormControl variant="outlined" sx={{ mb: 3, minWidth: 200 }}>
+				<InputLabel id="country-filter-label">Filter by Country</InputLabel>
+				<Select
+					labelId="country-filter-label"
+					id="country-filter"
+					value={selectedCountry}
+					onChange={(e) => setSelectedCountry(e.target.value)}
+					label="Filter by Country"
+				>
+					<MenuItem value="All">All Countries</MenuItem>
+					{uniqueUserCountries.map((country) => (
+						<MenuItem key={country} value={country}>
+							{country}
+						</MenuItem>
+					))}
+				</Select>
+			</FormControl>
 
-					{/* Users Table */}
-					<TableContainer component={Paper}>
-						<Table>
-							<TableHead>
-								<TableRow>
-									<TableCell>Rank</TableCell>
-									<TableCell onClick={() => handleSort('username')} className="sortable-header">
-										Username {getSortIcon('username')}
-									</TableCell>
-									<TableCell onClick={() => handleSort('indivScore')} className="sortable-header">
-										Score {getSortIcon('indivScore')}
-									</TableCell>
-									<TableCell onClick={() => handleSort('country')} className="sortable-header">
-										Country {getSortIcon('country')}
-									</TableCell>
-								</TableRow>
-							</TableHead>
-							<TableBody>
-								{filteredUsers.map((user, index) => (
-									<TableRow
-										key={user._id}
-										className={user._id === currentUser?.id ? 'current-user-row' : ''}
-									>
-										<TableCell>{index + 1}</TableCell>
-										<TableCell>
-											{user._id === ADMIN_ID ? (
-												<span className="admin-user">{user.username}</span>
-											) : (
-												user.username
-											)}
-										</TableCell>
-										<TableCell>{user.indivScore}</TableCell>
-										<TableCell>{user.country || 'N/A'}</TableCell>
-									</TableRow>
-								))}
-							</TableBody>
-						</Table>
-					</TableContainer>
-				</>
-			)}
+			{/* Standings Table */}
+			<TableContainer component={Paper}>
+				<Table>
+					<TableHead>
+						<TableRow>
+							<TableCell>Rank</TableCell>
+							<TableCell>Username</TableCell>
+							<TableCell>Country</TableCell>
+							<TableCell onClick={() => handleSort('indivScore')} style={{ cursor: 'pointer' }}>
+								Score {getSortIcon('indivScore')}
+							</TableCell>
+							<TableCell onClick={() => handleSort('problemsSolved')} style={{ cursor: 'pointer' }}>
+								Problems Solved {getSortIcon('problemsSolved')}
+							</TableCell>
+						</TableRow>
+					</TableHead>
+					<TableBody>
+						{filteredAndSortedUsers.map((user, index) => (
+							<TableRow
+								key={user._id}
+								sx={{
+									backgroundColor:
+										currentUser && user._id === currentUser.id
+											? 'rgba(25, 118, 210, 0.1)'
+											: 'inherit',
+								}}
+							>
+								<TableCell>{index + 1}</TableCell>
+								<TableCell>{user.username}</TableCell>
+								<TableCell>{user.country || '--'}</TableCell>
+								<TableCell>{user.indivScore || 0}</TableCell>
+								<TableCell>{user.problemsSolved || 0}</TableCell>
+							</TableRow>
+						))}
+					</TableBody>
+				</Table>
+			</TableContainer>
 		</Container>
 	);
 };

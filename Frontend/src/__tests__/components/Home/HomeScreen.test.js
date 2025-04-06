@@ -1,16 +1,18 @@
 import React from 'react';
 import { render, screen, fireEvent, waitFor } from '../../../__tests__/utils/test-utils';
 import HomeScreen from '../../../components/Home/HomeScreen';
-import authService from '../../../services/auth.service';
-import probService from '../../../services/prob.service';
+import { useGetProblemsQuery } from '../../../services';
+import { selectCurrentUser } from '../../../features/auth/authSlice';
 
 // Mock the services
-jest.mock('../../../services/auth.service', () => ({
-  getCurrentUser: jest.fn(),
+jest.mock('../../../services', () => ({
+  useGetProblemsQuery: jest.fn(),
 }));
 
-jest.mock('../../../services/prob.service', () => ({
-  GetProbs: jest.fn(),
+// Mock the Redux hooks
+jest.mock('react-redux', () => ({
+  ...jest.requireActual('react-redux'),
+  useSelector: jest.fn(),
 }));
 
 // Mock the ProblemItem component
@@ -40,12 +42,25 @@ describe('HomeScreen Component', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
-    authService.getCurrentUser.mockReturnValue(mockUser);
-    probService.GetProbs.mockResolvedValue({ data: mockProblems });
+    
+    // Mock useSelector to return the current user
+    require('react-redux').useSelector.mockImplementation((selector) => {
+      if (selector === selectCurrentUser) {
+        return mockUser;
+      }
+      return null;
+    });
   });
 
   it('renders loading state initially', () => {
-    // Arrange & Act
+    // Arrange
+    useGetProblemsQuery.mockReturnValue({
+      data: undefined,
+      isLoading: true,
+      error: undefined,
+    });
+    
+    // Act
     render(<HomeScreen />);
 
     // Assert
@@ -53,18 +68,19 @@ describe('HomeScreen Component', () => {
   });
 
   it('fetches and displays problems', async () => {
-    // Arrange & Act
+    // Arrange
+    useGetProblemsQuery.mockReturnValue({
+      data: mockProblems,
+      isLoading: false,
+      error: undefined,
+    });
+    
+    // Act
     render(<HomeScreen />);
 
     // Assert
-    await waitFor(() => {
-      expect(probService.GetProbs).toHaveBeenCalled();
-    });
-
-    await waitFor(() => {
-      expect(screen.queryByRole('progressbar')).not.toBeInTheDocument();
-    });
-
+    expect(useGetProblemsQuery).toHaveBeenCalled();
+    expect(screen.queryByRole('progressbar')).not.toBeInTheDocument();
     expect(screen.getByText(`Welcome, ${mockUser.username}!`)).toBeInTheDocument();
     expect(screen.getByTestId('problem-item-1')).toBeInTheDocument();
     expect(screen.getByTestId('problem-item-2')).toBeInTheDocument();
@@ -74,12 +90,13 @@ describe('HomeScreen Component', () => {
   // TODO Skipping this test as it requires complex Material-UI Select interaction
   it.skip('filters problems by type', async () => {
     // Arrange
-    render(<HomeScreen />);
-
-    // Wait for problems to load
-    await waitFor(() => {
-      expect(screen.queryByRole('progressbar')).not.toBeInTheDocument();
+    useGetProblemsQuery.mockReturnValue({
+      data: mockProblems,
+      isLoading: false,
+      error: undefined,
     });
+    
+    render(<HomeScreen />);
 
     // This test is skipped because Material-UI Select components are difficult to test
     // The actual implementation would need to:
@@ -90,17 +107,17 @@ describe('HomeScreen Component', () => {
 
   it('shows error message when fetching problems fails', async () => {
     // Arrange
-    const errorMessage = 'Failed to load problems';
-    probService.GetProbs.mockRejectedValueOnce(new Error(errorMessage));
+    useGetProblemsQuery.mockReturnValue({
+      data: undefined,
+      isLoading: false,
+      error: { message: 'Failed to load problems' },
+    });
 
     // Act
     render(<HomeScreen />);
 
     // Assert
-    await waitFor(() => {
-      expect(screen.queryByRole('progressbar')).not.toBeInTheDocument();
-    });
-
+    expect(screen.queryByRole('progressbar')).not.toBeInTheDocument();
     expect(screen.getByText(/failed to load problems/i)).toBeInTheDocument();
     expect(screen.queryByTestId('problem-item-1')).not.toBeInTheDocument();
   });
@@ -108,12 +125,13 @@ describe('HomeScreen Component', () => {
   // TODO Skipping this test as it requires complex Material-UI Select interaction
   it.skip('shows message when no problems match the filter', async () => {
     // Arrange
-    render(<HomeScreen />);
-
-    // Wait for problems to load
-    await waitFor(() => {
-      expect(screen.queryByRole('progressbar')).not.toBeInTheDocument();
+    useGetProblemsQuery.mockReturnValue({
+      data: mockProblems,
+      isLoading: false,
+      error: undefined,
     });
+    
+    render(<HomeScreen />);
 
     // This test is skipped because Material-UI Select components are difficult to test
     // The actual implementation would need to:

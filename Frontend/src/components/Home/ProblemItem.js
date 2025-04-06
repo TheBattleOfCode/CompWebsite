@@ -1,66 +1,41 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { TableRow, TableCell, Button, CircularProgress, Chip, Tooltip, Box, useTheme } from '@mui/material';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 import { useHistory } from 'react-router-dom';
 import PropTypes from 'prop-types';
-import authService from '../../services/auth.service';
-import genProblemService from '../../services/gen-problem.service';
+import { useSelector } from 'react-redux';
+import { useGetUserProblemQuery, useGetProblemStatsQuery } from '../../services/api';
+import { selectCurrentUser } from '../../features/auth/authSlice';
 
 const ProblemItem = ({ problem }) => {
-	const currentUser = authService.getCurrentUser();
-	const [problemState, setProblemState] = useState('white');
-	const [userProblemData, setUserProblemData] = useState({});
-	const [problemStats, setProblemStats] = useState([]);
-	const [acceptanceRate, setAcceptanceRate] = useState('Not played yet');
+	const currentUser = useSelector(selectCurrentUser);
 	const [loading, setLoading] = useState(false);
 	const history = useHistory();
 	const theme = useTheme();
 
-	const fetchUserProblemData = async () => {
-		if (!currentUser?.id || !problem._id) return;
+	// Fetch user's problem data
+	const { data: userProblemData } = useGetUserProblemQuery(
+		{ userId: currentUser?.id, problemId: problem._id },
+		{ skip: !currentUser?.id || !problem._id },
+	);
 
-		try {
-			const response = await genProblemService.GetGenProb(currentUser.id, problem._id);
-			setUserProblemData(response);
-		} catch (error) {
-			console.error('Error fetching user problem data:', error);
-		}
-	};
+	// Fetch problem statistics
+	const { data: problemStats } = useGetProblemStatsQuery(problem._id, { skip: !problem._id });
 
-	const fetchProblemStats = async () => {
-		if (!problem._id) return;
-
-		try {
-			const response = await genProblemService.GetAllGenProbByProb(problem._id);
-			setProblemStats(response);
-		} catch (error) {
-			console.error('Error fetching problem stats:', error);
-		}
-	};
-
-	// Calculate acceptance rate when problem stats change
-	useEffect(() => {
-		if (problemStats.data && problemStats.data.length > 0) {
-			const totalAttempts = problemStats.data.length;
-			const acceptedAttempts = problemStats.data.filter((attempt) => attempt.answered).length;
+	// Calculate acceptance rate
+	const acceptanceRate = React.useMemo(() => {
+		if (problemStats?.length > 0) {
+			const totalAttempts = problemStats.length;
+			const acceptedAttempts = problemStats.filter((attempt) => attempt.answered).length;
 			const rate = Math.round((acceptedAttempts / totalAttempts) * 100);
-			setAcceptanceRate(`${rate}%`);
+			return `${rate}%`;
 		}
+		return 'Not played yet';
 	}, [problemStats]);
 
-	// Update problem state when user data changes
-	useEffect(() => {
-		if (userProblemData.data) {
-			setProblemState(userProblemData.data.answered ? 'solved' : 'attempted');
-		}
-	}, [userProblemData]);
-
-	// Fetch data on component mount
-	useEffect(() => {
-		fetchUserProblemData();
-		fetchProblemStats();
-	}, [problem._id, currentUser?.id]);
+	// Determine problem state
+	const problemState = userProblemData?.answered ? 'solved' : userProblemData ? 'attempted' : 'white';
 
 	const handleEnterProblem = () => {
 		setLoading(true);

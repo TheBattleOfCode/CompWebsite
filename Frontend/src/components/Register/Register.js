@@ -21,7 +21,9 @@ import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import Form from 'react-validation/build/form';
 import CheckButton from 'react-validation/build/button';
 import { Link as RouterLink } from 'react-router-dom';
-import AuthService from '../../services/auth.service';
+import { useSelector } from 'react-redux';
+import { useRegisterMutation } from '../../services/api';
+import { selectCurrentUser } from '../../features/auth/authSlice';
 import { validateRequired, validateEmail, validateUsername, validatePassword } from './utils';
 
 // We're not validating history props as they come from react-router
@@ -30,22 +32,24 @@ const Register = (props) => {
 	const checkBtn = useRef();
 	// eslint-disable-next-line no-unused-vars
 	const theme = useTheme();
+	const currentUser = useSelector(selectCurrentUser);
 
 	const [username, setUsername] = useState('');
 	const [email, setEmail] = useState('');
 	const [password, setPassword] = useState('');
 	const [successful, setSuccessful] = useState(false);
 	const [message, setMessage] = useState('');
-	const [loading, setLoading] = useState(false);
 	const [showPassword, setShowPassword] = useState(false);
+
+	// RTK Query register mutation
+	const [register, { isLoading }] = useRegisterMutation();
 
 	// Check if user is already logged in
 	useEffect(() => {
-		const currentUser = AuthService.getCurrentUser();
 		if (currentUser) {
 			props.history.push('/home');
 		}
-	}, [props.history]);
+	}, [props.history, currentUser]);
 
 	const handleUsernameChange = (e) => {
 		setUsername(e.target.value.trim().toUpperCase());
@@ -71,13 +75,13 @@ const Register = (props) => {
 		e.preventDefault();
 		setMessage('');
 		setSuccessful(false);
-		setLoading(true);
 		form.current.validateAll();
 
 		if (checkBtn.current.context._errors.length === 0) {
-			AuthService.register(username, email, password)
+			register({ username, email, password })
+				.unwrap()
 				.then((response) => {
-					setMessage(response.data.message);
+					setMessage(response.message || 'Registration successful!');
 					setSuccessful(true);
 					// Redirect to login after 3 seconds
 					setTimeout(() => {
@@ -86,17 +90,10 @@ const Register = (props) => {
 				})
 				.catch((error) => {
 					const resMessage =
-						(error.response && error.response.data && error.response.data.message) ||
-						error.message ||
-						error.toString();
+						(error.data && error.data.message) || error.error || 'An error occurred during registration';
 					setMessage(resMessage);
 					setSuccessful(false);
-				})
-				.finally(() => {
-					setLoading(false);
 				});
-		} else {
-			setLoading(false);
 		}
 	};
 
@@ -203,7 +200,7 @@ const Register = (props) => {
 								variant="contained"
 								color="secondary"
 								fullWidth
-								disabled={loading}
+								disabled={isLoading}
 								sx={{
 									py: 1.5,
 									borderRadius: 1.5,
@@ -212,7 +209,7 @@ const Register = (props) => {
 									boxShadow: 3,
 								}}
 							>
-								{loading ? <CircularProgress size={24} sx={{ color: 'white' }} /> : 'Create Account'}
+								{isLoading ? <CircularProgress size={24} sx={{ color: 'white' }} /> : 'Create Account'}
 							</Button>
 						</div>
 					)}
