@@ -8,13 +8,13 @@ import PropTypes from 'prop-types';
 
 import AuthService from './services/auth.service';
 
-import Login from './components/Login';
-import Register from './components/Register';
-import Home from './components/Home';
-import Profile from './components/Profile';
-import CreateProblem from './components/CreateProblem';
-import ProbNumberGen from './components/ProbNumberGen';
-import Standings from './components/Standings';
+import Login from './components/Login/Login';
+import Register from './components/Register/Register';
+import Home from './components/Home/Home';
+import Profile from './components/Profile/Profile';
+import CreateProblem from './components/CreateProblem/CreateProblem';
+import ProblemSolver from './components/ProblemSolver/ProblemSolver';
+import Standings from './components/Standings/Standings';
 import AdminRoute from './components/common/AdminRoute';
 
 import EventBus from './common/EventBus';
@@ -196,7 +196,7 @@ const App = () => {
 					<ProtectedRoute exact path={['/', '/home']} component={Home} />
 					<ProtectedRoute exact path="/profile" component={Profile} />
 					<ProtectedRoute exact path="/standings" component={Standings} />
-					<ProtectedRoute exact path="/ProbNumberGen/:id" component={ProbNumberGen} />
+					<ProtectedRoute exact path="/problem/:id" component={ProblemSolver} />
 
 					{/* Admin-only routes */}
 					<AdminRoute exact path="/createProb" component={CreateProblem} currentUser={currentUser} />

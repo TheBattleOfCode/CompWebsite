@@ -64,7 +64,7 @@ const ProblemItem = ({ problem }) => {
 
 	const handleEnterProblem = () => {
 		setLoading(true);
-		history.push(`/ProbNumberGen/${problem._id}`);
+		history.push(`/problem/${problem._id}`);
 	};
 
 	// Get color based on problem type

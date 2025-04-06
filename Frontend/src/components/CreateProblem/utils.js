@@ -6,7 +6,9 @@
  */
 export const handleFileChange = (e, setFileContent, setFileName) => {
 	const file = e.target.files[0];
-	if (!file) return;
+	if (!file) {
+		return;
+	}
 
 	const reader = new FileReader();
 	reader.onload = (event) => {
@@ -127,6 +129,8 @@ export const handleSubmit = ({
  * @returns {string} HTML content
  */
 export const renderMarkdown = (content, md) => {
-	if (!content) return '';
+	if (!content) {
+		return '';
+	}
 	return md.render(content);
 };
