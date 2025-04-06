@@ -11,15 +11,16 @@ import {
 	Alert,
 	CircularProgress,
 } from '@mui/material';
-import AuthService from '../services/auth.service';
-import countryService from '../services/country.service';
-import userService from '../services/user.service';
-import './Profile.css';
+import AuthService from '../../services/auth.service';
+import countryService from '../../services/country.service';
+import userService from '../../services/user.service';
+import { encodeImageFileAsURL } from './utils';
+import './styles.css';
 
 const Profile = () => {
 	const currentUser = AuthService.getCurrentUser();
 	const [countries, setCountries] = useState([]);
-	const [editMsg, setEditMsg] = useState(false);
+	const [editMode, setEditMode] = useState(false);
 	const [firstName, setFirstName] = useState(currentUser.firstName);
 	const [lastName, setLastName] = useState(currentUser.lastName);
 	const [phone, setPhone] = useState(currentUser.phone);
@@ -28,163 +29,155 @@ const Profile = () => {
 	const [profilePicture, setProfilePicture] = useState(currentUser.profilePicture);
 	const [successful, setSuccessful] = useState(false);
 	const [message, setMessage] = useState('');
-	const [cancelMsg, setCancelMsg] = useState(false);
 	const [loading, setLoading] = useState(false);
 	const [editImage, setEditImage] = useState(false);
 	const [uploadName, setUploadName] = useState('');
 
-	const editProfile = () => {
-		setEditMsg(!editMsg);
+	const toggleEditMode = () => {
+		setEditMode(!editMode);
 		setSuccessful(false);
-		setCancelMsg(false);
+		setMessage('');
 	};
 
 	const cancelEdit = () => {
-		setEditMsg(!editMsg);
-		setCancelMsg(!cancelMsg);
-		setMessage(false);
+		setEditMode(false);
+		setMessage('Profile update canceled');
+		setSuccessful(false);
 	};
 
 	const saveProfile = () => {
 		setLoading(true);
+
+		const updatedUserData = {
+			firstName,
+			lastName,
+			phone,
+			city,
+			country,
+		};
+
 		userService
-			.UpdateUser(currentUser.id, {
-				firstName: firstName,
-				lastName: lastName,
-				phone: phone,
-				city: city,
-				country: country,
-			})
-			.then((response) => {
-				if (editMsg) {
-					setEditMsg(!editMsg);
-				}
-				setLoading(false);
+			.UpdateUser(currentUser.id, updatedUserData)
+			.then(() => {
+				// Update local storage with new user data
+				const updatedUser = {
+					...currentUser,
+					...updatedUserData,
+					profilePicture,
+				};
+
+				localStorage.setItem('user', JSON.stringify(updatedUser));
+
+				setEditMode(false);
 				setSuccessful(true);
+				setMessage('Profile updated successfully');
+			})
+			.catch((error) => {
+				setSuccessful(false);
+				setMessage('Error updating profile: ' + error.message);
+			})
+			.finally(() => {
+				setLoading(false);
 			});
-
-		currentUser.firstName = firstName;
-		currentUser.lastName = lastName;
-		currentUser.phone = phone;
-		currentUser.city = city;
-		currentUser.country = country;
-		currentUser.profilePicture = profilePicture;
-
-		localStorage.setItem('user', JSON.stringify(currentUser));
 	};
 
 	const saveProfilePicture = () => {
 		setLoading(true);
-		userService.UpdateUser(currentUser.id, { profilePicture: profilePicture }).then((response) => {
-			if (editImage) {
-				setEditImage(!editImage);
-			}
-			setLoading(false);
-		});
-		currentUser.profilePicture = profilePicture;
-		localStorage.setItem('user', JSON.stringify(currentUser));
-		setUploadName('');
+
+		userService
+			.UpdateUser(currentUser.id, { profilePicture })
+			.then(() => {
+				// Update local storage with new profile picture
+				const updatedUser = {
+					...currentUser,
+					profilePicture,
+				};
+
+				localStorage.setItem('user', JSON.stringify(updatedUser));
+
+				setEditImage(false);
+				setUploadName('');
+				setSuccessful(true);
+				setMessage('Profile picture updated successfully');
+			})
+			.catch((error) => {
+				setSuccessful(false);
+				setMessage('Error updating profile picture: ' + error.message);
+			})
+			.finally(() => {
+				setLoading(false);
+			});
 	};
 
-	const getCountries = async () => {
-		if (localStorage.getItem('countries') === null) {
-			const countriesLocal = await countryService.GetAllCounties();
-			setCountries(countriesLocal.data.sort((c1, c2) => c1.name.common.localeCompare(c2.name.common)));
-			localStorage.setItem(
-				'countries',
-				JSON.stringify(countriesLocal.data.sort((c1, c2) => c1.name.common.localeCompare(c2.name.common))),
-			);
-		} else {
-			const countries = JSON.parse(localStorage.getItem('countries'));
-			setCountries(countries);
+	const handleImageUpload = (element) => {
+		encodeImageFileAsURL(element, currentUser.profilePicture, setProfilePicture, setUploadName);
+	};
+
+	const fetchCountries = async () => {
+		setLoading(true);
+
+		try {
+			if (localStorage.getItem('countries') === null) {
+				const response = await countryService.GetAllCounties();
+				const sortedCountries = response.data.sort((a, b) => a.name.common.localeCompare(b.name.common));
+
+				setCountries(sortedCountries);
+				localStorage.setItem('countries', JSON.stringify(sortedCountries));
+			} else {
+				const cachedCountries = JSON.parse(localStorage.getItem('countries'));
+				setCountries(cachedCountries);
+			}
+		} catch (error) {
+			console.error('Error fetching countries:', error);
+		} finally {
+			setLoading(false);
 		}
 	};
 
-	function encodeImageFileAsURL(element) {
-		var file = element.files[0];
-		var reader = new FileReader();
-		reader.onloadend = function () {
-			if (reader.result.length > 100000) {
-				alert(
-					'Image size is too big\nMax size is 100kb\nYour image size is ' +
-						reader.result.length / 1000 +
-						'kb',
-				);
-			} else {
-				if (reader.result == currentUser.profilePicture) {
-					setUploadName('You chose your old profile picture');
-				} else {
-					setUploadName(file.name);
-				}
-				setProfilePicture(reader.result);
-			}
-		};
-		reader.readAsDataURL(file);
-	}
-
 	useEffect(() => {
-		setLoading(true);
-		getCountries().then(() => {
-			setLoading(false);
-		});
+		fetchCountries();
 	}, []);
-
-	const onChangeFirstName = (e) => {
-		setFirstName(e.target.value);
-	};
-
-	const onChangeLastName = (e) => {
-		setLastName(e.target.value);
-	};
-
-	const onChangePhone = (e) => {
-		setPhone(e.target.value);
-	};
-
-	const onChangeCity = (e) => {
-		setCity(e.target.value);
-	};
-
-	const onChangeCountry = (e) => {
-		setCountry(e.target.value);
-	};
 
 	return (
 		<Container>
 			<Card sx={{ marginTop: 2 }}>
 				<CardContent>
 					<Typography variant="h5">User Profile</Typography>
+
+					{/* Profile Picture Section */}
 					<div className="image_container">
-						<img src={profilePicture} alt="Admin" className="rounded-circle profile_image" />
+						<img src={profilePicture} alt="Profile" className="rounded-circle profile_image" />
 						{!editImage ? (
-							<Button variant="contained" color="secondary" onClick={() => setEditImage(!editImage)}>
+							<Button variant="contained" color="secondary" onClick={() => setEditImage(true)}>
 								Change
 							</Button>
 						) : null}
 					</div>
+
+					{/* Profile Picture Edit Form */}
 					{editImage && (
 						<div className="form-group">
 							<div className="mt-3">
 								<Button variant="contained" component="label">
 									Choose a file
-									<input type="file" hidden onChange={(e) => encodeImageFileAsURL(e.target)} />
+									<input type="file" hidden onChange={(e) => handleImageUpload(e.target)} />
 								</Button>
 								<br />
 								<Typography
 									className={
-										profilePicture == currentUser.profilePicture ? 'text-danger' : 'text-success'
+										profilePicture === currentUser.profilePicture ? 'text-danger' : 'text-success'
 									}
 								>
 									<strong>
-										<em>{uploadName ? uploadName : 'No file chosen'}</em>
+										<em>{uploadName || 'No file chosen'}</em>
 									</strong>
 								</Typography>
 								<br />
 								<Button
 									variant="contained"
 									color="primary"
-									onClick={() => saveProfilePicture()}
-									disabled={profilePicture == currentUser.profilePicture}
+									onClick={saveProfilePicture}
+									disabled={profilePicture === currentUser.profilePicture || loading}
 								>
 									{loading && <CircularProgress size={24} />}
 									Save
@@ -202,12 +195,13 @@ const Profile = () => {
 							</div>
 						</div>
 					)}
+
+					{/* User Info Section */}
 					<div className="mt-3">
 						<Typography variant="h6">{currentUser.username}</Typography>
 						<Typography color="textSecondary">{currentUser.indivScore}</Typography>
 						<Typography color="textSecondary">
-							{currentUser.city === null ? '--' : currentUser.city},{' '}
-							{currentUser.country === null ? '--' : currentUser.country}
+							{currentUser.city || '--'}, {currentUser.country || '--'}
 						</Typography>
 						<Button variant="contained" color="primary">
 							Follow
@@ -216,25 +210,27 @@ const Profile = () => {
 							Message
 						</Button>
 					</div>
+
+					{/* Full Name Section */}
 					<div className="mt-3">
 						<Typography variant="h6">Full Name</Typography>
-						{editMsg ? (
+						{editMode ? (
 							<div className="row">
 								<TextField
 									label="First Name"
 									variant="outlined"
 									fullWidth
 									margin="normal"
-									value={firstName ? firstName : ''}
-									onChange={onChangeFirstName}
+									value={firstName || ''}
+									onChange={(e) => setFirstName(e.target.value)}
 								/>
 								<TextField
 									label="Last Name"
 									variant="outlined"
 									fullWidth
 									margin="normal"
-									value={lastName ? lastName : ''}
-									onChange={onChangeLastName}
+									value={lastName || ''}
+									onChange={(e) => setLastName(e.target.value)}
 								/>
 							</div>
 						) : (
@@ -243,34 +239,38 @@ const Profile = () => {
 							</Typography>
 						)}
 					</div>
+
+					{/* Email Section */}
 					<div className="mt-3">
 						<Typography variant="h6">Email</Typography>
 						<Typography color="textSecondary">{currentUser.email}</Typography>
 					</div>
+
+					{/* Phone Section */}
 					<div className="mt-3">
 						<Typography variant="h6">Phone</Typography>
-						{editMsg ? (
+						{editMode ? (
 							<TextField
 								label="Phone"
 								variant="outlined"
 								fullWidth
 								margin="normal"
-								value={phone ? phone : ''}
-								onChange={onChangePhone}
+								value={phone || ''}
+								onChange={(e) => setPhone(e.target.value)}
 							/>
 						) : (
-							<Typography color="textSecondary">
-								{currentUser.phone === null ? '--' : currentUser.phone}
-							</Typography>
+							<Typography color="textSecondary">{currentUser.phone || '--'}</Typography>
 						)}
 					</div>
+
+					{/* Address Section */}
 					<div className="mt-3">
 						<Typography variant="h6">Address</Typography>
-						{editMsg ? (
+						{editMode ? (
 							<div className="row">
 								<Select
-									value={country}
-									onChange={onChangeCountry}
+									value={country || ''}
+									onChange={(e) => setCountry(e.target.value)}
 									fullWidth
 									variant="outlined"
 									margin="normal"
@@ -278,7 +278,7 @@ const Profile = () => {
 									{currentUser.country ? (
 										<MenuItem value={currentUser.country}>{currentUser.country}</MenuItem>
 									) : (
-										<MenuItem value="N/A">Select Country</MenuItem>
+										<MenuItem value="">Select Country</MenuItem>
 									)}
 									{countries.map((country, index) => (
 										<MenuItem key={index} value={country.name.common}>
@@ -291,20 +291,21 @@ const Profile = () => {
 									variant="outlined"
 									fullWidth
 									margin="normal"
-									value={city ? city : ''}
-									onChange={onChangeCity}
+									value={city || ''}
+									onChange={(e) => setCity(e.target.value)}
 								/>
 							</div>
 						) : (
 							<Typography color="textSecondary">
-								{currentUser.city === null ? '--' : currentUser.city},{' '}
-								{currentUser.country === null ? '--' : currentUser.country}
+								{currentUser.city || '--'}, {currentUser.country || '--'}
 							</Typography>
 						)}
 					</div>
+
+					{/* Action Buttons */}
 					<div className="mt-3">
-						{!editMsg ? (
-							<Button variant="contained" color="primary" onClick={editProfile} disabled={loading}>
+						{!editMode ? (
+							<Button variant="contained" color="primary" onClick={toggleEditMode} disabled={loading}>
 								{loading && <CircularProgress size={24} />}
 								Edit
 							</Button>
@@ -314,14 +315,15 @@ const Profile = () => {
 								Cancel
 							</Button>
 						)}
-						{cancelMsg && <Alert severity="error">Profile update canceled</Alert>}
-						{editMsg && (
+
+						{editMode && (
 							<Button variant="contained" color="success" onClick={saveProfile} disabled={loading}>
 								{loading && <CircularProgress size={24} />}
 								Save
 							</Button>
 						)}
-						{successful && <Alert severity="success">Profile updated successfully</Alert>}
+
+						{message && <Alert severity={successful ? 'success' : 'error'}>{message}</Alert>}
 					</div>
 				</CardContent>
 			</Card>
