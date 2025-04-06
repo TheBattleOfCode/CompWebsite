@@ -1,7 +1,7 @@
 import React from 'react';
 import { render, screen } from '@testing-library/react';
 import { MemoryRouter, Route } from 'react-router-dom';
-import AdminRoute from './AdminRoute';
+import AdminRoute from '../../../components/common/AdminRoute';
 
 // Mock component to render when the route matches
 const MockAdminComponent = () => <div>Admin Component</div>;

@@ -1,4 +1,4 @@
-import { filterProblemsByType } from './utils';
+import { filterProblemsByType } from '../../../components/Home/utils';
 
 describe('Home Utils', () => {
   describe('filterProblemsByType', () => {
@@ -12,7 +12,7 @@ describe('Home Utils', () => {
     it('returns all problems when type is "all"', () => {
       // Arrange & Act
       const result = filterProblemsByType(mockProblems, 'all');
-      
+
       // Assert
       expect(result).toEqual(mockProblems);
       expect(result.length).toBe(4);
@@ -23,15 +23,15 @@ describe('Home Utils', () => {
       const genProblems = filterProblemsByType(mockProblems, 'gen');
       const numberGenProblems = filterProblemsByType(mockProblems, 'NumberGen');
       const qnaProblems = filterProblemsByType(mockProblems, 'Qna');
-      
+
       // Assert
       expect(genProblems.length).toBe(2);
       expect(genProblems[0]._id).toBe('1');
       expect(genProblems[1]._id).toBe('4');
-      
+
       expect(numberGenProblems.length).toBe(1);
       expect(numberGenProblems[0]._id).toBe('2');
-      
+
       expect(qnaProblems.length).toBe(1);
       expect(qnaProblems[0]._id).toBe('3');
     });
@@ -39,7 +39,7 @@ describe('Home Utils', () => {
     it('returns empty array when no problems match the type', () => {
       // Arrange & Act
       const result = filterProblemsByType(mockProblems, 'nonexistent');
-      
+
       // Assert
       expect(result).toEqual([]);
       expect(result.length).toBe(0);
@@ -49,7 +49,7 @@ describe('Home Utils', () => {
       // Arrange & Act
       const resultNull = filterProblemsByType(null, 'gen');
       const resultUndefined = filterProblemsByType(undefined, 'gen');
-      
+
       // Assert
       expect(resultNull).toEqual([]);
       expect(resultUndefined).toEqual([]);
@@ -58,7 +58,7 @@ describe('Home Utils', () => {
     it('handles non-array problems parameter', () => {
       // Arrange & Act
       const result = filterProblemsByType({}, 'gen');
-      
+
       // Assert
       expect(result).toEqual([]);
     });

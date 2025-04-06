@@ -1,11 +1,11 @@
 import React from 'react';
 import { fireEvent, waitFor, screen } from '@testing-library/react';
-import { render, mockAuthService } from '../../utils/test-utils';
-import Login from './index';
-import AuthService from '../../services/auth.service';
+import { render, mockAuthService } from '../../../__tests__/utils/test-utils';
+import Login from '../../../components/Login';
+import AuthService from '../../../services/auth.service';
 
 // Mock the auth service
-jest.mock('../../services/auth.service', () => ({
+jest.mock('../../../services/auth.service', () => ({
   login: jest.fn(),
   getCurrentUser: jest.fn(),
 }));
@@ -33,7 +33,7 @@ describe('Login Component', () => {
   it('renders login form correctly', () => {
     // Arrange & Act
     render(<Login {...mockProps} />);
-    
+
     // Assert
     expect(screen.getByLabelText(/username/i)).toBeInTheDocument();
     expect(screen.getByLabelText(/password/i)).toBeInTheDocument();
@@ -48,10 +48,10 @@ describe('Login Component', () => {
       username: 'testuser',
       roles: ['ROLE_USER'],
     });
-    
+
     // Act
     render(<Login {...mockProps} />);
-    
+
     // Assert
     expect(mockHistoryPush).toHaveBeenCalledWith('/home');
   });
@@ -61,11 +61,11 @@ describe('Login Component', () => {
     render(<Login {...mockProps} />);
     const usernameInput = screen.getByLabelText(/username/i);
     const passwordInput = screen.getByLabelText(/password/i);
-    
+
     // Act
     fireEvent.change(usernameInput, { target: { value: 'testuser' } });
     fireEvent.change(passwordInput, { target: { value: 'password123' } });
-    
+
     // Assert
     expect(usernameInput.value).toBe('testuser');
     expect(passwordInput.value).toBe('password123');
@@ -75,12 +75,12 @@ describe('Login Component', () => {
     // Arrange
     AuthService.login.mockResolvedValueOnce({});
     render(<Login {...mockProps} />);
-    
+
     // Act
     fireEvent.change(screen.getByLabelText(/username/i), { target: { value: 'testuser' } });
     fireEvent.change(screen.getByLabelText(/password/i), { target: { value: 'password123' } });
     fireEvent.click(screen.getByRole('button', { name: /login/i }));
-    
+
     // Assert
     expect(AuthService.login).toHaveBeenCalledWith('testuser', 'password123');
     await waitFor(() => {
@@ -95,12 +95,12 @@ describe('Login Component', () => {
       response: { data: { message: errorMessage } },
     });
     render(<Login {...mockProps} />);
-    
+
     // Act
     fireEvent.change(screen.getByLabelText(/username/i), { target: { value: 'testuser' } });
     fireEvent.change(screen.getByLabelText(/password/i), { target: { value: 'wrongpassword' } });
     fireEvent.click(screen.getByRole('button', { name: /login/i }));
-    
+
     // Assert
     await waitFor(() => {
       expect(screen.getByText(errorMessage)).toBeInTheDocument();
@@ -111,19 +111,19 @@ describe('Login Component', () => {
   it('redirects to the page the user was trying to access after login', async () => {
     // Arrange
     AuthService.login.mockResolvedValueOnce({});
-    
+
     // Override the useLocation mock for this test
     jest.spyOn(require('react-router-dom'), 'useLocation').mockReturnValue({
       state: { from: { pathname: '/profile' } },
     });
-    
+
     render(<Login {...mockProps} />);
-    
+
     // Act
     fireEvent.change(screen.getByLabelText(/username/i), { target: { value: 'testuser' } });
     fireEvent.change(screen.getByLabelText(/password/i), { target: { value: 'password123' } });
     fireEvent.click(screen.getByRole('button', { name: /login/i }));
-    
+
     // Assert
     await waitFor(() => {
       expect(mockHistoryPush).toHaveBeenCalledWith('/profile');
