@@ -11,8 +11,10 @@ import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import Tooltip from '@mui/material/Tooltip';
 import MenuItem from '@mui/material/MenuItem';
-import AdbIcon from '@mui/icons-material/Adb';
 import AdminPanelSettingsIcon from '@mui/icons-material/AdminPanelSettings';
+import Brightness4Icon from '@mui/icons-material/Brightness4';
+import Brightness7Icon from '@mui/icons-material/Brightness7';
+import CodeIcon from '@mui/icons-material/Code';
 import { useHistory, useLocation } from 'react-router-dom';
 import PropTypes from 'prop-types';
 
@@ -24,7 +26,7 @@ const publicPages = [
 
 const adminPages = [{ screenName: 'Create Problem', link: '/createProb', adminOnly: true }];
 
-function Navbar({ currentUser, logOut, isAdmin }) {
+function Navbar({ currentUser, logOut, isAdmin, themeMode, toggleThemeMode }) {
 	const [anchorElNav, setAnchorElNav] = useState(null);
 	const [anchorElUser, setAnchorElUser] = useState(null);
 	const history = useHistory();
@@ -74,11 +76,11 @@ function Navbar({ currentUser, logOut, isAdmin }) {
 	};
 
 	return (
-		<AppBar position="static">
+		<AppBar position="static" elevation={3} sx={{ mb: 3 }}>
 			<Container maxWidth="xl">
 				<Toolbar disableGutters>
 					{/* Logo - Desktop */}
-					<AdbIcon sx={{ display: { xs: 'none', md: 'flex' }, mr: 1 }} />
+					<CodeIcon sx={{ display: { xs: 'none', md: 'flex' }, mr: 1 }} />
 					<Typography
 						variant="h6"
 						noWrap
@@ -89,7 +91,7 @@ function Navbar({ currentUser, logOut, isAdmin }) {
 							display: { xs: 'none', md: 'flex' },
 							fontFamily: 'monospace',
 							fontWeight: 700,
-							letterSpacing: '.3rem',
+							letterSpacing: '.1rem',
 							color: 'inherit',
 							textDecoration: 'none',
 							cursor: 'pointer',
@@ -140,11 +142,21 @@ function Navbar({ currentUser, logOut, isAdmin }) {
 									</MenuItem>
 								</>
 							)}
+							<MenuItem onClick={toggleThemeMode}>
+								<Typography textAlign="center" sx={{ display: 'flex', alignItems: 'center' }}>
+									{themeMode === 'dark' ? 'Light Mode' : 'Dark Mode'}
+									{themeMode === 'dark' ? (
+										<Brightness7Icon sx={{ ml: 1 }} />
+									) : (
+										<Brightness4Icon sx={{ ml: 1 }} />
+									)}
+								</Typography>
+							</MenuItem>
 						</Menu>
 					</Box>
 
 					{/* Logo - Mobile */}
-					<AdbIcon sx={{ display: { xs: 'flex', md: 'none' }, mr: 1 }} />
+					<CodeIcon sx={{ display: { xs: 'flex', md: 'none' }, mr: 1 }} />
 					<Typography
 						variant="h5"
 						noWrap
@@ -156,13 +168,13 @@ function Navbar({ currentUser, logOut, isAdmin }) {
 							flexGrow: 1,
 							fontFamily: 'monospace',
 							fontWeight: 700,
-							letterSpacing: '.3rem',
+							letterSpacing: '.1rem',
 							color: 'inherit',
 							textDecoration: 'none',
 							cursor: 'pointer',
 						}}
 					>
-						Battle of Code
+						BoC
 					</Typography>
 
 					{/* Desktop Menu */}
@@ -183,6 +195,8 @@ function Navbar({ currentUser, logOut, isAdmin }) {
 												? 'rgba(255, 255, 255, 0.2)'
 												: 'rgba(255, 255, 255, 0.1)',
 										},
+										mx: 0.5,
+										px: 2,
 									}}
 									startIcon={adminOnly ? <AdminPanelSettingsIcon /> : null}
 								>
@@ -200,6 +214,8 @@ function Navbar({ currentUser, logOut, isAdmin }) {
 										backgroundColor: isActive('/login')
 											? 'rgba(255, 255, 255, 0.1)'
 											: 'transparent',
+										mx: 0.5,
+										px: 2,
 									}}
 								>
 									Login
@@ -213,12 +229,23 @@ function Navbar({ currentUser, logOut, isAdmin }) {
 										backgroundColor: isActive('/register')
 											? 'rgba(255, 255, 255, 0.1)'
 											: 'transparent',
+										mx: 0.5,
+										px: 2,
 									}}
 								>
 									Register
 								</Button>
 							</>
 						)}
+					</Box>
+
+					{/* Theme Toggle */}
+					<Box sx={{ mr: 2 }}>
+						<Tooltip title={`Switch to ${themeMode === 'dark' ? 'light' : 'dark'} mode`}>
+							<IconButton onClick={toggleThemeMode} color="inherit">
+								{themeMode === 'dark' ? <Brightness7Icon /> : <Brightness4Icon />}
+							</IconButton>
+						</Tooltip>
 					</Box>
 
 					{/* User Menu */}
@@ -234,7 +261,16 @@ function Navbar({ currentUser, logOut, isAdmin }) {
 									<Avatar
 										alt={currentUser.username}
 										src={currentUser.profilePicture || '/static/images/avatar/2.jpg'}
-									/>
+										sx={{
+											bgcolor: 'secondary.main',
+											width: 40,
+											height: 40,
+											border: '2px solid',
+											borderColor: 'background.paper',
+										}}
+									>
+										{currentUser.username.charAt(0).toUpperCase()}
+									</Avatar>
 								</IconButton>
 							</Tooltip>
 							<Menu
@@ -266,6 +302,8 @@ Navbar.propTypes = {
 	currentUser: PropTypes.object,
 	logOut: PropTypes.func.isRequired,
 	isAdmin: PropTypes.bool,
+	themeMode: PropTypes.oneOf(['light', 'dark']).isRequired,
+	toggleThemeMode: PropTypes.func.isRequired,
 };
 
 Navbar.defaultProps = {
