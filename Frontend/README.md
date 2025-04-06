@@ -14,12 +14,13 @@ A competitive coding platform where users can solve programming challenges, trac
 ## Tech Stack
 
 - **React**: Frontend library for building user interfaces
+- **Redux Toolkit**: State management with RTK Query for data fetching
 - **Material-UI**: React component library implementing Google's Material Design
 - **React Router**: Navigation and routing
-- **Axios**: HTTP client for API requests
 - **JWT**: Authentication using JSON Web Tokens
 - **ESLint & Prettier**: Code quality and formatting
 - **Husky**: Git hooks for pre-commit linting
+- **Jest & React Testing Library**: Unit testing
 
 ## Prerequisites
 
@@ -122,6 +123,86 @@ The project aims for at least 50% code coverage across:
 - Functions
 - Lines
 
+## Data Fetching with RTK Query
+
+This project uses Redux Toolkit Query (RTK Query) for data fetching, caching, and state management. RTK Query provides several benefits:
+
+- **Automatic Caching**: Cached data is automatically reused without refetching
+- **Polling**: Automatic refetching at specified intervals
+- **Deduplicated Requests**: Multiple components requesting the same data only trigger one request
+- **Prefetching**: Data can be prefetched before it's needed
+- **Optimistic Updates**: UI updates immediately while waiting for server confirmation
+- **Normalized Cache**: Efficient data storage and retrieval
+- **TypeScript Support**: Full type safety for API endpoints
+
+### API Structure
+
+The API is organized into domain-specific slices for better maintainability and debugging:
+
+- **Base API Configuration**: `src/services/api/apiSlice.js`
+- **Auth API**: `src/services/api/auth/authApiSlice.js`
+- **Problems API**: `src/services/api/problems/problemsApiSlice.js`
+- **Users API**: `src/services/api/users/usersApiSlice.js`
+- **Countries API**: `src/services/api/countries/countriesApiSlice.js`
+
+Each slice is responsible for a specific domain and includes all related endpoints. All slices and hooks are exported from `src/services/api/index.js` for easy access.
+
+### Usage Example
+
+```jsx
+// In a component
+import { useGetProblemsQuery } from '../services/api';
+
+function ProblemList() {
+  const { data: problems, isLoading, error } = useGetProblemsQuery();
+
+  if (isLoading) return <div>Loading...</div>;
+  if (error) return <div>Error: {error.message}</div>;
+
+  return (
+    <ul>
+      {problems.map(problem => (
+        <li key={problem._id}>{problem.title}</li>
+      ))}
+    </ul>
+  );
+}
+```
+
+### Service Migration
+
+All API calls have been migrated from individual service files to RTK Query. The old service files are kept for backward compatibility, but they now use RTK Query under the hood and display deprecation warnings.
+
+If you're working on a new component or refactoring an existing one, you should use the RTK Query hooks directly instead of the old service files.
+
+#### Before (deprecated)
+
+```jsx
+import probService from '../services/prob.service';
+
+// In a component
+const fetchProblems = async () => {
+  try {
+    const response = await probService.GetProbs();
+    setProblems(response.data);
+  } catch (error) {
+    console.error('Error fetching problems:', error);
+  }
+};
+```
+
+#### After (recommended)
+
+```jsx
+import { useGetProblemsQuery } from '../services/api';
+
+// In a component
+const { data: problems, isLoading, error } = useGetProblemsQuery();
+
+// The data is automatically fetched and cached
+// No need for loading state, error handling, or useEffect
+```
+
 ## Project Structure
 
 ```text
@@ -135,18 +216,29 @@ Frontend/
 │   │   │   └── common/     # Common component tests
 │   │   ├── services/       # Service tests
 │   │   └── utils/          # Test utilities
+│   ├── app/                # Redux store configuration
+│   │   └── store.js        # Redux store setup
 │   ├── common/             # Common utilities
 │   ├── components/         # React components
 │   │   ├── CreateProblem/  # Admin component for creating problems
 │   │   ├── Home/           # Home screen components
 │   │   ├── Login/          # Login components
 │   │   ├── Navbar/         # Navigation components
-│   │   ├── ProbNumberGen/  # Problem solving components
+│   │   ├── ProblemSolver/  # Problem solving components
 │   │   ├── Profile/        # User profile components
 │   │   ├── Register/       # Registration components
 │   │   ├── Standings/      # Leaderboard components
 │   │   └── common/         # Shared components
+│   ├── features/           # Redux slices and features
+│   │   └── auth/           # Authentication slice
 │   ├── services/           # API services
+│   │   ├── api/            # RTK Query API slices
+│   │   │   ├── auth/        # Auth API endpoints
+│   │   │   ├── problems/    # Problems API endpoints
+│   │   │   ├── users/       # Users API endpoints
+│   │   │   ├── countries/   # Countries API endpoints
+│   │   │   └── apiSlice.js  # Base API configuration
+│   │   └── auth-header.js  # Authentication header utility
 │   ├── App.js              # Main application component
 │   └── index.js            # Application entry point
 ├── .env                    # Environment variables

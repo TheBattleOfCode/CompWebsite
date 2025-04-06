@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import {
 	MenuItem,
 	Select,
@@ -24,46 +24,28 @@ import {
 } from '@mui/material';
 import EmojiEventsIcon from '@mui/icons-material/EmojiEvents';
 import CodeIcon from '@mui/icons-material/Code';
-import authService from '../../services/auth.service';
-import probService from '../../services/prob.service';
+import { useSelector } from 'react-redux';
+import { useGetProblemsQuery } from '../../services/api';
+import { selectCurrentUser } from '../../features/auth/authSlice';
 import ProblemItem from './ProblemItem';
 import { filterProblemsByType } from './utils';
 
 const HomeScreen = () => {
-	const [problems, setProblems] = useState([]);
-	const [filteredProblems, setFilteredProblems] = useState([]);
-	const [loading, setLoading] = useState(true);
-	const [error, setError] = useState('');
 	const [problemType, setProblemType] = useState('all');
-	const currentUser = authService.getCurrentUser();
+	const currentUser = useSelector(selectCurrentUser);
 	const theme = useTheme();
 
-	const fetchProblems = async () => {
-		try {
-			setLoading(true);
-			const response = await probService.GetProbs();
-			setProblems(response.data);
-			setFilteredProblems(response.data);
-			setError('');
-		} catch (error) {
-			console.error('Error fetching problems:', error);
-			setError('Failed to load problems. Please try again later.');
-		} finally {
-			setLoading(false);
-		}
-	};
+	// Fetch problems using RTK Query
+	const { data: problems = [], isLoading, error } = useGetProblemsQuery();
+
+	// Filter problems based on selected type
+	const filteredProblems = filterProblemsByType(problems, problemType);
 
 	const handleTypeChange = (event) => {
-		const type = event.target.value;
-		setProblemType(type);
-		setFilteredProblems(filterProblemsByType(problems, type));
+		setProblemType(event.target.value);
 	};
 
-	useEffect(() => {
-		fetchProblems();
-	}, []);
-
-	if (loading) {
+	if (isLoading) {
 		return (
 			<Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '50vh' }}>
 				<CircularProgress size={60} thickness={4} />
@@ -82,7 +64,7 @@ const HomeScreen = () => {
 				}}
 				variant="filled"
 			>
-				{error}
+				Failed to load problems. Please try again later.
 			</Alert>
 		);
 	}

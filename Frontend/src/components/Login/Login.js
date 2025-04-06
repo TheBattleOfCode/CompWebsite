@@ -22,7 +22,9 @@ import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import Form from 'react-validation/build/form';
 import CheckButton from 'react-validation/build/button';
 import { Link as RouterLink, useLocation } from 'react-router-dom';
-import AuthService from '../../services/auth.service';
+import { useSelector } from 'react-redux';
+import { useLoginMutation } from '../../services/api';
+import { selectCurrentUser } from '../../features/auth/authSlice';
 import { validateRequired } from './utils';
 
 // We're not validating history props as they come from react-router
@@ -32,19 +34,20 @@ const Login = (props) => {
 	const location = useLocation();
 	// eslint-disable-next-line no-unused-vars
 	const theme = useTheme();
+	const currentUser = useSelector(selectCurrentUser);
 
 	const [username, setUsername] = useState('');
 	const [password, setPassword] = useState('');
-	const [loading, setLoading] = useState(false);
 	const [message, setMessage] = useState('');
 	const [notification, setNotification] = useState('');
 	const [notificationOpen, setNotificationOpen] = useState(false);
 	const [showPassword, setShowPassword] = useState(false);
 
+	// RTK Query login mutation
+	const [login, { isLoading }] = useLoginMutation();
+
 	// Check if user is already logged in or if there's a message from redirection
 	useEffect(() => {
-		const currentUser = AuthService.getCurrentUser();
-
 		// If user is logged in, redirect to home
 		if (currentUser) {
 			props.history.push('/home');
@@ -64,7 +67,7 @@ const Login = (props) => {
 				state: rest,
 			});
 		}
-	}, [props.history, location]);
+	}, [props.history, location, currentUser]);
 
 	const handleInputChange = (e, setter) => {
 		setter(e.target.value);
@@ -81,11 +84,11 @@ const Login = (props) => {
 	const handleLogin = (e) => {
 		e.preventDefault();
 		setMessage('');
-		setLoading(true);
 		form.current.validateAll();
 
 		if (checkBtn.current.context._errors.length === 0) {
-			AuthService.login(username, password)
+			login({ username, password })
+				.unwrap()
 				.then(() => {
 					// Redirect to the page the user was trying to access, or to home
 					const { from } = location.state || { from: { pathname: '/home' } };
@@ -93,16 +96,9 @@ const Login = (props) => {
 				})
 				.catch((error) => {
 					const resMessage =
-						(error.response && error.response.data && error.response.data.message) ||
-						error.message ||
-						error.toString();
+						(error.data && error.data.message) || error.error || 'An error occurred during login';
 					setMessage(resMessage);
-				})
-				.finally(() => {
-					setLoading(false);
 				});
-		} else {
-			setLoading(false);
 		}
 	};
 
@@ -194,7 +190,7 @@ const Login = (props) => {
 						variant="contained"
 						color="primary"
 						fullWidth
-						disabled={loading}
+						disabled={isLoading}
 						sx={{
 							py: 1.5,
 							borderRadius: 1.5,
@@ -203,7 +199,7 @@ const Login = (props) => {
 							boxShadow: 3,
 						}}
 					>
-						{loading ? <CircularProgress size={24} sx={{ color: 'white' }} /> : 'Sign In'}
+						{isLoading ? <CircularProgress size={24} sx={{ color: 'white' }} /> : 'Sign In'}
 					</Button>
 
 					{message && (

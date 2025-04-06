@@ -16,7 +16,9 @@ import Brightness4Icon from '@mui/icons-material/Brightness4';
 import Brightness7Icon from '@mui/icons-material/Brightness7';
 import CodeIcon from '@mui/icons-material/Code';
 import { useHistory, useLocation } from 'react-router-dom';
+import { useSelector, useDispatch } from 'react-redux';
 import PropTypes from 'prop-types';
+import { selectCurrentUser, selectIsAdmin, logout } from '../../features/auth/authSlice';
 
 // Define navigation items
 const publicPages = [
@@ -26,11 +28,16 @@ const publicPages = [
 
 const adminPages = [{ screenName: 'Create Problem', link: '/createProb', adminOnly: true }];
 
-function Navbar({ currentUser, logOut, isAdmin, themeMode, toggleThemeMode }) {
+function Navbar({ themeMode, toggleThemeMode }) {
 	const [anchorElNav, setAnchorElNav] = useState(null);
 	const [anchorElUser, setAnchorElUser] = useState(null);
 	const history = useHistory();
 	const location = useLocation();
+	const dispatch = useDispatch();
+
+	// Get user data from Redux
+	const currentUser = useSelector(selectCurrentUser);
+	const isAdmin = useSelector(selectIsAdmin);
 
 	// Combine pages based on user role
 	const availablePages = [...publicPages, ...(isAdmin ? adminPages : [])];
@@ -57,7 +64,7 @@ function Navbar({ currentUser, logOut, isAdmin, themeMode, toggleThemeMode }) {
 		if (setting === 'Profile') {
 			history.push('/profile');
 		} else if (setting === 'Logout') {
-			logOut();
+			dispatch(logout());
 			history.push('/login');
 		}
 	};
@@ -299,15 +306,8 @@ function Navbar({ currentUser, logOut, isAdmin, themeMode, toggleThemeMode }) {
 }
 
 Navbar.propTypes = {
-	currentUser: PropTypes.object,
-	logOut: PropTypes.func.isRequired,
-	isAdmin: PropTypes.bool,
 	themeMode: PropTypes.oneOf(['light', 'dark']).isRequired,
 	toggleThemeMode: PropTypes.func.isRequired,
-};
-
-Navbar.defaultProps = {
-	isAdmin: false,
 };
 
 export default Navbar;

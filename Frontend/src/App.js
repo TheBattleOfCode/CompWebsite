@@ -5,8 +5,9 @@ import { grey, blue, purple, green } from '@mui/material/colors';
 import CssBaseline from '@mui/material/CssBaseline';
 import Container from '@mui/material/Container';
 import PropTypes from 'prop-types';
+import { useSelector, useDispatch } from 'react-redux';
 
-import AuthService from './services/auth.service';
+import { selectCurrentUser, selectIsAdmin, logout } from './features/auth/authSlice';
 
 import Login from './components/Login/Login';
 import Register from './components/Register/Register';
@@ -22,7 +23,7 @@ import Navbar from './components/Navbar/Navbar';
 
 // Create protected route component
 const ProtectedRoute = ({ component: Component, ...rest }) => {
-	const currentUser = AuthService.getCurrentUser();
+	const currentUser = useSelector(selectCurrentUser);
 
 	return (
 		<Route
@@ -49,11 +50,12 @@ ProtectedRoute.propTypes = {
 };
 
 const App = () => {
-	// We're keeping this state for future use but not using it currently
+	const dispatch = useDispatch();
+	// These variables are used in the JSX below
 	// eslint-disable-next-line no-unused-vars
-	const [showModeratorBoard, setShowModeratorBoard] = useState(false);
-	const [showAdminBoard, setShowAdminBoard] = useState(false);
-	const [currentUser, setCurrentUser] = useState(null);
+	const currentUser = useSelector(selectCurrentUser);
+	// eslint-disable-next-line no-unused-vars
+	const isAdmin = useSelector(selectIsAdmin);
 	const [loading, setLoading] = useState(true);
 	const [mode, setMode] = useState(() => {
 		// Try to get the theme mode from localStorage
@@ -131,23 +133,7 @@ const App = () => {
 	};
 
 	useEffect(() => {
-		const initializeAuth = async () => {
-			try {
-				const user = AuthService.getCurrentUser();
-
-				if (user) {
-					setCurrentUser(user);
-					setShowModeratorBoard(user.roles.includes('ROLE_MODERATOR'));
-					setShowAdminBoard(user.roles.includes('ROLE_ADMIN'));
-				}
-			} catch (error) {
-				console.error('Error initializing auth:', error);
-			} finally {
-				setLoading(false);
-			}
-		};
-
-		initializeAuth();
+		setLoading(false);
 
 		EventBus.on('logout', () => {
 			logOut();
@@ -159,10 +145,7 @@ const App = () => {
 	}, []);
 
 	const logOut = () => {
-		AuthService.logout();
-		setShowModeratorBoard(false);
-		setShowAdminBoard(false);
-		setCurrentUser(null);
+		dispatch(logout());
 	};
 
 	if (loading) {
@@ -179,13 +162,7 @@ const App = () => {
 	return (
 		<ThemeProvider theme={theme}>
 			<CssBaseline />
-			<Navbar
-				currentUser={currentUser}
-				logOut={logOut}
-				isAdmin={showAdminBoard}
-				themeMode={mode}
-				toggleThemeMode={toggleThemeMode}
-			/>
+			<Navbar themeMode={mode} toggleThemeMode={toggleThemeMode} />
 			<Container>
 				<Switch>
 					{/* Public routes */}
@@ -199,7 +176,7 @@ const App = () => {
 					<ProtectedRoute exact path="/problem/:id" component={ProblemSolver} />
 
 					{/* Admin-only routes */}
-					<AdminRoute exact path="/createProb" component={CreateProblem} currentUser={currentUser} />
+					<AdminRoute exact path="/createProb" component={CreateProblem} />
 
 					{/* Fallback redirect */}
 					<Redirect from="*" to="/" />
