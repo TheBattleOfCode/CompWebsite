@@ -7,25 +7,25 @@ import { grey } from '@mui/material/colors';
 
 // Create a theme instance for testing
 const theme = createTheme({
-  palette: {
-    mode: 'dark',
-    primary: {
-      main: '#1976d2',
-    },
-    secondary: {
-      main: '#9c27b0',
-    },
-    success: {
-      main: '#66bb6a',
-    },
-    default: {
-      main: grey[300],
-      dark: grey[400],
-    },
-  },
-  typography: {
-    useNextVariants: true,
-  },
+	palette: {
+		mode: 'dark',
+		primary: {
+			main: '#1976d2',
+		},
+		secondary: {
+			main: '#9c27b0',
+		},
+		success: {
+			main: '#66bb6a',
+		},
+		default: {
+			main: grey[300],
+			dark: grey[400],
+		},
+	},
+	typography: {
+		useNextVariants: true,
+	},
 });
 
 /**
@@ -35,54 +35,51 @@ const theme = createTheme({
  * @returns {Object} The render result
  */
 const customRender = (ui, options = {}) => {
-  const {
-    route = '/',
-    history = {},
-    initialState = {},
-    ...renderOptions
-  } = options;
+	// eslint-disable-next-line no-unused-vars
+	const { route = '/', history = {}, initialState = {}, ...renderOptions } = options;
 
-  const Wrapper = ({ children }) => {
-    return (
-      <MemoryRouter initialEntries={[route]}>
-        <ThemeProvider theme={theme}>
-          <CssBaseline />
-          {children}
-        </ThemeProvider>
-      </MemoryRouter>
-    );
-  };
+	// eslint-disable-next-line react/prop-types
+	const Wrapper = ({ children }) => {
+		return (
+			<MemoryRouter initialEntries={[route]}>
+				<ThemeProvider theme={theme}>
+					<CssBaseline />
+					{children}
+				</ThemeProvider>
+			</MemoryRouter>
+		);
+	};
 
-  return render(ui, { wrapper: Wrapper, ...renderOptions });
+	return render(ui, { wrapper: Wrapper, ...renderOptions });
 };
 
 // Mock AuthService
 const mockAuthService = {
-  login: jest.fn(),
-  logout: jest.fn(),
-  register: jest.fn(),
-  getCurrentUser: jest.fn(),
+	login: jest.fn(),
+	logout: jest.fn(),
+	register: jest.fn(),
+	getCurrentUser: jest.fn(),
 };
 
 // Mock localStorage for testing
 const mockLocalStorage = (() => {
-  let store = {};
-  return {
-    getItem: jest.fn(key => store[key] || null),
-    setItem: jest.fn((key, value) => {
-      store[key] = value.toString();
-    }),
-    removeItem: jest.fn(key => {
-      delete store[key];
-    }),
-    clear: jest.fn(() => {
-      store = {};
-    }),
-    _getStore: () => store,
-    _reset: () => {
-      store = {};
-    },
-  };
+	let store = {};
+	return {
+		getItem: jest.fn((key) => store[key] || null),
+		setItem: jest.fn((key, value) => {
+			store[key] = value.toString();
+		}),
+		removeItem: jest.fn((key) => {
+			delete store[key];
+		}),
+		clear: jest.fn(() => {
+			store = {};
+		}),
+		_getStore: () => store,
+		_reset: () => {
+			store = {};
+		},
+	};
 })();
 
 // Re-export everything from testing-library
