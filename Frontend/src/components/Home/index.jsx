@@ -4,11 +4,11 @@ import React from 'react';
 import HomeScreen from './HomeScreen';
 
 const Home = () => {
-    return (
-        <Container>
-            <HomeScreen />
-        </Container>
-    );
+	return (
+		<Container>
+			<HomeScreen />
+		</Container>
+	);
 };
 
 export default Home;

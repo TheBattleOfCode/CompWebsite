@@ -1,5 +1,6 @@
-import React from 'react';
-import { withRouter } from 'react-router-dom';
+import PropTypes from 'prop-types';
+import { useEffect } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 
 /**
  * Parse the JWT token to get the expiration date
@@ -8,11 +9,11 @@ import { withRouter } from 'react-router-dom';
  * @return {object}
  */
 const parseJwt = (token) => {
-    try {
-        return JSON.parse(atob(token.split('.')[1]));
-    } catch (e) {
-        return null;
-    }
+	try {
+		return JSON.parse(atob(token.split('.')[1]));
+	} catch (e) {
+		return null;
+	}
 };
 
 /**
@@ -21,23 +22,29 @@ const parseJwt = (token) => {
  * @param {object} props
  * @return {object} React component
  */
-// We're not validating history and logOut props as they come from react-router and parent component
-// eslint-disable-next-line react/prop-types
-const AuthVerify = (props) => {
-    props.history.listen(() => {
-        const user = JSON.parse(localStorage.getItem('user'));
+const AuthVerify = ({ logOut }) => {
+	const navigate = useNavigate();
+	const location = useLocation();
 
-        if (user) {
-            const decodedJwt = parseJwt(user.accessToken);
+	useEffect(() => {
+		const user = JSON.parse(localStorage.getItem('user'));
 
-            if (decodedJwt.exp * 1000 < Date.now()) {
-                // eslint-disable-next-line react/prop-types
-                props.logOut();
-            }
-        }
-    });
+		if (user) {
+			const decodedJwt = parseJwt(user.accessToken);
 
-    return <div></div>;
+			// If token is expired, log out the user
+			if (decodedJwt.exp * 1000 < Date.now()) {
+				logOut();
+				navigate('/login');
+			}
+		}
+	}, [location, logOut, navigate]);
+
+	return <div></div>;
 };
 
-export default withRouter(AuthVerify);
+AuthVerify.propTypes = {
+	logOut: PropTypes.func.isRequired,
+};
+
+export default AuthVerify;
