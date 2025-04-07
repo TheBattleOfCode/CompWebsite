@@ -1,5 +1,5 @@
-import React from 'react';
 import { Alert } from '@mui/material';
+import React from 'react';
 
 /**
  * Validates that a field is not empty
@@ -7,8 +7,8 @@ import { Alert } from '@mui/material';
  * @returns {JSX.Element|undefined} Alert component if validation fails, undefined otherwise
  */
 export const validateRequired = (value) => {
-	if (!value) {
-		return <Alert severity="error">This field is required!</Alert>;
-	}
-	return undefined;
+    if (!value) {
+        return <Alert severity="error">This field is required!</Alert>;
+    }
+    return undefined;
 };

@@ -5,13 +5,13 @@
  * @returns {Array} Filtered array of problems
  */
 export const filterProblemsByType = (problems, type) => {
-	if (!problems || !Array.isArray(problems)) {
-		return [];
-	}
+    if (!problems || !Array.isArray(problems)) {
+        return [];
+    }
 
-	if (type === 'all') {
-		return problems;
-	}
+    if (type === 'all') {
+        return problems;
+    }
 
-	return problems.filter((problem) => problem.type === type);
+    return problems.filter((problem) => problem.type === type);
 };
