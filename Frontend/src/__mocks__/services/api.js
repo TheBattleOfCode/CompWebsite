@@ -21,34 +21,34 @@ export const useGetStandingsQuery = jest.fn();
 export const getCurrentUser = jest.fn();
 
 export const apiSlice = {
-    endpoints: {
-        login: { matchFulfilled: 'login.matchFulfilled' },
-        register: { matchFulfilled: 'register.matchFulfilled' },
-    },
+	endpoints: {
+		login: { matchFulfilled: 'login.matchFulfilled' },
+		register: { matchFulfilled: 'register.matchFulfilled' },
+	},
 };
 
 export const authApiSlice = {
-    endpoints: {
-        login: { matchFulfilled: 'login.matchFulfilled' },
-        register: { matchFulfilled: 'register.matchFulfilled' },
-    },
+	endpoints: {
+		login: { matchFulfilled: 'login.matchFulfilled' },
+		register: { matchFulfilled: 'register.matchFulfilled' },
+	},
 };
 
 export const problemsApiSlice = {
-    endpoints: {
-        getProblems: { matchFulfilled: 'getProblems.matchFulfilled' },
-        getProblem: { matchFulfilled: 'getProblem.matchFulfilled' },
-    },
+	endpoints: {
+		getProblems: { matchFulfilled: 'getProblems.matchFulfilled' },
+		getProblem: { matchFulfilled: 'getProblem.matchFulfilled' },
+	},
 };
 
 export const usersApiSlice = {
-    endpoints: {
-        getUsers: { matchFulfilled: 'getUsers.matchFulfilled' },
-    },
+	endpoints: {
+		getUsers: { matchFulfilled: 'getUsers.matchFulfilled' },
+	},
 };
 
 export const countriesApiSlice = {
-    endpoints: {
-        getCountries: { matchFulfilled: 'getCountries.matchFulfilled' },
-    },
+	endpoints: {
+		getCountries: { matchFulfilled: 'getCountries.matchFulfilled' },
+	},
 };

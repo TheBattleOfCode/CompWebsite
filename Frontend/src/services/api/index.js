@@ -3,25 +3,25 @@ import { apiSlice, getCurrentUser } from './apiSlice';
 import { authApiSlice, useLoginMutation, useRegisterMutation } from './auth/authApiSlice';
 import { countriesApiSlice, useGetCountriesQuery } from './countries/countriesApiSlice';
 import {
-    problemsApiSlice,
-    useGetProblemsQuery,
-    useGetProblemQuery,
-    useCreateProblemMutation,
-    useDeleteProblemMutation,
-    useSaveGeneratedProblemMutation,
-    useGetUserProblemQuery,
-    useGetProblemStatsQuery,
-    useSubmitAnswerMutation,
+	problemsApiSlice,
+	useGetProblemsQuery,
+	useGetProblemQuery,
+	useCreateProblemMutation,
+	useDeleteProblemMutation,
+	useSaveGeneratedProblemMutation,
+	useGetUserProblemQuery,
+	useGetProblemStatsQuery,
+	useSubmitAnswerMutation,
 } from './problems/problemsApiSlice';
 import {
-    usersApiSlice,
-    useGetPublicContentQuery,
-    useGetUserBoardQuery,
-    useGetModeratorBoardQuery,
-    useGetAdminBoardQuery,
-    useUpdateUserMutation,
-    useGetUsersQuery,
-    useGetStandingsQuery,
+	usersApiSlice,
+	useGetPublicContentQuery,
+	useGetUserBoardQuery,
+	useGetModeratorBoardQuery,
+	useGetAdminBoardQuery,
+	useUpdateUserMutation,
+	useGetUsersQuery,
+	useGetStandingsQuery,
 } from './users/usersApiSlice';
 
 // Export all API slices
@@ -29,36 +29,36 @@ export { apiSlice, authApiSlice, problemsApiSlice, usersApiSlice, countriesApiSl
 
 // Export all hooks
 export {
-    // Auth hooks
-    useLoginMutation,
-    useRegisterMutation,
+	// Auth hooks
+	useLoginMutation,
+	useRegisterMutation,
 
-    // Problem hooks
-    useGetProblemsQuery,
-    useGetProblemQuery,
-    useCreateProblemMutation,
-    useDeleteProblemMutation,
+	// Problem hooks
+	useGetProblemsQuery,
+	useGetProblemQuery,
+	useCreateProblemMutation,
+	useDeleteProblemMutation,
 
-    // Generated Problem hooks
-    useSaveGeneratedProblemMutation,
-    useGetUserProblemQuery,
-    useGetProblemStatsQuery,
-    useSubmitAnswerMutation,
+	// Generated Problem hooks
+	useSaveGeneratedProblemMutation,
+	useGetUserProblemQuery,
+	useGetProblemStatsQuery,
+	useSubmitAnswerMutation,
 
-    // User hooks
-    useGetPublicContentQuery,
-    useGetUserBoardQuery,
-    useGetModeratorBoardQuery,
-    useGetAdminBoardQuery,
-    useUpdateUserMutation,
-    useGetUsersQuery,
+	// User hooks
+	useGetPublicContentQuery,
+	useGetUserBoardQuery,
+	useGetModeratorBoardQuery,
+	useGetAdminBoardQuery,
+	useUpdateUserMutation,
+	useGetUsersQuery,
 
-    // Countries hooks
-    useGetCountriesQuery,
+	// Countries hooks
+	useGetCountriesQuery,
 
-    // Standings hooks
-    useGetStandingsQuery,
+	// Standings hooks
+	useGetStandingsQuery,
 
-    // Helper functions
-    getCurrentUser,
+	// Helper functions
+	getCurrentUser,
 };

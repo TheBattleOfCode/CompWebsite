@@ -7,8 +7,8 @@ import React from 'react';
  * @returns {JSX.Element|undefined} Alert component if validation fails, undefined otherwise
  */
 export const validateRequired = (value) => {
-    if (!value) {
-        return <Alert severity="error">This field is required!</Alert>;
-    }
-    return undefined;
+	if (!value) {
+		return <Alert severity="error">This field is required!</Alert>;
+	}
+	return undefined;
 };

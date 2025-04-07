@@ -1,25 +1,25 @@
 .loading-container {
-    display: flex;
-    justify-content: center;
-    padding: 2rem;
+	display: flex;
+	justify-content: center;
+	padding: 2rem;
 }
 
 .sortable-header {
-    cursor: pointer;
-    user-select: none;
-    display: flex;
-    align-items: center;
+	cursor: pointer;
+	user-select: none;
+	display: flex;
+	align-items: center;
 }
 
 .sortable-header svg {
-    margin-left: 0.5rem;
+	margin-left: 0.5rem;
 }
 
 .current-user-row {
-    background-color: rgba(25, 118, 210, 0.1);
+	background-color: rgba(25, 118, 210, 0.1);
 }
 
 .admin-user {
-    font-weight: bold;
-    color: #9c27b0;
+	font-weight: bold;
+	color: #9c27b0;
 }

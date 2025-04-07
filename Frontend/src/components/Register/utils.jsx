@@ -8,10 +8,10 @@ import { isEmail } from 'validator';
  * @returns {JSX.Element|undefined} Alert component if validation fails, undefined otherwise
  */
 export const validateRequired = (value) => {
-    if (!value) {
-        return <Alert severity="error">This field is required!</Alert>;
-    }
-    return undefined;
+	if (!value) {
+		return <Alert severity="error">This field is required!</Alert>;
+	}
+	return undefined;
 };
 
 /**
@@ -20,10 +20,10 @@ export const validateRequired = (value) => {
  * @returns {JSX.Element|undefined} Alert component if validation fails, undefined otherwise
  */
 export const validateEmail = (value) => {
-    if (!isEmail(value)) {
-        return <Alert severity="error">This is not a valid email.</Alert>;
-    }
-    return undefined;
+	if (!isEmail(value)) {
+		return <Alert severity="error">This is not a valid email.</Alert>;
+	}
+	return undefined;
 };
 
 /**
@@ -32,10 +32,10 @@ export const validateEmail = (value) => {
  * @returns {JSX.Element|undefined} Alert component if validation fails, undefined otherwise
  */
 export const validateUsername = (value) => {
-    if (value.length < 3 || value.length > 20) {
-        return <Alert severity="error">The username must be between 3 and 20 characters.</Alert>;
-    }
-    return undefined;
+	if (value.length < 3 || value.length > 20) {
+		return <Alert severity="error">The username must be between 3 and 20 characters.</Alert>;
+	}
+	return undefined;
 };
 
 /**
@@ -44,8 +44,8 @@ export const validateUsername = (value) => {
  * @returns {JSX.Element|undefined} Alert component if validation fails, undefined otherwise
  */
 export const validatePassword = (value) => {
-    if (value.length < 6 || value.length > 40) {
-        return <Alert severity="error">The password must be between 6 and 40 characters.</Alert>;
-    }
-    return undefined;
+	if (value.length < 6 || value.length > 40) {
+		return <Alert severity="error">The password must be between 6 and 40 characters.</Alert>;
+	}
+	return undefined;
 };

@@ -3,7 +3,6 @@ import CssBaseline from '@mui/material/CssBaseline';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import { configureStore } from '@reduxjs/toolkit';
 import { render as rtlRender } from '@testing-library/react';
-import React from 'react';
 import { Provider } from 'react-redux';
 import { MemoryRouter } from 'react-router-dom';
 import { vi } from 'vitest';
@@ -15,25 +14,25 @@ import { countriesApiSlice } from '../../services/api/countries/countriesApiSlic
 
 // Create a theme instance for testing
 const theme = createTheme({
-    palette: {
-        mode: 'dark',
-        primary: {
-            main: '#1976d2',
-        },
-        secondary: {
-            main: '#9c27b0',
-        },
-        success: {
-            main: '#66bb6a',
-        },
-        default: {
-            main: grey[300],
-            dark: grey[400],
-        },
-    },
-    typography: {
-        useNextVariants: true,
-    },
+	palette: {
+		mode: 'dark',
+		primary: {
+			main: '#1976d2',
+		},
+		secondary: {
+			main: '#9c27b0',
+		},
+		success: {
+			main: '#66bb6a',
+		},
+		default: {
+			main: grey[300],
+			dark: grey[400],
+		},
+	},
+	typography: {
+		useNextVariants: true,
+	},
 });
 
 /**
@@ -43,76 +42,73 @@ const theme = createTheme({
  * @returns {Object} The render result
  */
 const customRender = (ui, options = {}) => {
-    // eslint-disable-next-line no-unused-vars
-    const {
-        route = '/',
-        history = {},
-        initialState = {},
-        store = configureStore({
-            reducer: {
-                auth: authReducer,
-                [apiSlice.reducerPath]: apiSlice.reducer,
-                [countriesApiSlice.reducerPath]: countriesApiSlice.reducer,
-            },
-            middleware: (getDefaultMiddleware) =>
-                getDefaultMiddleware().concat(apiSlice.middleware).concat(countriesApiSlice.middleware),
-            preloadedState: initialState,
-        }),
-        ...renderOptions
-    } = options;
+	const {
+		route = '/',
+		// eslint-disable-next-line no-unused-vars
+		_history = {},
+		initialState = {},
+		store = configureStore({
+			reducer: {
+				auth: authReducer,
+				[apiSlice.reducerPath]: apiSlice.reducer,
+				[countriesApiSlice.reducerPath]: countriesApiSlice.reducer,
+			},
+			middleware: (getDefaultMiddleware) =>
+				getDefaultMiddleware().concat(apiSlice.middleware).concat(countriesApiSlice.middleware),
+			preloadedState: initialState,
+		}),
+		...renderOptions
+	} = options;
 
-    // eslint-disable-next-line react/prop-types
-    const Wrapper = ({ children }) => {
-        return (
-            <Provider store={store}>
-                <MemoryRouter initialEntries={[route]}>
-                    <ThemeProvider theme={theme}>
-                        <CssBaseline />
-                        {children}
-                    </ThemeProvider>
-                </MemoryRouter>
-            </Provider>
-        );
-    };
+	// eslint-disable-next-line react/prop-types
+	const Wrapper = ({ children }) => {
+		return (
+			<Provider store={store}>
+				<MemoryRouter initialEntries={[route]}>
+					<ThemeProvider theme={theme}>
+						<CssBaseline />
+						{children}
+					</ThemeProvider>
+				</MemoryRouter>
+			</Provider>
+		);
+	};
 
-    return rtlRender(ui, { wrapper: Wrapper, ...renderOptions });
+	return rtlRender(ui, { wrapper: Wrapper, ...renderOptions });
 };
 
 // Mock AuthService
 const mockAuthService = {
-    login: vi.fn(),
-    logout: vi.fn(),
-    register: vi.fn(),
-    getCurrentUser: vi.fn(),
+	login: vi.fn(),
+	logout: vi.fn(),
+	register: vi.fn(),
+	getCurrentUser: vi.fn(),
 };
 
 // Mock localStorage for testing
 const mockLocalStorage = (() => {
-    let store = {};
-    return {
-        getItem: vi.fn((key) => store[key] || null),
-        setItem: vi.fn((key, value) => {
-            store[key] = value.toString();
-        }),
-        removeItem: vi.fn((key) => {
-            delete store[key];
-        }),
-        clear: vi.fn(() => {
-            store = {};
-        }),
-        _getStore: () => store,
-        _reset: () => {
-            store = {};
-        },
-    };
+	let store = {};
+	return {
+		getItem: vi.fn((key) => store[key] || null),
+		setItem: vi.fn((key, value) => {
+			store[key] = value.toString();
+		}),
+		removeItem: vi.fn((key) => {
+			delete store[key];
+		}),
+		clear: vi.fn(() => {
+			store = {};
+		}),
+		_getStore: () => store,
+		_reset: () => {
+			store = {};
+		},
+	};
 })();
 
 // Mock functions
 export const mockNavigate = vi.fn();
 export const mockUseNavigate = vi.fn(() => mockNavigate);
 
-// Re-export everything from testing-library
-export * from '@testing-library/react';
-
-// Override the render method
+// Export our custom render and mocks
 export { customRender as render, mockAuthService, mockLocalStorage };
