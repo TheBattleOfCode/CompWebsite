@@ -8,11 +8,11 @@ import { withRouter } from 'react-router-dom';
  * @return {object}
  */
 const parseJwt = (token) => {
-	try {
-		return JSON.parse(atob(token.split('.')[1]));
-	} catch (e) {
-		return null;
-	}
+    try {
+        return JSON.parse(atob(token.split('.')[1]));
+    } catch (e) {
+        return null;
+    }
 };
 
 /**
@@ -24,20 +24,20 @@ const parseJwt = (token) => {
 // We're not validating history and logOut props as they come from react-router and parent component
 // eslint-disable-next-line react/prop-types
 const AuthVerify = (props) => {
-	props.history.listen(() => {
-		const user = JSON.parse(localStorage.getItem('user'));
+    props.history.listen(() => {
+        const user = JSON.parse(localStorage.getItem('user'));
 
-		if (user) {
-			const decodedJwt = parseJwt(user.accessToken);
+        if (user) {
+            const decodedJwt = parseJwt(user.accessToken);
 
-			if (decodedJwt.exp * 1000 < Date.now()) {
-				// eslint-disable-next-line react/prop-types
-				props.logOut();
-			}
-		}
-	});
+            if (decodedJwt.exp * 1000 < Date.now()) {
+                // eslint-disable-next-line react/prop-types
+                props.logOut();
+            }
+        }
+    });
 
-	return <div></div>;
+    return <div></div>;
 };
 
 export default withRouter(AuthVerify);

@@ -1,89 +1,59 @@
 {
   "name": "battle-of-code-frontend",
-  "version": "0.1.0",
   "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "start": "vite",
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage",
+    "lint": "eslint --ext .js,.jsx src/",
+    "lint:fix": "eslint --ext .js,.jsx src/ --fix",
+    "prettier:check": "prettier --check \"src/**/*.{js,jsx,ts,tsx,json,css,scss,md}\"",
+    "prettier:write": "prettier --write \"src/**/*.{js,jsx,ts,tsx,json,css,scss,md}\"",
+    "prepare": "husky"
+  },
   "dependencies": {
-    "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
     "@emotion/react": "^11.11.4",
     "@emotion/styled": "^11.11.5",
     "@mui/icons-material": "^5.15.18",
     "@mui/material": "^5.15.18",
     "@reduxjs/toolkit": "^2.6.1",
-    "axios": "^0.19.2",
+    "axios": "^1.6.7",
     "prop-types": "^15.8.1",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
-    "react-icons": "^4.3.1",
+    "react-icons": "^5.0.1",
     "react-redux": "^9.2.0",
-    "react-router-dom": "^5.2.0",
-    "react-scripts": "^5.0.1",
-    "react-validation": "^3.0.7",
+    "react-router-dom": "^6.22.3",
     "remarkable": "^2.0.1",
-    "validator": "^13.0.0"
-  },
-  "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test",
-    "test:coverage": "react-scripts test --coverage --watchAll=false",
-    "eject": "react-scripts eject",
-    "lint": "eslint --ext .js,.jsx src/",
-    "lint:fix": "eslint --ext .js,.jsx src/ --fix",
-    "prettier:check": "prettier --check \"src/**/*.{js,jsx,ts,tsx,json,css,scss,md}\"",
-    "prettier:write": "prettier --write \"src/**/*.{js,jsx,ts,tsx,json,css,scss,md}\"",
-    "prepare": "node setup-husky.js",
-    "setup-husky": "node setup-husky.js"
-  },
-  "eslintConfig": {
-    "extends": [
-      "react-app",
-      "react-app/jest",
-      "prettier"
-    ],
-    "rules": {
-      "react/jsx-filename-extension": [
-        1,
-        {
-          "extensions": [
-            ".js",
-            ".jsx"
-          ]
-        }
-      ],
-      "react/react-in-jsx-scope": "off",
-      "no-unused-vars": "warn",
-      "no-console": "warn"
-    }
-  },
-  "browserslist": {
-    "production": [
-      ">0.2%",
-      "not dead",
-      "not op_mini all"
-    ],
-    "development": [
-      "last 1 chrome version",
-      "last 1 firefox version",
-      "last 1 safari version"
-    ]
+    "validator": "^13.11.0"
   },
   "devDependencies": {
-    "@testing-library/dom": "^10.4.0",
     "@testing-library/jest-dom": "^6.6.3",
-    "@testing-library/react": "^16.3.0",
+    "@testing-library/react": "^14.2.1",
     "@testing-library/user-event": "^14.6.1",
-    "eslint": "^8.57.0",
+    "@vitejs/plugin-react": "^4.2.1",
+    "eslint": "^9.0.0-alpha.0",
     "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-import": "^2.29.1",
+    "eslint-plugin-jsx-a11y": "^6.8.0",
     "eslint-plugin-prettier": "^5.1.3",
     "eslint-plugin-react": "^7.34.1",
+    "eslint-plugin-react-hooks": "^4.6.0",
+    "eslint-plugin-react-refresh": "^0.4.5",
     "husky": "^9.0.11",
-    "jest-environment-jsdom": "^29.7.0",
+    "jsdom": "^24.0.0",
     "lint-staged": "^15.2.2",
     "msw": "^2.7.3",
-    "prettier": "3.2.5"
-  },
-  "resolutions": {
-    "eslint-plugin-react": "^7.32.0"
+    "prettier": "3.2.5",
+    "vite": "^5.1.6",
+    "vite-plugin-svgr": "^4.2.0",
+    "vitest": "^1.3.1"
   },
   "lint-staged": {
     "*.{js,jsx}": [
@@ -92,25 +62,6 @@
     ],
     "*.{json,css,md}": [
       "prettier --write"
-    ]
-  },
-  "jest": {
-    "collectCoverageFrom": [
-      "src/**/*.{js,jsx}",
-      "!src/index.js",
-      "!src/serviceWorker.js",
-      "!src/reportWebVitals.js"
-    ],
-    "coverageThreshold": {
-      "global": {
-        "statements": 50,
-        "branches": 50,
-        "functions": 50,
-        "lines": 50
-      }
-    },
-    "testMatch": [
-      "<rootDir>/src/__tests__/**/*.test.{js,jsx}"
     ]
   }
 }
