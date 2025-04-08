@@ -35,7 +35,6 @@ const Login = () => {
 	const checkBtn = useRef();
 	const location = useLocation();
 	const navigate = useNavigate();
-	// eslint-disable-next-line no-unused-vars
 	const theme = useTheme();
 	const currentUser = useSelector(selectCurrentUser);
 
@@ -63,7 +62,6 @@ const Login = () => {
 			setNotificationOpen(true);
 
 			// Clear the message from location state to prevent showing it again on refresh
-			// eslint-disable-next-line no-unused-vars
 			const { message, ...rest } = location.state;
 			navigate(
 				{

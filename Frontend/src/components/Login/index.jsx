@@ -52,7 +52,6 @@ const Login = () => {
 			setNotificationOpen(true);
 
 			// Clear the message from location state to prevent showing it again on refresh
-			// eslint-disable-next-line no-unused-vars
 			const { message, ...rest } = location.state;
 			navigate(
 				{

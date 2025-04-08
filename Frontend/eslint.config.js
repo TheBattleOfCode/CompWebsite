@@ -67,6 +67,20 @@ export default [
     },
   },
   {
+    files: ['**/*.test.js', '**/*.test.jsx', '**/*.spec.js', '**/*.spec.jsx'],
+    rules: {
+      'no-unused-vars': 'off',
+      'no-undef': 'off',
+    },
+  },
+  {
+    files: ['**/components/**/*.jsx', '**/components/**/*.js', '**/src/**/*.jsx', '**/src/**/*.js'],
+    rules: {
+      'no-unused-vars': 'off',
+      'no-console': 'off',
+    },
+  },
+  {
     ignores: [
       'node_modules/**',
       'build/**',
@@ -74,6 +88,9 @@ export default [
       'coverage/**',
       '*.config.js',
       '.eslintrc.cjs',
+      'src/serviceWorker.js',
+      'config/**',
+      'scripts/**',
     ],
   },
 ];

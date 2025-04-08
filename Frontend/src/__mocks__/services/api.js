@@ -1,24 +1,26 @@
-// Mock API service
-export const useLoginMutation = jest.fn();
-export const useRegisterMutation = jest.fn();
-export const useGetProblemsQuery = jest.fn();
-export const useGetProblemQuery = jest.fn();
-export const useCreateProblemMutation = jest.fn();
-export const useDeleteProblemMutation = jest.fn();
-export const useSaveGeneratedProblemMutation = jest.fn();
-export const useGetUserProblemQuery = jest.fn();
-export const useGetProblemStatsQuery = jest.fn();
-export const useSubmitAnswerMutation = jest.fn();
-export const useGetPublicContentQuery = jest.fn();
-export const useGetUserBoardQuery = jest.fn();
-export const useGetModeratorBoardQuery = jest.fn();
-export const useGetAdminBoardQuery = jest.fn();
-export const useUpdateUserMutation = jest.fn();
-export const useGetUsersQuery = jest.fn();
-export const useGetCountriesQuery = jest.fn();
-export const useGetStandingsQuery = jest.fn();
+import { vi } from 'vitest';
 
-export const getCurrentUser = jest.fn();
+// Mock API service
+export const useLoginMutation = vi.fn();
+export const useRegisterMutation = vi.fn();
+export const useGetProblemsQuery = vi.fn();
+export const useGetProblemQuery = vi.fn();
+export const useCreateProblemMutation = vi.fn();
+export const useDeleteProblemMutation = vi.fn();
+export const useSaveGeneratedProblemMutation = vi.fn();
+export const useGetUserProblemQuery = vi.fn();
+export const useGetProblemStatsQuery = vi.fn();
+export const useSubmitAnswerMutation = vi.fn();
+export const useGetPublicContentQuery = vi.fn();
+export const useGetUserBoardQuery = vi.fn();
+export const useGetModeratorBoardQuery = vi.fn();
+export const useGetAdminBoardQuery = vi.fn();
+export const useUpdateUserMutation = vi.fn();
+export const useGetUsersQuery = vi.fn();
+export const useGetCountriesQuery = vi.fn();
+export const useGetStandingsQuery = vi.fn();
+
+export const getCurrentUser = vi.fn();
 
 export const apiSlice = {
 	endpoints: {

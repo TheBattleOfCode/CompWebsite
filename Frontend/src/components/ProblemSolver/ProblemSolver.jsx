@@ -18,7 +18,7 @@ import {
 	CircularProgress,
 	useTheme,
 } from '@mui/material';
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom';
 import { Remarkable } from 'remarkable';
@@ -39,14 +39,15 @@ function ProblemSolver() {
 	const currentUser = useSelector(selectCurrentUser);
 	const theme = useTheme();
 
-	const md = new Remarkable({
+	// Use useMemo to prevent the Remarkable instance from being recreated on every render
+	const md = useMemo(() => new Remarkable({
 		html: false, // Enable HTML tags in source
 		xhtmlOut: false, // Use '/' to close single tags (<br />)
 		breaks: true, // Convert '\n' in paragraphs into <br>
 		langPrefix: 'language-', // CSS language prefix for fenced blocks
 		linkify: true, // Autoconvert URL-like text to links
 		typographer: true, // Enable smartypants and other sweet transforms
-	});
+	}), []);
 
 	// Fetch problem data
 	const { data: problem, isLoading: problemLoading, error: problemError } = useGetProblemQuery(id);
