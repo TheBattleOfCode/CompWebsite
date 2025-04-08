@@ -15,7 +15,7 @@ export default defineConfig({
       exclude: [
         'node_modules/',
         'src/setupTests.js',
-        'src/index.js',
+        'src/index.jsx',
       ],
       thresholds: {
         statements: 50,
