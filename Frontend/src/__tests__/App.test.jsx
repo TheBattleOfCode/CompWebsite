@@ -57,7 +57,9 @@ vi.mock('react-redux', async () => {
 
 describe('App Component', () => {
   it('renders without crashing', () => {
+    // Render the App component
     const { container } = render(<App />);
+    // Check that the container is defined
     expect(container).toBeDefined();
   });
 });

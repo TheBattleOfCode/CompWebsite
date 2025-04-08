@@ -30,7 +30,6 @@ import { validateRequired, validateEmail, validateUsername, validatePassword } f
 const Register = (props) => {
 	const form = useRef();
 	const checkBtn = useRef();
-	// eslint-disable-next-line no-unused-vars
 	const theme = useTheme();
 
 	const [username, setUsername] = useState('');

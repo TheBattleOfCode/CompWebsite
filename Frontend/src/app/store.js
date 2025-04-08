@@ -5,11 +5,8 @@ import authReducer from '../features/auth/authSlice';
 import {
 	apiSlice,
 	// These slices are imported for completeness but not directly used in this file
-	// eslint-disable-next-line no-unused-vars
 	authApiSlice,
-	// eslint-disable-next-line no-unused-vars
 	problemsApiSlice,
-	// eslint-disable-next-line no-unused-vars
 	usersApiSlice,
 	countriesApiSlice,
 } from '../services/api';

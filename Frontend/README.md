@@ -16,16 +16,17 @@ A competitive coding platform where users can solve programming challenges, trac
 - **React**: Frontend library for building user interfaces
 - **Redux Toolkit**: State management with RTK Query for data fetching
 - **Material-UI**: React component library implementing Google's Material Design
-- **React Router**: Navigation and routing
+- **React Router v6**: Navigation and routing
 - **JWT**: Authentication using JSON Web Tokens
-- **ESLint & Prettier**: Code quality and formatting
+- **ESLint 9.x & Prettier**: Code quality and formatting
 - **Husky**: Git hooks for pre-commit linting
-- **Jest & React Testing Library**: Unit testing
+- **Vitest & React Testing Library**: Unit testing
+- **Vite**: Fast, modern build tool and development server
 
 ## Prerequisites
 
-- Node.js (v14.x or higher)
-- npm (v6.x or higher)
+- Node.js (v16.x or higher)
+- npm (v8.x or higher) or pnpm (v8.x or higher)
 
 ## Installation
 
@@ -40,14 +41,15 @@ A competitive coding platform where users can solve programming challenges, trac
 
    ```bash
    npm install
+   # or
+   pnpm install
    ```
 
 3. Set up environment variables:
    Create a `.env` file in the root directory with the following content:
 
    ```env
-   PORT=8081
-   REACT_APP_API_URL=http://localhost:8080/api
+   VITE_API_URL=http://localhost:8080/api
    NODE_ENV=development
    ```
 
@@ -56,10 +58,12 @@ A competitive coding platform where users can solve programming challenges, trac
 ### Development Mode
 
 ```bash
-npm start
+npm run dev
+# or
+pnpm dev
 ```
 
-This will start the development server at [http://localhost:8081](http://localhost:8081).
+This will start the development server at [http://localhost:5173](http://localhost:5173).
 
 ### Production Build
 
@@ -67,7 +71,7 @@ This will start the development server at [http://localhost:8081](http://localho
 npm run build
 ```
 
-This creates a production-ready build in the `build` folder.
+This creates a production-ready build in the `dist` folder.
 
 ## Code Quality
 
@@ -101,14 +105,14 @@ npm test
 npm run test:coverage
 ```
 
-The project uses Jest and React Testing Library for unit testing. All tests are centralized in the `__tests__` directory with a structure that mirrors the main source code.
+The project uses Vitest and React Testing Library for unit testing. All tests are centralized in the `__tests__` directory with a structure that mirrors the main source code.
 
 #### Test Structure
 
 All tests are organized in a dedicated `__tests__` directory structure that mirrors the main source code:
 
 - `src/setupTests.js` - Global test setup
-- `src/__tests__/utils/test-utils.js` - Custom render function and test utilities
+- `src/__tests__/utils/test-utils.jsx` - Custom render function and test utilities
 - `src/__tests__/components/` - Component tests organized by feature
 - `src/__tests__/services/` - Service tests
 
@@ -239,11 +243,13 @@ Frontend/
 │   │   │   ├── countries/   # Countries API endpoints
 │   │   │   └── apiSlice.js  # Base API configuration
 │   │   └── auth-header.js  # Authentication header utility
-│   ├── App.js              # Main application component
-│   └── index.js            # Application entry point
+│   ├── App.jsx             # Main application component
+│   └── index.jsx           # Application entry point
 ├── .env                    # Environment variables
-├── .eslintrc.js            # ESLint configuration
+├── eslint.config.js        # ESLint configuration (ESLint 9.x)
 ├── .prettierrc.json        # Prettier configuration
+├── vite.config.js          # Vite configuration
+├── vitest.config.js        # Vitest configuration
 └── package.json            # Project dependencies and scripts
 ```
 

@@ -44,7 +44,6 @@ const theme = createTheme({
 const customRender = (ui, options = {}) => {
 	const {
 		route = '/',
-		// eslint-disable-next-line no-unused-vars
 		_history = {},
 		initialState = {},
 		store = configureStore({
@@ -60,7 +59,6 @@ const customRender = (ui, options = {}) => {
 		...renderOptions
 	} = options;
 
-	 
 	const Wrapper = ({ children }) => {
 		return (
 			<Provider store={store}>

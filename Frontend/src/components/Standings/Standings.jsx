@@ -35,7 +35,6 @@ const Standings = () => {
 	const [selectedCountry, setSelectedCountry] = useState('All');
 
 	// Sort countries alphabetically - keeping this for future use
-	// eslint-disable-next-line no-unused-vars
 	const sortedCountries = useMemo(() => {
 		return [...(countries || [])].sort((a, b) => a.name?.common?.localeCompare(b.name?.common));
 	}, [countries]);
