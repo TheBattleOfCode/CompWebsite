@@ -60,7 +60,7 @@ const CreateProblem = () => {
 		xhtmlOut: false, // Use '/' to close single tags (<br />)
 		breaks: true, // Convert '\n' in paragraphs into <br>
 		langPrefix: 'language-', // CSS language prefix for fenced blocks
-		// eslint-disable-next-line
+		 
 		linkify: true, // Auto-convert URL-like text to links
 		typographer: true, // Enable smart punctuation and other transforms
 	});

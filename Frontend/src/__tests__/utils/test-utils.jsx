@@ -60,7 +60,7 @@ const customRender = (ui, options = {}) => {
 		...renderOptions
 	} = options;
 
-	// eslint-disable-next-line react/prop-types
+	 
 	const Wrapper = ({ children }) => {
 		return (
 			<Provider store={store}>
