@@ -1,6 +1,7 @@
 package com.comp.web.security.jwt;
 
-import com.comp.web.service.impl.UserDetailsServiceImpl;
+import com.comp.web.service.TokenService;
+import com.comp.web.service.UserDetailsService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
@@ -22,7 +23,10 @@ public class AuthTokenFilter extends OncePerRequestFilter {
     private JwtUtilsInterface jwtUtils;
 
     @Autowired
-    private UserDetailsServiceImpl userDetailsService;
+    private UserDetailsService userDetailsService;
+
+    @Autowired
+    private TokenService tokenService;
 
     private static final Logger logger = LoggerFactory.getLogger(AuthTokenFilter.class);
 
@@ -31,7 +35,7 @@ public class AuthTokenFilter extends OncePerRequestFilter {
             throws ServletException, IOException {
         try {
             String jwt = parseJwt(request);
-            if (jwt != null && jwtUtils.validateJwtToken(jwt)) {
+            if (jwt != null && jwtUtils.validateJwtToken(jwt) && validateTokenInDatabase(jwt)) {
                 String username = jwtUtils.getUserNameFromJwtToken(jwt);
 
                 UserDetails userDetails = userDetailsService.loadUserByUsername(username);
@@ -59,5 +63,11 @@ public class AuthTokenFilter extends OncePerRequestFilter {
         }
 
         return null;
+    }
+
+    private boolean validateTokenInDatabase(String token) {
+        return tokenService.findByAccessToken(token)
+                .map(t -> !t.isInvoked() && t.getAccessTokenExpiryDate().isAfter(java.time.Instant.now()))
+                .orElse(false);
     }
 }

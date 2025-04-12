@@ -8,14 +8,14 @@ import com.comp.web.model.dto.response.JwtResponse;
 import com.comp.web.model.dto.response.MessageResponse;
 import com.comp.web.model.dto.response.TokenRefreshResponse;
 import com.comp.web.model.entity.ERole;
-import com.comp.web.model.entity.RefreshToken;
 import com.comp.web.model.entity.Role;
+import com.comp.web.model.entity.Token;
 import com.comp.web.model.entity.User;
 import com.comp.web.repository.RoleRepository;
 import com.comp.web.repository.UserRepository;
 import com.comp.web.security.jwt.JwtUtilsInterface;
 import com.comp.web.service.AuthService;
-import com.comp.web.service.RefreshTokenService;
+import com.comp.web.service.TokenService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -49,7 +49,7 @@ public class AuthServiceImpl implements AuthService {
     private JwtUtilsInterface jwtUtils;
 
     @Autowired
-    private RefreshTokenService refreshTokenService;
+    private TokenService tokenService;
 
     @Override
     public JwtResponse authenticateUser(LoginRequest loginRequest) {
@@ -57,20 +57,24 @@ public class AuthServiceImpl implements AuthService {
                 .authenticate(new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword()));
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
-        
+
         UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
-        
+
         String jwt = jwtUtils.generateJwtToken(authentication);
-        
+
         List<String> roles = userDetails.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority)
                 .collect(Collectors.toList());
-        
-        RefreshToken refreshToken = refreshTokenService.createRefreshToken(userDetails.getId());
+
+        // Generate a refresh token
+        String refreshTokenStr = java.util.UUID.randomUUID().toString();
+
+        // Create a token with both access and refresh tokens
+        Token token = tokenService.createToken(userDetails.getId(), jwt, refreshTokenStr);
 
         return JwtResponse.builder()
                 .token(jwt)
-                .refreshToken(refreshToken.getToken())
+                .refreshToken(token.getRefreshToken())
                 .id(userDetails.getId())
                 .username(userDetails.getUsername())
                 .email(userDetails.getEmail())
@@ -133,12 +137,21 @@ public class AuthServiceImpl implements AuthService {
     public TokenRefreshResponse refreshToken(TokenRefreshRequest request) {
         String requestRefreshToken = request.getRefreshToken();
 
-        return refreshTokenService.findByToken(requestRefreshToken)
-                .map(refreshTokenService::verifyExpiration)
-                .map(RefreshToken::getUser)
-                .map(user -> {
-                    String token = jwtUtils.generateTokenFromUsername(user.getUsername());
-                    return new TokenRefreshResponse(token, requestRefreshToken, "Bearer");
+        return tokenService.findByRefreshToken(requestRefreshToken)
+                .map(tokenService::verifyRefreshTokenExpirationAndInvocation)
+                .map(token -> {
+                    // Mark the current token as invoked
+                    tokenService.markAsInvoked(token);
+
+                    // Generate new tokens
+                    String newAccessToken = jwtUtils.generateTokenFromUsername(token.getUser().getUsername());
+                    String newRefreshToken = java.util.UUID.randomUUID().toString();
+
+                    // Create a new token with both access and refresh tokens
+                    Token newToken = tokenService.createToken(
+                            token.getUser().getId(), newAccessToken, newRefreshToken);
+
+                    return new TokenRefreshResponse(newAccessToken, newToken.getRefreshToken(), "Bearer");
                 })
                 .orElseThrow(() -> new TokenRefreshException(requestRefreshToken,
                         "Refresh token is not in database!"));
@@ -149,8 +162,21 @@ public class AuthServiceImpl implements AuthService {
     public MessageResponse logoutUser(Long userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found with id: " + userId));
-        
-        refreshTokenService.deleteByUser(user);
+
+        tokenService.deleteByUser(user);
         return new MessageResponse("Log out successful!");
+    }
+
+    @Override
+    public boolean validateAccessToken(String accessToken) {
+        // First check if the token is valid using JWT validation
+        if (!jwtUtils.validateJwtToken(accessToken)) {
+            return false;
+        }
+
+        // Then check if the token exists in the database and is not invoked
+        return tokenService.findByAccessToken(accessToken)
+                .map(token -> !token.isInvoked() && token.getAccessTokenExpiryDate().isAfter(java.time.Instant.now()))
+                .orElse(false);
     }
 }
