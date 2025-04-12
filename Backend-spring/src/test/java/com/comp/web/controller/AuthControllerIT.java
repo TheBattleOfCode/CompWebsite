@@ -4,6 +4,7 @@ import com.comp.web.model.dto.request.LoginRequest;
 import com.comp.web.model.dto.request.SignupRequest;
 import com.comp.web.model.dto.response.JwtResponse;
 import com.comp.web.model.dto.response.MessageResponse;
+
 import com.comp.web.model.entity.ERole;
 import com.comp.web.model.entity.Role;
 import com.comp.web.repository.RoleRepository;
@@ -29,7 +30,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @SpringBootTest
 @AutoConfigureMockMvc
 @ActiveProfiles("test")
-public class AuthControllerIntegrationTest {
+public class AuthControllerIT {
 
     @Autowired
     private MockMvc mockMvc;
@@ -47,7 +48,7 @@ public class AuthControllerIntegrationTest {
     void setUp() {
         // Clear database
         userRepository.deleteAll();
-        
+
         // Ensure roles exist
         if (roleRepository.count() == 0) {
             roleRepository.save(new Role(ERole.ROLE_USER));
@@ -90,7 +91,7 @@ public class AuthControllerIntegrationTest {
 
         JwtResponse jwtResponse = objectMapper.readValue(
                 result.getResponse().getContentAsString(), JwtResponse.class);
-        
+
         assertNotNull(jwtResponse.getToken());
         assertNotNull(jwtResponse.getRefreshToken());
         assertEquals("testuser", jwtResponse.getUsername());
@@ -113,7 +114,7 @@ public class AuthControllerIntegrationTest {
 
         // Try to register with same username
         signupRequest.setEmail("second@example.com");
-        
+
         MvcResult result = mockMvc.perform(post("/auth/signup")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(signupRequest)))

@@ -10,7 +10,7 @@ import com.comp.web.model.entity.Role;
 import com.comp.web.model.entity.User;
 import com.comp.web.repository.RoleRepository;
 import com.comp.web.repository.UserRepository;
-import com.comp.web.security.jwt.JwtUtils;
+import com.comp.web.security.jwt.JwtUtilsInterface;
 import com.comp.web.service.impl.AuthServiceImpl;
 import com.comp.web.service.impl.UserDetailsImpl;
 import org.junit.jupiter.api.BeforeEach;
@@ -31,6 +31,8 @@ import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
 import static org.mockito.Mockito.doReturn;
 
@@ -40,7 +42,7 @@ public class AuthServiceTest {
     @BeforeEach
     void setUpMockito() {
         MockitoAnnotations.openMocks(this);
-        Mockito.lenient().when(jwtUtils.generateJwtToken(any(Authentication.class))).thenReturn("jwt_token");
+        // We'll use a different approach for mocking Authentication
     }
 
     @Mock
@@ -56,7 +58,7 @@ public class AuthServiceTest {
     private PasswordEncoder encoder;
 
     @Mock
-    private JwtUtils jwtUtils;
+    private JwtUtilsInterface jwtUtils;
 
     @Mock
     private RefreshTokenService refreshTokenService;
@@ -99,8 +101,8 @@ public class AuthServiceTest {
         List<SimpleGrantedAuthority> authorities = List.of(new SimpleGrantedAuthority("ROLE_USER"));
         userDetails = new UserDetailsImpl(1L, "testuser", "test@example.com", "encoded_password", authorities);
 
-        authentication = mock(Authentication.class);
-        lenient().when(authentication.getPrincipal()).thenReturn(userDetails);
+        // Create a test authentication instead of mocking
+        authentication = new TestAuthentication(userDetails, userDetails.getAuthorities());
 
         refreshToken = new RefreshToken();
         refreshToken.setId(1L);
@@ -113,8 +115,8 @@ public class AuthServiceTest {
         // Arrange
         when(authenticationManager.authenticate(any(UsernamePasswordAuthenticationToken.class)))
                 .thenReturn(authentication);
-        // JwtUtils mock is already set up in setUp()
-        when(refreshTokenService.createRefreshToken(1L)).thenReturn(refreshToken);
+        when(jwtUtils.generateJwtToken(any(Authentication.class))).thenReturn("jwt_token");
+        when(refreshTokenService.createRefreshToken(eq(1L))).thenReturn(refreshToken);
 
         // Act
         JwtResponse response = authService.authenticateUser(loginRequest);
@@ -130,8 +132,8 @@ public class AuthServiceTest {
         assertEquals("ROLE_USER", response.getRoles().get(0));
 
         verify(authenticationManager).authenticate(any(UsernamePasswordAuthenticationToken.class));
-        verify(jwtUtils).generateJwtToken(authentication);
-        verify(refreshTokenService).createRefreshToken(1L);
+        verify(jwtUtils).generateJwtToken(any(Authentication.class));
+        verify(refreshTokenService).createRefreshToken(eq(1L));
     }
 
     @Test

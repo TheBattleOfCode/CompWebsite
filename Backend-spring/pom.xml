@@ -12,6 +12,7 @@
 	<artifactId>comp-web-backend</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>comp-web-backend</name>
+	<description>Competition Website Backend with Spring Boot</description>
 	<properties>
 		<java.version>17</java.version>
 		<jjwt.version>0.12.3</jjwt.version>
@@ -125,10 +126,6 @@
 	<build>
 		<plugins>
 			<plugin>
-				<groupId>org.springframework.boot</groupId>
-				<artifactId>spring-boot-maven-plugin</artifactId>
-			</plugin>
-			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
 				<configuration>
@@ -143,6 +140,22 @@
 					</annotationProcessorPaths>
 				</configuration>
 			</plugin>
+
+			<!-- Spring Boot Maven Plugin -->
+			<plugin>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-maven-plugin</artifactId>
+				<configuration>
+					<excludes>
+						<exclude>
+							<groupId>org.projectlombok</groupId>
+							<artifactId>lombok</artifactId>
+						</exclude>
+					</excludes>
+				</configuration>
+			</plugin>
+
+			<!-- Maven Surefire Plugin for Unit Tests -->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-surefire-plugin</artifactId>
@@ -150,9 +163,53 @@
 					<includes>
 						<include>**/*Test.java</include>
 					</includes>
+					<excludes>
+						<exclude>**/*IT.java</exclude>
+						<exclude>**/*IntegrationTest.java</exclude>
+					</excludes>
+					<!-- Skip unit tests when running verify -->
+					<skipTests>${skip.unit.tests}</skipTests>
 				</configuration>
+			</plugin>
+
+			<!-- Maven Failsafe Plugin for Integration Tests -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-failsafe-plugin</artifactId>
+				<executions>
+					<execution>
+						<goals>
+							<goal>integration-test</goal>
+							<goal>verify</goal>
+						</goals>
+						<configuration>
+							<includes>
+								<include>**/*IT.java</include>
+								<include>**/*IntegrationTest.java</include>
+							</includes>
+						</configuration>
+					</execution>
+				</executions>
 			</plugin>
 		</plugins>
 	</build>
+
+	<profiles>
+		<profile>
+			<id>integration-test</id>
+			<properties>
+				<skip.unit.tests>true</skip.unit.tests>
+			</properties>
+		</profile>
+		<profile>
+			<id>unit-test</id>
+			<properties>
+				<skip.unit.tests>false</skip.unit.tests>
+			</properties>
+			<activation>
+				<activeByDefault>true</activeByDefault>
+			</activation>
+		</profile>
+	</profiles>
 
 </project>

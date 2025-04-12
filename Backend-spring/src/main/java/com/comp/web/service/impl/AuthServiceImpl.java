@@ -13,7 +13,7 @@ import com.comp.web.model.entity.Role;
 import com.comp.web.model.entity.User;
 import com.comp.web.repository.RoleRepository;
 import com.comp.web.repository.UserRepository;
-import com.comp.web.security.jwt.JwtUtils;
+import com.comp.web.security.jwt.JwtUtilsInterface;
 import com.comp.web.service.AuthService;
 import com.comp.web.service.RefreshTokenService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -46,7 +46,7 @@ public class AuthServiceImpl implements AuthService {
     private PasswordEncoder encoder;
 
     @Autowired
-    private JwtUtils jwtUtils;
+    private JwtUtilsInterface jwtUtils;
 
     @Autowired
     private RefreshTokenService refreshTokenService;
