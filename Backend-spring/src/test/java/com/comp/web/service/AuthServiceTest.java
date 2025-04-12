@@ -94,7 +94,7 @@ public class AuthServiceTest {
         signupRequest.setUsername("newuser");
         signupRequest.setEmail("newuser@example.com");
         signupRequest.setPassword("password");
-        signupRequest.setRoles(Set.of("user"));
+        signupRequest.setRoles(Set.of(ERole.ROLE_USER));
 
         List<SimpleGrantedAuthority> authorities = List.of(new SimpleGrantedAuthority("ROLE_USER"));
         userDetails = new UserDetailsImpl(1L, "testuser", "test@example.com", "encoded_password", authorities);

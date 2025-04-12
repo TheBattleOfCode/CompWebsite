@@ -1,5 +1,6 @@
 package com.comp.web.model.dto.request;
 
+import com.comp.web.model.entity.ERole;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
@@ -24,7 +25,7 @@ public class SignupRequest {
     @Email(message = "Invalid email format")
     private String email;
     
-    private Set<String> roles;
+    private Set<ERole> roles;
     
     @NotBlank(message = "Password is required")
     @Size(min = 6, max = 40, message = "Password must be between 6 and 40 characters")

@@ -63,8 +63,8 @@ public class AuthControllerIntegrationTest {
         signupRequest.setUsername("testuser");
         signupRequest.setEmail("test@example.com");
         signupRequest.setPassword("password123");
-        Set<String> roles = new HashSet<>();
-        roles.add("user");
+        Set<ERole> roles = new HashSet<>();
+        roles.add(ERole.ROLE_USER);
         signupRequest.setRoles(roles);
 
         MvcResult result = mockMvc.perform(post("/auth/signup")
