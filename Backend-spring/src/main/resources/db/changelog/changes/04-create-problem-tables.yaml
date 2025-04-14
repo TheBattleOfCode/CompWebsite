@@ -1,0 +1,114 @@
+databaseChangeLog:
+  - changeSet:
+      id: 04-create-problem-tables
+      author: houssem
+      changes:
+        - createTable:
+            tableName: problems
+            columns:
+              - column:
+                  name: id
+                  type: bigint
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: title
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: description
+                  type: text
+                  constraints:
+                    nullable: false
+              - column:
+                  name: type
+                  type: varchar(20)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: input_generator_code
+                  type: text
+              - column:
+                  name: output_generator_code
+                  type: text
+              - column:
+                  name: sample_input
+                  type: text
+              - column:
+                  name: sample_output
+                  type: text
+              - column:
+                  name: difficulty_level
+                  type: int
+                  constraints:
+                    nullable: false
+              - column:
+                  name: max_score
+                  type: int
+                  constraints:
+                    nullable: false
+              - column:
+                  name: created_at
+                  type: timestamp
+                  constraints:
+                    nullable: false
+              - column:
+                  name: updated_at
+                  type: timestamp
+                  constraints:
+                    nullable: false
+              - column:
+                  name: created_by
+                  type: bigint
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_problems_user
+                    references: users(id)
+        
+        - createTable:
+            tableName: problem_submissions
+            columns:
+              - column:
+                  name: id
+                  type: bigint
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: problem_id
+                  type: bigint
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_problem_submissions_problem
+                    references: problems(id)
+              - column:
+                  name: user_id
+                  type: bigint
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_problem_submissions_user
+                    references: users(id)
+              - column:
+                  name: submitted_answer
+                  type: text
+                  constraints:
+                    nullable: false
+              - column:
+                  name: is_correct
+                  type: boolean
+                  constraints:
+                    nullable: false
+              - column:
+                  name: score
+                  type: int
+                  constraints:
+                    nullable: false
+              - column:
+                  name: submitted_at
+                  type: timestamp
+                  constraints:
+                    nullable: false

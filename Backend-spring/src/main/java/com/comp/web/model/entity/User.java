@@ -40,6 +40,26 @@ public class User {
     @Size(max = 120)
     private String password;
 
+    @Size(max = 100)
+    private String displayName;
+
+    @Size(max = 255)
+    private String profileImageUrl;
+
+    @Size(max = 2)
+    private String countryCode;
+
+    @Size(max = 100)
+    private String establishment;
+
+    private Integer totalScore = 0;
+
+    private Integer globalRank;
+
+    private Integer countryRank;
+
+    private Integer establishmentRank;
+
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "user_roles",
             joinColumns = @JoinColumn(name = "user_id"),

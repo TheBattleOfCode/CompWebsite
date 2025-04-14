@@ -1,0 +1,49 @@
+databaseChangeLog:
+  - changeSet:
+      id: 05-add-user-profile-fields
+      author: houssem
+      changes:
+        - addColumn:
+            tableName: users
+            columns:
+              - column:
+                  name: display_name
+                  type: varchar(100)
+                  constraints:
+                    nullable: true
+              - column:
+                  name: profile_image_url
+                  type: varchar(255)
+                  constraints:
+                    nullable: true
+              - column:
+                  name: country_code
+                  type: varchar(2)
+                  constraints:
+                    nullable: true
+              - column:
+                  name: establishment
+                  type: varchar(100)
+                  constraints:
+                    nullable: true
+              - column:
+                  name: total_score
+                  type: int
+                  defaultValue: 0
+                  constraints:
+                    nullable: false
+              - column:
+                  name: global_rank
+                  type: int
+                  constraints:
+                    nullable: true
+              - column:
+                  name: country_rank
+                  type: int
+                  constraints:
+                    nullable: true
+              - column:
+                  name: establishment_rank
+                  type: int
+                  constraints:
+                    nullable: true
