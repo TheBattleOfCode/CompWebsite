@@ -1,195 +1,198 @@
-# Spring Boot Login example with Spring Security, MySQL and JWT
-Build a Spring Boot Login and Registration example (Rest API) that supports JWT with HttpOnly Cookie. You’ll know:
+# Competition Website Backend with Spring Boot
 
-- Appropriate Flow for User Login and Registration with JWT and HttpOnly Cookies
-- Spring Boot Rest Api Architecture with Spring Security
-- How to configure Spring Security to work with JWT
-- How to define Data Models and association for Authentication and Authorization
-- Way to use Spring Data JPA to interact with MySQL Database
+This is the backend for the Competition Website, built with Spring Boot, PostgreSQL, and JWT authentication.
 
-## User Registration, Login and Authorization process.
+## Table of Contents
 
-![spring-boot-login-example-flow](spring-boot-login-example-flow.png)
+- [Environment Setup](#environment-setup)
+- [Profiles](#profiles)
+- [Running the Application](#running-the-application)
+- [Testing](#testing)
+- [Docker](#docker)
+- [API Documentation](#api-documentation)
 
-## Spring Boot Server Architecture with Spring Security
-You can have an overview of our Spring Boot Server with the diagram below:
+## Environment Setup
 
-![spring-boot-login-example-architecture](spring-boot-login-example-architecture.png)
+The application uses environment variables for configuration. Follow these steps to set up your environment:
 
-For more detail, please visit:
-> [Spring Boot Login example with MySQL and JWT](https://www.bezkoder.com/spring-boot-login-example-mysql/)
+1. Copy the example environment file to create your own:
 
-> [For H2 Embedded database](https://www.bezkoder.com/spring-boot-security-login-jwt/)
-
-> [For MongoDB](https://www.bezkoder.com/spring-boot-jwt-auth-mongodb/)
-
-Working with Front-end:
-> [Angular 12](https://www.bezkoder.com/angular-12-jwt-auth-httponly-cookie/) / [Angular 13](https://www.bezkoder.com/angular-13-jwt-auth-httponly-cookie/) / [Angular 14](https://www.bezkoder.com/angular-14-jwt-auth/) / [Angular 15](https://www.bezkoder.com/angular-15-jwt-auth/) / [Angular 16](https://www.bezkoder.com/angular-16-jwt-auth/) / [Angular 17](https://www.bezkoder.com/angular-17-jwt-auth/)
-
-> [React](https://www.bezkoder.com/react-login-example-jwt-hooks/) / [React Redux](https://www.bezkoder.com/redux-toolkit-auth/)
-
-## Dependency
-– If you want to use PostgreSQL:
-```xml
-<dependency>
-  <groupId>org.postgresql</groupId>
-  <artifactId>postgresql</artifactId>
-  <scope>runtime</scope>
-</dependency>
+```bash
+cp .env.example .env
 ```
-– or MySQL:
-```xml
-<dependency>
-  <groupId>com.mysql</groupId>
-  <artifactId>mysql-connector-j</artifactId>
-  <scope>runtime</scope>
-</dependency>
-```
-## Configure Spring Datasource, JPA, App properties
-Open `src/main/resources/application.properties`
-- For PostgreSQL:
-```
-spring.datasource.url= jdbc:postgresql://localhost:5432/testdb
-spring.datasource.username= postgres
-spring.datasource.password= 123
 
-spring.jpa.properties.hibernate.jdbc.lob.non_contextual_creation= true
-spring.jpa.properties.hibernate.dialect= org.hibernate.dialect.PostgreSQLDialect
+2. Edit the `.env` file with your specific configuration values:
 
-# Hibernate ddl auto (create, create-drop, validate, update)
-spring.jpa.hibernate.ddl-auto= update
+```properties
+# Server Configuration
+SERVER_PORT=8080
+SERVER_CONTEXT_PATH=/api
 
-# App Properties
-bezkoder.app.jwtCookieName= bezkoder
-bezkoder.app.jwtSecret= ======================BezKoder=Spring===========================
-bezkoder.app.jwtExpirationMs= 86400000
-```
-- For MySQL
-```
-spring.datasource.url= jdbc:mysql://localhost:3306/testdb?useSSL=false
-spring.datasource.username= root
-spring.datasource.password= 123456
+# Database Configuration
+DB_URL=jdbc:postgresql://localhost:5432/Comp
+DB_USERNAME=root
+DB_PASSWORD=your_secure_password
 
-spring.jpa.properties.hibernate.dialect= org.hibernate.dialect.MySQL5InnoDBDialect
-spring.jpa.hibernate.ddl-auto= update
+# JWT Configuration
+JWT_SECRET=your_jwt_secret_key
+JWT_EXPIRATION=86400000
+JWT_REFRESH_EXPIRATION=604800000
 
-# App Properties
-bezkoder.app.jwtCookieName= bezkoder
-bezkoder.app.jwtSecret= ======================BezKoder=Spring===========================
-bezkoder.app.jwtExpirationMs= 86400000
+# Logging Configuration
+LOG_LEVEL_SPRING_SECURITY=INFO
+LOG_LEVEL_APP=INFO
+LOG_LEVEL_LIQUIBASE=INFO
 ```
-## Run Spring Boot application
+
+> **Note**: For production environments, make sure to use strong, unique values for passwords and secrets.
+
+## Profiles
+
+The application supports different profiles for various environments:
+
+### Local Profile
+
+The local profile is intended for local development:
+
+- Uses default values from `.env` file with fallbacks
+- Enables detailed SQL logging
+- Enables debug-level logging
+
+To run with the local profile:
+
+```bash
+mvn spring-boot:run -Dspring-boot.run.profiles=local
 ```
+
+### Dev Profile
+
+The dev profile is intended for shared development environments:
+
+- Requires all environment variables to be set
+- Uses more conservative logging settings
+- Suitable for team development environments
+
+To run with the dev profile:
+
+```bash
+mvn spring-boot:run -Dspring-boot.run.profiles=dev
+```
+
+## Running the Application
+
+### Prerequisites
+
+- Java 17 or higher
+- Maven 3.6 or higher
+- PostgreSQL 15 or higher
+
+### Steps
+
+1. Ensure PostgreSQL is running and the database is created:
+
+```bash
+# Create the database if it doesn't exist
+createdb Comp
+```
+
+2. Run the application:
+
+```bash
+# Using Maven
 mvn spring-boot:run
+
+# Or with a specific profile
+mvn spring-boot:run -Dspring-boot.run.profiles=local
 ```
 
-## Run following SQL insert statements
+3. The application will be available at `http://localhost:8080/api`
+
+## Testing
+
+The project includes both unit tests and integration tests.
+
+### Running Unit Tests
+
+Unit tests use the H2 in-memory database and don't require any external dependencies:
+
+```bash
+# Run only unit tests
+mvn test
+
+# Or with the unit-test profile
+mvn test -P unit-test
 ```
-INSERT INTO roles(name) VALUES('ROLE_USER');
-INSERT INTO roles(name) VALUES('ROLE_MODERATOR');
-INSERT INTO roles(name) VALUES('ROLE_ADMIN');
+
+### Running Integration Tests
+
+Integration tests use TestContainers to spin up a PostgreSQL container:
+
+```bash
+# Run only integration tests
+mvn verify -P integration-test
 ```
 
-## Refresh Token
+### Running All Tests
 
-[Spring Boot Refresh Token with JWT example](https://www.bezkoder.com/spring-boot-refresh-token-jwt/)
+To run both unit and integration tests:
 
-## More Practice:
-> [Spring Boot File upload example with Multipart File](https://bezkoder.com/spring-boot-file-upload/)
+```bash
+mvn verify
+```
 
-> [Exception handling: @RestControllerAdvice example in Spring Boot](https://bezkoder.com/spring-boot-restcontrolleradvice/)
+## Docker
 
-> [Spring Boot Repository Unit Test with @DataJpaTest](https://bezkoder.com/spring-boot-unit-test-jpa-repo-datajpatest/)
+The application can be run using Docker and Docker Compose.
 
-> [Spring Boot Rest Controller Unit Test with @WebMvcTest](https://www.bezkoder.com/spring-boot-webmvctest/)
+### Building and Running with Docker Compose
 
-> [Spring Boot Pagination & Sorting example](https://www.bezkoder.com/spring-boot-pagination-sorting-example/)
+```bash
+# Build and start the containers
+docker-compose up -d
 
-> Validation: [Spring Boot Validate Request Body](https://www.bezkoder.com/spring-boot-validate-request-body/)
+# View logs
+docker-compose logs -f
 
-> Documentation: [Spring Boot and Swagger 3 example](https://www.bezkoder.com/spring-boot-swagger-3/)
+# Stop the containers
+docker-compose down
+```
 
-> Caching: [Spring Boot Redis Cache example](https://www.bezkoder.com/spring-boot-redis-cache-example/)
+### Environment Variables in Docker
 
-Associations:
-> [JPA/Hibernate One To Many example in Spring Boot](https://www.bezkoder.com/jpa-one-to-many/)
+Docker Compose will use the `.env` file for environment variables. You can override them by setting them in your environment or in the docker-compose.yml file.
 
-> [JPA/Hibernate Many To Many example in Spring Boot](https://www.bezkoder.com/jpa-many-to-many/)
+## API Documentation
 
-> [JPA/Hibernate One To One example in Spring Boot](https://www.bezkoder.com/jpa-one-to-one/)
+The API documentation is available through Swagger UI when the application is running:
 
-Deployment:
-> [Deploy Spring Boot App on AWS – Elastic Beanstalk](https://www.bezkoder.com/deploy-spring-boot-aws-eb/)
+- Swagger UI: `http://localhost:8080/api/swagger-ui.html`
+- OpenAPI Spec: `http://localhost:8080/api/api-docs`
 
-> [Docker Compose Spring Boot and MySQL example](https://www.bezkoder.com/docker-compose-spring-boot-mysql/)
+## Project Structure
 
-## Fullstack CRUD App
-
-> [Vue.js + Spring Boot + H2 Embedded database example](https://www.bezkoder.com/spring-boot-vue-js-crud-example/)
-
-> [Vue.js + Spring Boot + MySQL example](https://www.bezkoder.com/spring-boot-vue-js-mysql/)
-
-> [Vue.js + Spring Boot + PostgreSQL example](https://www.bezkoder.com/spring-boot-vue-js-postgresql/)
-
-> [Angular 8 + Spring Boot + Embedded database example](https://www.bezkoder.com/angular-spring-boot-crud/)
-
-> [Angular 8 + Spring Boot + MySQL example](https://www.bezkoder.com/angular-spring-boot-crud/)
-
-> [Angular 8 + Spring Boot + PostgreSQL example](https://www.bezkoder.com/angular-spring-boot-postgresql/)
-
-> [Angular 10 + Spring Boot + MySQL example](https://www.bezkoder.com/angular-10-spring-boot-crud/)
-
-> [Angular 10 + Spring Boot + PostgreSQL example](https://www.bezkoder.com/angular-10-spring-boot-postgresql/)
-
-> [Angular 11 + Spring Boot + MySQL example](https://www.bezkoder.com/angular-11-spring-boot-crud/)
-
-> [Angular 11 + Spring Boot + PostgreSQL example](https://www.bezkoder.com/angular-11-spring-boot-postgresql/)
-
-> [Angular 12 + Spring Boot + Embedded database example](https://www.bezkoder.com/angular-12-spring-boot-crud/)
-
-> [Angular 12 + Spring Boot + MySQL example](https://www.bezkoder.com/angular-12-spring-boot-mysql/)
-
-> [Angular 12 + Spring Boot + PostgreSQL example](https://www.bezkoder.com/angular-12-spring-boot-postgresql/)
-
-> [Angular 13 + Spring Boot + H2 Embedded Database example](https://www.bezkoder.com/spring-boot-angular-13-crud/)
-
-> [Angular 13 + Spring Boot + MySQL example](https://www.bezkoder.com/spring-boot-angular-13-mysql/)
-
-> [Angular 13 + Spring Boot + PostgreSQL example](https://www.bezkoder.com/spring-boot-angular-13-postgresql/)
-
-> [Angular 14 + Spring Boot + H2 Embedded Database example](https://www.bezkoder.com/spring-boot-angular-14-crud/)
-
-> [Angular 14 + Spring Boot + MySQL example](https://www.bezkoder.com/spring-boot-angular-14-mysql/)
-
-> [Angular 14 + Spring Boot + PostgreSQL example](https://www.bezkoder.com/spring-boot-angular-14-postgresql/)
-
-> [Angular 15 + Spring Boot + H2 Embedded Database example](https://www.bezkoder.com/spring-boot-angular-15-crud/)
-
-> [Angular 15 + Spring Boot + MySQL example](https://www.bezkoder.com/spring-boot-angular-15-mysql/)
-
-> [Angular 15 + Spring Boot + PostgreSQL example](https://www.bezkoder.com/spring-boot-angular-15-postgresql/)
-
-> [Angular 16 + Spring Boot + H2 Embedded Database example](https://www.bezkoder.com/spring-boot-angular-16-crud/)
-
-> [Angular 16 + Spring Boot + MySQL example](https://www.bezkoder.com/spring-boot-angular-16-mysql/)
-
-> [Angular 16 + Spring Boot + PostgreSQL example](https://www.bezkoder.com/spring-boot-angular-16-postgresql/)
-
-> [Angular 17 + Spring Boot + H2 Embedded Database example](https://www.bezkoder.com/spring-boot-angular-17-crud/)
-
-> [Angular 17 + Spring Boot + MySQL example](https://www.bezkoder.com/spring-boot-angular-17-mysql/)
-
-> [Angular 17 + Spring Boot + PostgreSQL example](https://www.bezkoder.com/spring-boot-angular-17-postgresql/)
-
-> [React + Spring Boot + MySQL example](https://www.bezkoder.com/react-spring-boot-crud/)
-
-> [React + Spring Boot + PostgreSQL example](https://www.bezkoder.com/spring-boot-react-postgresql/)
-
-> [React + Spring Boot + MongoDB example](https://www.bezkoder.com/react-spring-boot-mongodb/)
-
-Run both Back-end & Front-end in one place:
-> [Integrate Angular with Spring Boot Rest API](https://www.bezkoder.com/integrate-angular-spring-boot/)
-
-> [Integrate React.js with Spring Boot Rest API](https://www.bezkoder.com/integrate-reactjs-spring-boot/)
-
-> [Integrate Vue.js with Spring Boot Rest API](https://www.bezkoder.com/integrate-vue-spring-boot/)
+```
+├── src
+│   ├── main
+│   │   ├── java
+│   │   │   └── com.comp.web
+│   │   │       ├── config        # Configuration classes
+│   │   │       ├── controller    # REST controllers
+│   │   │       ├── exception     # Exception handlers
+│   │   │       ├── model         # Entity and DTO classes
+│   │   │       ├── repository    # Data repositories
+│   │   │       ├── security      # Security configuration
+│   │   │       └── service       # Business logic
+│   │   └── resources
+│   │       ├── application.properties          # Common properties
+│   │       ├── application-local.properties    # Local profile
+│   │       ├── application-dev.properties      # Dev profile
+│   │       └── db/changelog                    # Liquibase migrations
+│   └── test
+│       ├── java                  # Test classes
+│       └── resources
+│           └── application-test.properties  # Test configuration
+├── .env.example                  # Example environment variables
+├── docker-compose.yml            # Docker Compose configuration
+├── Dockerfile                    # Docker build configuration
+└── pom.xml                       # Maven configuration
+```
