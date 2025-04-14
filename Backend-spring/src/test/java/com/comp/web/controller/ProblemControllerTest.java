@@ -20,8 +20,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.mockito.quality.Strictness;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
@@ -162,9 +160,10 @@ public class ProblemControllerTest {
         mockMvc.perform(get("/problems")
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.content[0].id").value(1))
-                .andExpect(jsonPath("$.content[0].title").value("Test Problem"))
-                .andExpect(jsonPath("$.content[0].type").value("NUMBER_GEN"));
+                .andExpect(jsonPath("$.data[0].id").value(1))
+                .andExpect(jsonPath("$.data[0].title").value("Test Problem"))
+                .andExpect(jsonPath("$.data[0].type").value("NUMBER_GEN"))
+                .andExpect(jsonPath("$.total_count").exists());
 
         verify(problemService).getAllProblems(any(Pageable.class));
     }
@@ -174,9 +173,9 @@ public class ProblemControllerTest {
         mockMvc.perform(get("/problems/1")
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(1))
-                .andExpect(jsonPath("$.title").value("Test Problem"))
-                .andExpect(jsonPath("$.type").value("NUMBER_GEN"));
+                .andExpect(jsonPath("$.data.id").value(1))
+                .andExpect(jsonPath("$.data.title").value("Test Problem"))
+                .andExpect(jsonPath("$.data.type").value("NUMBER_GEN"));
 
         verify(problemService).getProblemById(1L);
     }
@@ -186,9 +185,10 @@ public class ProblemControllerTest {
         mockMvc.perform(get("/problems/type/NUMBER_GEN")
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.content[0].id").value(1))
-                .andExpect(jsonPath("$.content[0].title").value("Test Problem"))
-                .andExpect(jsonPath("$.content[0].type").value("NUMBER_GEN"));
+                .andExpect(jsonPath("$.data[0].id").value(1))
+                .andExpect(jsonPath("$.data[0].title").value("Test Problem"))
+                .andExpect(jsonPath("$.data[0].type").value("NUMBER_GEN"))
+                .andExpect(jsonPath("$.total_count").exists());
 
         verify(problemService).getProblemsByType(eq(EProblemType.NUMBER_GEN), any(Pageable.class));
     }
@@ -198,9 +198,10 @@ public class ProblemControllerTest {
         mockMvc.perform(get("/problems/difficulty/5")
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.content[0].id").value(1))
-                .andExpect(jsonPath("$.content[0].title").value("Test Problem"))
-                .andExpect(jsonPath("$.content[0].difficultyLevel").value(5));
+                .andExpect(jsonPath("$.data[0].id").value(1))
+                .andExpect(jsonPath("$.data[0].title").value("Test Problem"))
+                .andExpect(jsonPath("$.data[0].difficulty_level").value(5))
+                .andExpect(jsonPath("$.total_count").exists());
 
         verify(problemService).getProblemsByDifficultyLevel(eq(5), any(Pageable.class));
     }
@@ -211,9 +212,9 @@ public class ProblemControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(createProblemRequest)))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(1))
-                .andExpect(jsonPath("$.title").value("Test Problem"))
-                .andExpect(jsonPath("$.type").value("NUMBER_GEN"));
+                .andExpect(jsonPath("$.data.id").value(1))
+                .andExpect(jsonPath("$.data.title").value("Test Problem"))
+                .andExpect(jsonPath("$.data.type").value("NUMBER_GEN"));
 
         verify(problemService).createProblem(any(CreateProblemRequest.class), eq(1L));
     }
@@ -224,9 +225,9 @@ public class ProblemControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(createProblemRequest)))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(1))
-                .andExpect(jsonPath("$.title").value("Test Problem"))
-                .andExpect(jsonPath("$.type").value("NUMBER_GEN"));
+                .andExpect(jsonPath("$.data.id").value(1))
+                .andExpect(jsonPath("$.data.title").value("Test Problem"))
+                .andExpect(jsonPath("$.data.type").value("NUMBER_GEN"));
 
         verify(problemService).updateProblem(eq(1L), any(CreateProblemRequest.class));
     }
@@ -246,10 +247,10 @@ public class ProblemControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(submitProblemRequest)))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.submissionId").value(1))
-                .andExpect(jsonPath("$.isCorrect").value(true))
-                .andExpect(jsonPath("$.score").value(100))
-                .andExpect(jsonPath("$.message").value("Correct answer!"));
+                .andExpect(jsonPath("$.data.submission_id").value(1))
+                .andExpect(jsonPath("$.data.is_correct").value(true))
+                .andExpect(jsonPath("$.data.score").value(100))
+                .andExpect(jsonPath("$.data.message").value("Correct answer!"));
 
         verify(problemSubmissionService).submitProblem(any(SubmitProblemRequest.class), eq(1L));
     }
@@ -259,12 +260,13 @@ public class ProblemControllerTest {
         mockMvc.perform(get("/problems/submissions")
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.content[0].id").value(1))
-                .andExpect(jsonPath("$.content[0].problemId").value(1))
-                .andExpect(jsonPath("$.content[0].problemTitle").value("Test Problem"))
-                .andExpect(jsonPath("$.content[0].username").value("testuser"))
-                .andExpect(jsonPath("$.content[0].isCorrect").value(true))
-                .andExpect(jsonPath("$.content[0].score").value(100));
+                .andExpect(jsonPath("$.data[0].id").value(1))
+                .andExpect(jsonPath("$.data[0].problem_id").value(1))
+                .andExpect(jsonPath("$.data[0].problem_title").value("Test Problem"))
+                .andExpect(jsonPath("$.data[0].username").value("testuser"))
+                .andExpect(jsonPath("$.data[0].is_correct").value(true))
+                .andExpect(jsonPath("$.data[0].score").value(100))
+                .andExpect(jsonPath("$.total_count").exists());
 
         verify(problemSubmissionService).getSubmissionsByUser(eq(1L), any(Pageable.class));
     }
@@ -274,12 +276,12 @@ public class ProblemControllerTest {
         mockMvc.perform(get("/problems/submissions/1")
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(1))
-                .andExpect(jsonPath("$.problemId").value(1))
-                .andExpect(jsonPath("$.problemTitle").value("Test Problem"))
-                .andExpect(jsonPath("$.username").value("testuser"))
-                .andExpect(jsonPath("$.isCorrect").value(true))
-                .andExpect(jsonPath("$.score").value(100));
+                .andExpect(jsonPath("$.data.id").value(1))
+                .andExpect(jsonPath("$.data.problem_id").value(1))
+                .andExpect(jsonPath("$.data.problem_title").value("Test Problem"))
+                .andExpect(jsonPath("$.data.username").value("testuser"))
+                .andExpect(jsonPath("$.data.is_correct").value(true))
+                .andExpect(jsonPath("$.data.score").value(100));
 
         verify(problemSubmissionService).getBestSubmissionByUserAndProblem(1L, 1L);
     }
@@ -289,7 +291,7 @@ public class ProblemControllerTest {
         mockMvc.perform(get("/problems/stats/solved")
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(content().string("5"));
+                .andExpect(jsonPath("$.data").value(5));
 
         verify(problemSubmissionService).countSolvedProblemsByUser(1L);
     }
@@ -299,7 +301,7 @@ public class ProblemControllerTest {
         mockMvc.perform(get("/problems/stats/score")
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(content().string("500"));
+                .andExpect(jsonPath("$.data").value(500));
 
         verify(problemSubmissionService).getTotalScoreByUser(1L);
     }
@@ -309,7 +311,7 @@ public class ProblemControllerTest {
         mockMvc.perform(get("/problems/1/generate-input")
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(content().string("10"));
+                .andExpect(jsonPath("$.data").value("10"));
 
         verify(problemService).generateProblemInput(1L);
     }

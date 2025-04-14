@@ -1,5 +1,6 @@
 package com.comp.web.model.dto.request;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -12,5 +13,6 @@ import lombok.Setter;
 @AllArgsConstructor
 public class TokenRefreshRequest {
     @NotBlank(message = "Refresh token is required")
+    @JsonProperty("refresh_token")
     private String refreshToken;
 }

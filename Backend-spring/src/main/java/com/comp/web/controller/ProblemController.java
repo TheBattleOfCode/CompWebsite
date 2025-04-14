@@ -2,8 +2,10 @@ package com.comp.web.controller;
 
 import com.comp.web.model.dto.request.CreateProblemRequest;
 import com.comp.web.model.dto.request.SubmitProblemRequest;
+import com.comp.web.model.dto.response.PageDto;
 import com.comp.web.model.dto.response.ProblemResponse;
 import com.comp.web.model.dto.response.ProblemSubmissionResponse;
+import com.comp.web.model.dto.response.SingleResultDto;
 import com.comp.web.model.dto.response.SubmissionResultResponse;
 import com.comp.web.model.entity.EProblemType;
 import com.comp.web.service.ProblemService;
@@ -42,7 +44,7 @@ public class ProblemController {
             description = "Get all problems with pagination",
             security = @SecurityRequirement(name = "bearerAuth")
     )
-    public ResponseEntity<Page<ProblemResponse>> getAllProblems(
+    public ResponseEntity<PageDto<ProblemResponse>> getAllProblems(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(defaultValue = "id") String sortBy,
@@ -50,8 +52,15 @@ public class ProblemController {
 
         Sort.Direction direction = sortDir.equalsIgnoreCase("desc") ? Sort.Direction.DESC : Sort.Direction.ASC;
         Pageable pageable = PageRequest.of(page, size, Sort.by(direction, sortBy));
-        Page<ProblemResponse> problems = problemService.getAllProblems(pageable);
-        return ResponseEntity.ok(problems);
+        Page<ProblemResponse> problemsPage = problemService.getAllProblems(pageable);
+
+        PageDto<ProblemResponse> response = PageDto.<ProblemResponse>builder()
+                .data(problemsPage.getContent())
+                .totalCount(problemsPage.getTotalElements())
+                .meta(null)
+                .build();
+
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping("/{id}")
@@ -60,9 +69,12 @@ public class ProblemController {
             description = "Get a problem by its ID",
             security = @SecurityRequirement(name = "bearerAuth")
     )
-    public ResponseEntity<ProblemResponse> getProblemById(@PathVariable Long id) {
+    public ResponseEntity<SingleResultDto<ProblemResponse>> getProblemById(@PathVariable Long id) {
         ProblemResponse problem = problemService.getProblemById(id);
-        return ResponseEntity.ok(problem);
+        SingleResultDto<ProblemResponse> response = SingleResultDto.<ProblemResponse>builder()
+                .data(problem)
+                .build();
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping("/type/{type}")
@@ -71,14 +83,21 @@ public class ProblemController {
             description = "Get problems by type with pagination",
             security = @SecurityRequirement(name = "bearerAuth")
     )
-    public ResponseEntity<Page<ProblemResponse>> getProblemsByType(
+    public ResponseEntity<PageDto<ProblemResponse>> getProblemsByType(
             @PathVariable EProblemType type,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
 
         Pageable pageable = PageRequest.of(page, size);
-        Page<ProblemResponse> problems = problemService.getProblemsByType(type, pageable);
-        return ResponseEntity.ok(problems);
+        Page<ProblemResponse> problemsPage = problemService.getProblemsByType(type, pageable);
+
+        PageDto<ProblemResponse> response = PageDto.<ProblemResponse>builder()
+                .data(problemsPage.getContent())
+                .totalCount(problemsPage.getTotalElements())
+                .meta(null)
+                .build();
+
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping("/difficulty/{level}")
@@ -87,14 +106,21 @@ public class ProblemController {
             description = "Get problems by difficulty level with pagination",
             security = @SecurityRequirement(name = "bearerAuth")
     )
-    public ResponseEntity<Page<ProblemResponse>> getProblemsByDifficultyLevel(
+    public ResponseEntity<PageDto<ProblemResponse>> getProblemsByDifficultyLevel(
             @PathVariable Integer level,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
 
         Pageable pageable = PageRequest.of(page, size);
-        Page<ProblemResponse> problems = problemService.getProblemsByDifficultyLevel(level, pageable);
-        return ResponseEntity.ok(problems);
+        Page<ProblemResponse> problemsPage = problemService.getProblemsByDifficultyLevel(level, pageable);
+
+        PageDto<ProblemResponse> response = PageDto.<ProblemResponse>builder()
+                .data(problemsPage.getContent())
+                .totalCount(problemsPage.getTotalElements())
+                .meta(null)
+                .build();
+
+        return ResponseEntity.ok(response);
     }
 
     @PostMapping
@@ -104,10 +130,13 @@ public class ProblemController {
             description = "Create a new problem (requires MODERATOR or ADMIN role)",
             security = @SecurityRequirement(name = "bearerAuth")
     )
-    public ResponseEntity<ProblemResponse> createProblem(@Valid @RequestBody CreateProblemRequest createProblemRequest) {
+    public ResponseEntity<SingleResultDto<ProblemResponse>> createProblem(@Valid @RequestBody CreateProblemRequest createProblemRequest) {
         UserDetailsImpl userDetails = getCurrentUser();
         ProblemResponse problem = problemService.createProblem(createProblemRequest, userDetails.getId());
-        return ResponseEntity.ok(problem);
+        SingleResultDto<ProblemResponse> response = SingleResultDto.<ProblemResponse>builder()
+                .data(problem)
+                .build();
+        return ResponseEntity.ok(response);
     }
 
     @PutMapping("/{id}")
@@ -117,12 +146,15 @@ public class ProblemController {
             description = "Update an existing problem (requires MODERATOR or ADMIN role)",
             security = @SecurityRequirement(name = "bearerAuth")
     )
-    public ResponseEntity<ProblemResponse> updateProblem(
+    public ResponseEntity<SingleResultDto<ProblemResponse>> updateProblem(
             @PathVariable Long id,
             @Valid @RequestBody CreateProblemRequest createProblemRequest) {
 
         ProblemResponse problem = problemService.updateProblem(id, createProblemRequest);
-        return ResponseEntity.ok(problem);
+        SingleResultDto<ProblemResponse> response = SingleResultDto.<ProblemResponse>builder()
+                .data(problem)
+                .build();
+        return ResponseEntity.ok(response);
     }
 
     @DeleteMapping("/{id}")
@@ -143,10 +175,13 @@ public class ProblemController {
             description = "Submit a solution to a problem",
             security = @SecurityRequirement(name = "bearerAuth")
     )
-    public ResponseEntity<SubmissionResultResponse> submitProblem(@Valid @RequestBody SubmitProblemRequest submitProblemRequest) {
+    public ResponseEntity<SingleResultDto<SubmissionResultResponse>> submitProblem(@Valid @RequestBody SubmitProblemRequest submitProblemRequest) {
         UserDetailsImpl userDetails = getCurrentUser();
         SubmissionResultResponse result = problemSubmissionService.submitProblem(submitProblemRequest, userDetails.getId());
-        return ResponseEntity.ok(result);
+        SingleResultDto<SubmissionResultResponse> response = SingleResultDto.<SubmissionResultResponse>builder()
+                .data(result)
+                .build();
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping("/submissions")
@@ -155,14 +190,21 @@ public class ProblemController {
             description = "Get all submissions by the current user",
             security = @SecurityRequirement(name = "bearerAuth")
     )
-    public ResponseEntity<Page<ProblemSubmissionResponse>> getUserSubmissions(
+    public ResponseEntity<PageDto<ProblemSubmissionResponse>> getUserSubmissions(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
 
         UserDetailsImpl userDetails = getCurrentUser();
         Pageable pageable = PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "submittedAt"));
-        Page<ProblemSubmissionResponse> submissions = problemSubmissionService.getSubmissionsByUser(userDetails.getId(), pageable);
-        return ResponseEntity.ok(submissions);
+        Page<ProblemSubmissionResponse> submissionsPage = problemSubmissionService.getSubmissionsByUser(userDetails.getId(), pageable);
+
+        PageDto<ProblemSubmissionResponse> response = PageDto.<ProblemSubmissionResponse>builder()
+                .data(submissionsPage.getContent())
+                .totalCount(submissionsPage.getTotalElements())
+                .meta(null)
+                .build();
+
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping("/submissions/{problemId}")
@@ -171,10 +213,13 @@ public class ProblemController {
             description = "Get the best submission by the current user for a specific problem",
             security = @SecurityRequirement(name = "bearerAuth")
     )
-    public ResponseEntity<ProblemSubmissionResponse> getBestSubmissionForProblem(@PathVariable Long problemId) {
+    public ResponseEntity<SingleResultDto<ProblemSubmissionResponse>> getBestSubmissionForProblem(@PathVariable Long problemId) {
         UserDetailsImpl userDetails = getCurrentUser();
         ProblemSubmissionResponse submission = problemSubmissionService.getBestSubmissionByUserAndProblem(userDetails.getId(), problemId);
-        return ResponseEntity.ok(submission);
+        SingleResultDto<ProblemSubmissionResponse> response = SingleResultDto.<ProblemSubmissionResponse>builder()
+                .data(submission)
+                .build();
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping("/stats/solved")
@@ -183,10 +228,13 @@ public class ProblemController {
             description = "Get the number of problems solved by the current user",
             security = @SecurityRequirement(name = "bearerAuth")
     )
-    public ResponseEntity<Long> getSolvedProblemsCount() {
+    public ResponseEntity<SingleResultDto<Long>> getSolvedProblemsCount() {
         UserDetailsImpl userDetails = getCurrentUser();
         Long count = problemSubmissionService.countSolvedProblemsByUser(userDetails.getId());
-        return ResponseEntity.ok(count);
+        SingleResultDto<Long> response = SingleResultDto.<Long>builder()
+                .data(count)
+                .build();
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping("/stats/score")
@@ -195,10 +243,13 @@ public class ProblemController {
             description = "Get the total score of the current user",
             security = @SecurityRequirement(name = "bearerAuth")
     )
-    public ResponseEntity<Integer> getTotalScore() {
+    public ResponseEntity<SingleResultDto<Integer>> getTotalScore() {
         UserDetailsImpl userDetails = getCurrentUser();
         Integer score = problemSubmissionService.getTotalScoreByUser(userDetails.getId());
-        return ResponseEntity.ok(score);
+        SingleResultDto<Integer> response = SingleResultDto.<Integer>builder()
+                .data(score)
+                .build();
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping("/{id}/generate-input")
@@ -207,9 +258,12 @@ public class ProblemController {
             description = "Generate input for a problem",
             security = @SecurityRequirement(name = "bearerAuth")
     )
-    public ResponseEntity<String> generateProblemInput(@PathVariable Long id) {
+    public ResponseEntity<SingleResultDto<String>> generateProblemInput(@PathVariable Long id) {
         String input = problemService.generateProblemInput(id);
-        return ResponseEntity.ok(input);
+        SingleResultDto<String> response = SingleResultDto.<String>builder()
+                .data(input)
+                .build();
+        return ResponseEntity.ok(response);
     }
 
     private UserDetailsImpl getCurrentUser() {

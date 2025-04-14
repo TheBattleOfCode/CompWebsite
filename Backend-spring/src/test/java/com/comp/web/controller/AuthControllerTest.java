@@ -9,7 +9,6 @@ import com.comp.web.model.dto.response.MessageResponse;
 import com.comp.web.model.dto.response.TokenRefreshResponse;
 import com.comp.web.model.entity.ERole;
 import com.comp.web.model.entity.Role;
-import com.comp.web.model.entity.Token;
 import com.comp.web.model.entity.User;
 import com.comp.web.service.AuthService;
 import com.comp.web.service.TestAuthentication;
@@ -29,7 +28,6 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
-import java.time.Instant;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -38,7 +36,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.*;
-import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.springSecurity;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -123,8 +120,8 @@ public class AuthControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(loginRequest)))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.token").value("access_token"))
-                .andExpect(jsonPath("$.refreshToken").value("refresh_token"))
+                .andExpect(jsonPath("$.access_token").value("access_token"))
+                .andExpect(jsonPath("$.refresh_token").value("refresh_token"))
                 .andExpect(jsonPath("$.username").value("testuser"));
 
         verify(authService).authenticateUser(any(LoginRequest.class));
@@ -152,9 +149,9 @@ public class AuthControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(tokenRefreshRequest)))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.accessToken").value("new_access_token"))
-                .andExpect(jsonPath("$.refreshToken").value("new_refresh_token"))
-                .andExpect(jsonPath("$.tokenType").value("Bearer"));
+                .andExpect(jsonPath("$.access_token").value("new_access_token"))
+                .andExpect(jsonPath("$.refresh_token").value("new_refresh_token"))
+                .andExpect(jsonPath("$.token_type").value("Bearer"));
 
         verify(authService).refreshToken(any(TokenRefreshRequest.class));
     }

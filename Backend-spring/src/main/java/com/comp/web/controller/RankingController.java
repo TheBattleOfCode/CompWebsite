@@ -1,5 +1,7 @@
 package com.comp.web.controller;
 
+import com.comp.web.model.dto.response.PageDto;
+import com.comp.web.model.dto.response.SingleResultDto;
 import com.comp.web.model.dto.response.UserRankingResponse;
 import com.comp.web.service.RankingService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -28,13 +30,20 @@ public class RankingController {
             description = "Get global rankings of users based on their total score",
             security = @SecurityRequirement(name = "bearerAuth")
     )
-    public ResponseEntity<Page<UserRankingResponse>> getGlobalRankings(
+    public ResponseEntity<PageDto<UserRankingResponse>> getGlobalRankings(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
 
         Pageable pageable = PageRequest.of(page, size);
-        Page<UserRankingResponse> rankings = rankingService.getGlobalRankings(pageable);
-        return ResponseEntity.ok(rankings);
+        Page<UserRankingResponse> rankingsPage = rankingService.getGlobalRankings(pageable);
+
+        PageDto<UserRankingResponse> response = PageDto.<UserRankingResponse>builder()
+                .data(rankingsPage.getContent())
+                .totalCount(rankingsPage.getTotalElements())
+                .meta(null)
+                .build();
+
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping("/country/{countryCode}")
@@ -43,14 +52,21 @@ public class RankingController {
             description = "Get rankings of users from a specific country",
             security = @SecurityRequirement(name = "bearerAuth")
     )
-    public ResponseEntity<Page<UserRankingResponse>> getCountryRankings(
+    public ResponseEntity<PageDto<UserRankingResponse>> getCountryRankings(
             @PathVariable String countryCode,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
 
         Pageable pageable = PageRequest.of(page, size);
-        Page<UserRankingResponse> rankings = rankingService.getCountryRankings(countryCode, pageable);
-        return ResponseEntity.ok(rankings);
+        Page<UserRankingResponse> rankingsPage = rankingService.getCountryRankings(countryCode, pageable);
+
+        PageDto<UserRankingResponse> response = PageDto.<UserRankingResponse>builder()
+                .data(rankingsPage.getContent())
+                .totalCount(rankingsPage.getTotalElements())
+                .meta(null)
+                .build();
+
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping("/establishment/{establishmentId}")
@@ -59,14 +75,21 @@ public class RankingController {
             description = "Get rankings of users from a specific establishment",
             security = @SecurityRequirement(name = "bearerAuth")
     )
-    public ResponseEntity<Page<UserRankingResponse>> getEstablishmentRankings(
+    public ResponseEntity<PageDto<UserRankingResponse>> getEstablishmentRankings(
             @PathVariable Long establishmentId,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
 
         Pageable pageable = PageRequest.of(page, size);
-        Page<UserRankingResponse> rankings = rankingService.getEstablishmentRankings(establishmentId, pageable);
-        return ResponseEntity.ok(rankings);
+        Page<UserRankingResponse> rankingsPage = rankingService.getEstablishmentRankings(establishmentId, pageable);
+
+        PageDto<UserRankingResponse> response = PageDto.<UserRankingResponse>builder()
+                .data(rankingsPage.getContent())
+                .totalCount(rankingsPage.getTotalElements())
+                .meta(null)
+                .build();
+
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping("/user/{userId}")
@@ -75,9 +98,12 @@ public class RankingController {
             description = "Get the ranking of a specific user",
             security = @SecurityRequirement(name = "bearerAuth")
     )
-    public ResponseEntity<UserRankingResponse> getUserRanking(@PathVariable Long userId) {
+    public ResponseEntity<SingleResultDto<UserRankingResponse>> getUserRanking(@PathVariable Long userId) {
         UserRankingResponse ranking = rankingService.getUserRanking(userId);
-        return ResponseEntity.ok(ranking);
+        SingleResultDto<UserRankingResponse> response = SingleResultDto.<UserRankingResponse>builder()
+                .data(ranking)
+                .build();
+        return ResponseEntity.ok(response);
     }
 
     @PostMapping("/recalculate")

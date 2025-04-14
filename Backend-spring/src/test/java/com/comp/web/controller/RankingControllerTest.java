@@ -1,6 +1,7 @@
 package com.comp.web.controller;
 
 import com.comp.web.model.dto.response.UserRankingResponse;
+import org.springframework.data.domain.PageImpl;
 import com.comp.web.service.RankingService;
 import com.comp.web.service.TestAuthentication;
 import com.comp.web.service.impl.UserDetailsImpl;
@@ -15,7 +16,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
@@ -29,6 +29,10 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import java.util.Arrays;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
@@ -36,6 +40,21 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @ExtendWith(MockitoExtension.class)
 public class RankingControllerTest {
+
+    @JsonAutoDetect(fieldVisibility = JsonAutoDetect.Visibility.ANY)
+    @JsonIgnoreProperties({"pageable", "sort"})
+    abstract static class PageMixIn {
+        @JsonProperty("content")
+        List<?> content;
+        @JsonProperty("totalElements")
+        long totalElements;
+        @JsonProperty("totalPages")
+        int totalPages;
+        @JsonProperty("number")
+        int number;
+        @JsonProperty("size")
+        int size;
+    }
 
     private MockMvc mockMvc;
 
@@ -54,22 +73,29 @@ public class RankingControllerTest {
 
     @BeforeEach
     void setUp() {
-        // Configure ObjectMapper to handle LocalDateTime
+        // Configure ObjectMapper to handle LocalDateTime and Page objects
         objectMapper = new ObjectMapper();
         objectMapper.registerModule(new JavaTimeModule());
         objectMapper.disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
-        
+        objectMapper.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
+        // Add mix-in to handle Page serialization
+        objectMapper.addMixIn(Page.class, PageMixIn.class);
+
         // Create a custom HttpMessageConverter for handling Page objects
-        MappingJackson2HttpMessageConverter converter = new MappingJackson2HttpMessageConverter();
-        converter.setObjectMapper(objectMapper);
-        
+        MappingJackson2HttpMessageConverter jsonConverter = new MappingJackson2HttpMessageConverter();
+        jsonConverter.setObjectMapper(objectMapper);
+
+        // Create a StringHttpMessageConverter for plain text responses
+        org.springframework.http.converter.StringHttpMessageConverter stringConverter =
+                new org.springframework.http.converter.StringHttpMessageConverter();
+
         mockMvc = MockMvcBuilders
                 .standaloneSetup(rankingController)
                 .setControllerAdvice(new com.comp.web.exception.ControllerExceptionHandler())
-                .setMessageConverters(converter)
+                .setMessageConverters(jsonConverter, stringConverter)
                 .build();
 
-        userDetails = new UserDetailsImpl(1L, "testuser", "test@example.com", "password", 
+        userDetails = new UserDetailsImpl(1L, "testuser", "test@example.com", "password",
                 List.of(new SimpleGrantedAuthority("ROLE_USER")));
 
         userRanking1 = UserRankingResponse.builder()
@@ -113,28 +139,28 @@ public class RankingControllerTest {
                 .solvedProblems(3)
                 .totalSubmissions(6)
                 .build();
-        
+
         // Setup SecurityContext
         authentication = new TestAuthentication(userDetails, userDetails.getAuthorities());
         SecurityContext securityContext = SecurityContextHolder.createEmptyContext();
         securityContext.setAuthentication(authentication);
         SecurityContextHolder.setContext(securityContext);
-        
+
         // Setup service mocks
         List<UserRankingResponse> globalRankings = Arrays.asList(userRanking1, userRanking2, userRanking3);
         Page<UserRankingResponse> globalRankingsPage = new PageImpl<>(globalRankings);
         lenient().when(rankingService.getGlobalRankings(any(Pageable.class))).thenReturn(globalRankingsPage);
-        
+
         List<UserRankingResponse> usRankings = Arrays.asList(userRanking1, userRanking2);
         Page<UserRankingResponse> usRankingsPage = new PageImpl<>(usRankings);
         lenient().when(rankingService.getCountryRankings(eq("US"), any(Pageable.class))).thenReturn(usRankingsPage);
-        
+
         List<UserRankingResponse> uniARankings = Arrays.asList(userRanking1, userRanking2);
         Page<UserRankingResponse> uniARankingsPage = new PageImpl<>(uniARankings);
         lenient().when(rankingService.getEstablishmentRankings(eq(1L), any(Pageable.class))).thenReturn(uniARankingsPage);
-        
+
         lenient().when(rankingService.getUserRanking(1L)).thenReturn(userRanking1);
-        
+
         lenient().doNothing().when(rankingService).recalculateRankings();
     }
 
@@ -143,11 +169,12 @@ public class RankingControllerTest {
         mockMvc.perform(get("/rankings/global")
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.content[0].userId").value(1))
-                .andExpect(jsonPath("$.content[0].username").value("user1"))
-                .andExpect(jsonPath("$.content[0].globalRank").value(1))
-                .andExpect(jsonPath("$.content[1].userId").value(2))
-                .andExpect(jsonPath("$.content[2].userId").value(3));
+                .andExpect(jsonPath("$.data[0].user_id").value(1))
+                .andExpect(jsonPath("$.data[0].username").value("user1"))
+                .andExpect(jsonPath("$.data[0].global_rank").value(1))
+                .andExpect(jsonPath("$.data[1].user_id").value(2))
+                .andExpect(jsonPath("$.data[2].user_id").value(3))
+                .andExpect(jsonPath("$.total_count").exists());
 
         verify(rankingService).getGlobalRankings(any(Pageable.class));
     }
@@ -157,11 +184,12 @@ public class RankingControllerTest {
         mockMvc.perform(get("/rankings/country/US")
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.content[0].userId").value(1))
-                .andExpect(jsonPath("$.content[0].country").value("US"))
-                .andExpect(jsonPath("$.content[0].countryRank").value(1))
-                .andExpect(jsonPath("$.content[1].userId").value(2))
-                .andExpect(jsonPath("$.content[1].countryRank").value(2));
+                .andExpect(jsonPath("$.data[0].user_id").value(1))
+                .andExpect(jsonPath("$.data[0].country").value("US"))
+                .andExpect(jsonPath("$.data[0].country_rank").value(1))
+                .andExpect(jsonPath("$.data[1].user_id").value(2))
+                .andExpect(jsonPath("$.data[1].country_rank").value(2))
+                .andExpect(jsonPath("$.total_count").exists());
 
         verify(rankingService).getCountryRankings(eq("US"), any(Pageable.class));
     }
@@ -171,11 +199,12 @@ public class RankingControllerTest {
         mockMvc.perform(get("/rankings/establishment/1")
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.content[0].userId").value(1))
-                .andExpect(jsonPath("$.content[0].establishment").value("University A"))
-                .andExpect(jsonPath("$.content[0].establishmentRank").value(1))
-                .andExpect(jsonPath("$.content[1].userId").value(2))
-                .andExpect(jsonPath("$.content[1].establishmentRank").value(2));
+                .andExpect(jsonPath("$.data[0].user_id").value(1))
+                .andExpect(jsonPath("$.data[0].establishment").value("University A"))
+                .andExpect(jsonPath("$.data[0].establishment_rank").value(1))
+                .andExpect(jsonPath("$.data[1].user_id").value(2))
+                .andExpect(jsonPath("$.data[1].establishment_rank").value(2))
+                .andExpect(jsonPath("$.total_count").exists());
 
         verify(rankingService).getEstablishmentRankings(eq(1L), any(Pageable.class));
     }
@@ -185,16 +214,16 @@ public class RankingControllerTest {
         mockMvc.perform(get("/rankings/user/1")
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.userId").value(1))
-                .andExpect(jsonPath("$.username").value("user1"))
-                .andExpect(jsonPath("$.displayName").value("User One"))
-                .andExpect(jsonPath("$.globalRank").value(1))
-                .andExpect(jsonPath("$.countryRank").value(1))
-                .andExpect(jsonPath("$.establishmentRank").value(1))
-                .andExpect(jsonPath("$.country").value("US"))
-                .andExpect(jsonPath("$.establishment").value("University A"))
-                .andExpect(jsonPath("$.totalScore").value(1000))
-                .andExpect(jsonPath("$.solvedProblems").value(5));
+                .andExpect(jsonPath("$.data.user_id").value(1))
+                .andExpect(jsonPath("$.data.username").value("user1"))
+                .andExpect(jsonPath("$.data.display_name").value("User One"))
+                .andExpect(jsonPath("$.data.global_rank").value(1))
+                .andExpect(jsonPath("$.data.country_rank").value(1))
+                .andExpect(jsonPath("$.data.establishment_rank").value(1))
+                .andExpect(jsonPath("$.data.country").value("US"))
+                .andExpect(jsonPath("$.data.establishment").value("University A"))
+                .andExpect(jsonPath("$.data.total_score").value(1000))
+                .andExpect(jsonPath("$.data.solved_problems").value(5));
 
         verify(rankingService).getUserRanking(1L);
     }
