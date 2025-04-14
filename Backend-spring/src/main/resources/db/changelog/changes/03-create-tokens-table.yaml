@@ -1,0 +1,50 @@
+databaseChangeLog:
+  - changeSet:
+      id: 03-create-tokens-table
+      author: houssem
+      changes:
+        - createTable:
+            tableName: tokens
+            columns:
+              - column:
+                  name: id
+                  type: bigint
+                  autoIncrement: true
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: access_token
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+                    unique: true
+              - column:
+                  name: refresh_token
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+                    unique: true
+              - column:
+                  name: user_id
+                  type: bigint
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_tokens_user
+                    references: users(id)
+              - column:
+                  name: access_token_expiry_date
+                  type: timestamp
+                  constraints:
+                    nullable: false
+              - column:
+                  name: refresh_token_expiry_date
+                  type: timestamp
+                  constraints:
+                    nullable: false
+              - column:
+                  name: invoked
+                  type: boolean
+                  defaultValueBoolean: false
+                  constraints:
+                    nullable: false

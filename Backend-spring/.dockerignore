@@ -1,0 +1,44 @@
+# Git
+.git
+.gitignore
+
+# Maven
+target/
+!target/*.jar
+*.class
+*.jar
+*.war
+*.ear
+*.logs
+.mvn/
+
+# Eclipse
+.project
+.classpath
+.settings/
+
+# IntelliJ
+.idea/
+*.iml
+*.iws
+*.ipr
+*.iws
+out/
+
+# VS Code
+.vscode/
+
+# Logs
+logs/
+*.log
+
+# OS specific
+.DS_Store
+Thumbs.db
+
+# Docker
+.dockerignore
+docker-compose.yml
+
+# Tests
+src/test/
