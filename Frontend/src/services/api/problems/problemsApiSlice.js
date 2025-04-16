@@ -3,11 +3,11 @@ import { apiSlice } from '../apiSlice';
 export const problemsApiSlice = apiSlice.injectEndpoints({
 	endpoints: (builder) => ({
 		getProblems: builder.query({
-			query: () => '/problem/getall',
+			query: () => '/problems',
 			providesTags: ['Problems'],
 		}),
 		getProblem: builder.query({
-			query: (id) => `/problem/getone/${id}`,
+			query: (id) => `/problem/${id}`,
 			providesTags: (result, error, id) => [{ type: 'Problems', id }],
 		}),
 		createProblem: builder.mutation({
@@ -41,7 +41,7 @@ export const problemsApiSlice = apiSlice.injectEndpoints({
 		}),
 		deleteProblem: builder.mutation({
 			query: (id) => ({
-				url: `/problem/delete/${id}`,
+				url: `/problems/${id}`,
 				method: 'DELETE',
 			}),
 			invalidatesTags: ['Problems'],
